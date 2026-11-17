@@ -1305,6 +1305,22 @@ async function fetchRealStreetsForNeighborhood(bairro) {
       }
     }
 
+    // Ruas também vêm dos endereços mapeados nos prédios do bairro (addr:street)
+    if (loc) {
+      const spatialAddr = loc.bbox
+        ? `(${loc.bbox[0]},${loc.bbox[2]},${loc.bbox[1]},${loc.bbox[3]})`
+        : `(around:950,${loc.lat},${loc.lon})`;
+      const addrEls = await runOverpass(`
+        [out:json][timeout:10];
+        nwr${spatialAddr}["addr:street"];
+        out tags;
+      `);
+      if (addrEls && addrEls.length) {
+        const extras = addrEls.map(e => ({ tags: { name: e.tags['addr:street'] } }));
+        elements = [...(elements || []), ...extras];
+      }
+    }
+
     // 2) Fallback caso o bairro não tenha sido localizado no Nominatim/Photon
     if (!elements || !elements.length) {
       const bias = loc || getBiasCoords();
