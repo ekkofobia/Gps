@@ -848,13 +848,11 @@ const JUAZEIRO_NEIGHBORHOODS = [
   "Centro",
   "Codevasf",
   "Coreia",
-  "Coronel João Evangelista",
   "Country Club",
   "Distrito Industrial",
   "Dom José Rodrigues",
   "Dom Thomaz",
   "Expedito Nascimento",
-  "Gercino Coelho",
   "Itaberaba",
   "Jardim Flórida",
   "Jardim Primavera",
@@ -872,6 +870,7 @@ const JUAZEIRO_NEIGHBORHOODS = [
   "Mussambê",
   "Nossa Senhora das Grotas",
   "Nova Esperança",
+  "Nova Juazeiro",
   "Novo Encontro",
   "Padre Vicente",
   "Palmares",
@@ -890,6 +889,7 @@ const JUAZEIRO_NEIGHBORHOODS = [
   "Sol Levante",
   "Tabuleiro",
   "Tancredo Neves",
+  "Usina Aliança",
   "Vila Jacaré",
   "Vila Nova Fé",
   "Vila Tiradentes"
@@ -1059,13 +1059,6 @@ const JUAZEIRO_OFFICIAL_STREETS = {
     "Travessa Alfredo Nunes de Oliveira", "Travessa da Síria", "Travessa do Cajueiro", "Travessa do Canal",
     "Travessa do Canal 02", "Travessa Esperanto", "Travessa Francisco Martins Duarte", "Travessa Santa Terezinha"
   ],
-  "Coronel João Evangelista": [
-    "Avenida Carmela Dutra", "Avenida Doutor Adolfo Viana", "Praça Aprígio Duarte Filho", "Praça da Bandeira",
-    "Praça Imaculada Conceição", "Rua 15 de Julho", "Rua Américo Alves", "Rua Antônio Cursino", "Rua Barão de Cotegipe",
-    "Rua Barão do Rio Branco", "Rua Conselheiro Saraiva", "Rua Coronel Aprígio Duarte", "Rua Coronel João Evangelista",
-    "Rua Doutor José Gonçalves", "Rua Goes Calmon", "Rua Juvêncio Alves", "Rua Osvaldo Cruz", "Travessa Duque de Caxias",
-    "Travessa Josino Ribeiro", "Travessa Ribeiro"
-  ],
   "Country Club": [
     "Avenida Antônio Carlos Magalhães", "Avenida Comandante Manoel Severo", "Avenida Gaspar de Lemos",
     "Avenida Papa João Paulo I", "Loteamento Beira Rio", "Loteamento São Francisco", "Praça Alfredo Nunes da Silva",
@@ -1112,7 +1105,19 @@ const JUAZEIRO_OFFICIAL_STREETS = {
     "Caminho 71 (Cj Hab Juazeiro IV)", "Caminho Um", "Caminho Dois", "Caminho Três", "Caminho Quatro", "Caminho Cinco",
     "Caminho Seis", "Caminho Sete", "Caminho Oito", "Caminho Nove", "Caminho Dez", "Caminho Onze", "Caminho Doze",
     "Caminho Treze", "Caminho Quatorze", "Caminho Quinze", "Caminho Dezesseis", "Caminho Dezessete", "Caminho Dezoito",
-    "Caminho Dezenove", "Caminho Vinte", "Rua A (Cj Hab Juazeiro IV)", "Rua B", "Rua C", "Rua D", "Rua E (Cj Hab Juazeiro IV)",
+    "Caminho Dezenove", "Caminho Vinte", "Caminho Vinte e Um", "Caminho Vinte e Dois", "Caminho Vinte e Três",
+    "Caminho Vinte e Quatro", "Caminho Vinte e Cinco", "Caminho Vinte e Seis", "Caminho Vinte e Sete",
+    "Caminho Vinte e Oito", "Caminho Vinte e Nove", "Caminho Trinta", "Caminho Trinta e Um", "Caminho Trinta e Dois",
+    "Caminho Trinta e Três", "Caminho Trinta e Quatro", "Caminho Trinta e Cinco", "Caminho Trinta e Seis",
+    "Caminho Trinta e Sete", "Caminho Trinta e Oito", "Caminho Trinta e Nove", "Caminho Quarenta", "Caminho Quarenta e Um",
+    "Caminho Quarenta e Dois", "Caminho Quarenta e Três", "Caminho Quarenta e Quatro", "Caminho Quarenta e Cinco",
+    "Caminho Quarenta e Seis", "Caminho Quarenta e Sete", "Caminho Quarenta e Oito", "Caminho Quarenta e Nove",
+    "Caminho Cinquenta", "Caminho Cinquenta e Um", "Caminho Cinquenta e Dois", "Caminho Cinquenta e Três",
+    "Caminho Cinquenta e Quatro", "Caminho Cinquenta e Cinco", "Caminho Cinquenta e Seis", "Caminho Cinquenta e Sete",
+    "Caminho Cinquenta e Oito", "Caminho Cinquenta e Nove", "Caminho Sessenta", "Caminho Sessenta e Um",
+    "Caminho Sessenta e Dois", "Caminho Sessenta e Três", "Caminho Sessenta e Quatro", "Caminho Sessenta e Cinco",
+    "Caminho Sessenta e Seis", "Caminho Sessenta e Sete", "Caminho Sessenta e Oito", "Caminho Sessenta e Nove",
+    "Caminho Setenta", "Rua A (Cj Hab Juazeiro IV)", "Rua B", "Rua C", "Rua D", "Rua E (Cj Hab Juazeiro IV)",
     "Rua F (Cj Hab Juazeiro IV)", "Rua G", "Rua H", "Rua I", "Rua J", "Rua K (Cj Hab Juazeiro IV)", "Rua L", "Rua M",
     "Rua N (Cj Hab Juazeiro IV)", "Travessa 1 (Cj Hab Juazeiro IV)", "Travessa 16 (Cj Hab Juazeiro IV)",
     "Travessa 18 (Cj Hab Juazeiro IV)", "Travessa A (Cj Hab Juazeiro IV)", "Travessa Edésio dos Santos"
@@ -1139,13 +1144,6 @@ const JUAZEIRO_OFFICIAL_STREETS = {
     "Avenida Américo Tanury", "Avenida Gaspar de Lemos", "Avenida Manoel Novaes", "Avenida Miguel Silva Souza",
     "Avenida Nossa Senhora de Nazaré", "Rua A", "Rua B", "Rua C", "Rua D", "Rua E", "Rua F", "Rua Henrique Gomes",
     "Rua I", "Rua J", "Rua K", "Rua L", "Rua M", "Rua N"
-  ],
-  "Gercino Coelho": [
-    "Avenida Américo Tanury", "Avenida das Nações", "Avenida João Durval Carneiro", "Avenida Machado de Assis",
-    "Rua Antônio Carlos Magalhães", "Rua Bahia", "Rua Boa Esperança", "Rua Califórnia", "Rua da Liberdade",
-    "Rua das Lavadeiras", "Rua do Canal", "Rua Humberto de Alencar Castelo Branco", "Rua Mandacaru",
-    "Rua Miguel Silva Souza", "Rua Nossa Senhora das Grotas", "Rua Padre Feijó", "Rua Santo Antônio", "Rua São Francisco",
-    "Rua São João", "Rua São José"
   ],
   "Itaberaba": [
     "1ª Travessa da Liberdade", "2ª Travessa da Liberdade", "3ª Travessa da Liberdade", "Avenida Misael Aguilar Silva Júnior",
@@ -1308,6 +1306,23 @@ const JUAZEIRO_OFFICIAL_STREETS = {
     "Praça Argemiro José da Cruz", "Rua 7 (Lot Paulo VI)", "Rua 7 de Setembro", "Rua 15 (Lot Paulo VI)", "Rua Bela Vista",
     "Rua Belo Jardim", "Rua Bom Sucesso", "Rua J (Lot Paulo VI)", "Rua Novo Alvorecer", "Rua Novo Horizonte",
     "Rua Pôr do Sol", "Rua São Paulo", "Travessa Belo Jardim", "Travessa Girassol"
+  ],
+  "Nova Juazeiro": [
+    "Avenida Central A (Cond R S Francisco)", "Avenida Central B (Cond R S Francisco)", "Avenida Giuseppe Muccini",
+    "Avenida Marginal A (Cond R S Francisco)", "Rodovia BA-210", "Rua A (Cond R S Francisco)", "Rua B (Cond R S Francisco)",
+    "Rua C (Cond R S Francisco)", "Rua D (Cond R S Francisco)", "Rua E (Cond R S Francisco)", "Rua F (Cond R S Francisco)",
+    "Rua G (Cond R S Francisco)", "Rua H (Cond R S Francisco)", "Rua I (Cond R S Francisco)", "Rua J (Cond R S Francisco)",
+    "Rua K (Cond R S Francisco)", "Rua Projetada A (Cond Dr H Pereira)", "Rua Projetada A1 (Cond Dr H Pereira III)",
+    "Rua Projetada B (Cond Dr H Pereira)", "Rua Projetada B1 (Cond Dr H Pereira III)", "Rua Projetada C (Cond Dr H Pereira)",
+    "Rua Projetada C1 (Cond Dr H Pereira III)", "Rua Projetada D (Cond Dr H Pereira)", "Rua Projetada D1 (Cond Dr H Pereira III)",
+    "Rua Projetada E (Cond Dr H Pereira)", "Rua Projetada E1 (Cond Dr H Pereira III)", "Rua Projetada F (Cond Dr H Pereira)",
+    "Rua Projetada F1 (Cond Dr H Pereira III)", "Rua Projetada G (Cond Dr H Pereira)", "Rua Projetada G1 (Cond Dr H Pereira III)",
+    "Rua Projetada H (Cond Dr H Pereira)", "Rua Projetada H1 (Cond Dr H Pereira III)", "Rua Projetada I (Cond Dr H Pereira)",
+    "Rua Projetada I1 (Cond Dr H Pereira III)", "Rua Projetada J (Cond Dr H Pereira)", "Rua Projetada L (Cond Dr H Pereira)",
+    "Rua Projetada M (Cond Dr H Pereira)", "Rua Projetada N (Cond Dr H Pereira)", "Rua Projetada O (Cond Dr H Pereira)",
+    "Rua Projetada P (Cond Dr H Pereira)", "Rua Projetada Q (Cond Dr H Pereira)", "Rua Projetada R (Cond Dr H Pereira)",
+    "Rua Projetada T (Cond Dr H Pereira III)", "Rua Projetada U (Cond Dr H Pereira III)", "Rua Projetada X (Cond Dr H Pereira III)",
+    "Rua Projetada Z (Cond Dr H Pereira III)", "Travessa A (Cond R S Francisco)"
   ],
   "Novo Encontro": [
     "Avenida Brasil", "Avenida Eliseu Martins do Nascimento", "Avenida Luiz Inácio Lula da Silva", "Praça Maravilha",
@@ -1493,6 +1508,9 @@ const JUAZEIRO_OFFICIAL_STREETS = {
     "Travessa Ângelo Faustino", "Travessa Bom Jesus", "Travessa do Canal", "Travessa do Paraíso", "Travessa Padre Cícero",
     "Travessa São Jorge"
   ],
+  "Usina Aliança": [
+    "Avenida Epitácio Pessoa", "Rodovia BA-210", "Rodovia BR-407", "Rua 10", "Rua Boa Vista"
+  ],
   "Tancredo Neves": [
     "Avenida das Nações", "Caminho 1", "Caminho 2", "Caminho 3", "Caminho 4", "Caminho 5", "Caminho 6", "Caminho 7",
     "Caminho 8", "Caminho 9", "Caminho 10", "Caminho 11", "Caminho 12", "Caminho 13", "Caminho 14", "Caminho 15",
@@ -1666,7 +1684,11 @@ function loadCatalog() {
     streetCache = {};
   }
   try {
-    customNeighborhoods = JSON.parse(localStorage.getItem('rota_custom_neighborhoods_v2') || '[]');
+    const rawCustom = JSON.parse(localStorage.getItem('rota_custom_neighborhoods_v2') || '[]');
+    const blocked = new Set(['gercino coelho', 'coronel joao evangelista']);
+    customNeighborhoods = Array.isArray(rawCustom)
+      ? rawCustom.filter(n => !blocked.has(normalizeStr(n)))
+      : [];
   } catch (e) {
     customNeighborhoods = [];
   }
@@ -4003,3 +4025,4 @@ load();
 </script>
 </body>
 </html>
+```
