@@ -1353,6 +1353,19 @@ async function fetchRealStreetsForNeighborhood(bairro) {
       }
     }
 
+    // Se encontrou poucas ruas, tenta de novo com um raio maior (1800m), que costuma
+    // pegar travessas e ruas vizinhas que ficaram fora do polígono/raio original
+    if ((streetCache[cacheKey] || []).length < 5 && loc) {
+      const wider = await runOverpass(`
+        [out:json][timeout:12];
+        way(around:1800,${loc.lat},${loc.lon})[${highways}]["name"];
+        out tags;
+      `);
+      for (const el of (wider || [])) {
+        if (el.tags?.name) addStreetToCache(bairro, el.tags.name);
+      }
+    }
+
     if ((streetCache[cacheKey] || []).length) {
       saveCatalog();
     }
