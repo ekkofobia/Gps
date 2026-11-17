@@ -942,7 +942,7 @@ function getCacheKey(bairro) {
 
 function loadCatalog() {
   try {
-    streetCache = JSON.parse(localStorage.getItem('rota_real_streets_v3') || '{}');
+    streetCache = JSON.parse(localStorage.getItem('rota_real_streets_v4') || '{}');
   } catch (e) {
     streetCache = {};
   }
@@ -955,7 +955,7 @@ function loadCatalog() {
 
 function saveCatalog() {
   try {
-    localStorage.setItem('rota_real_streets_v3', JSON.stringify(streetCache));
+    localStorage.setItem('rota_real_streets_v4', JSON.stringify(streetCache));
     localStorage.setItem('rota_custom_neighborhoods_v2', JSON.stringify(customNeighborhoods));
   } catch (e) {}
 }
