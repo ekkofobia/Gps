@@ -1584,22 +1584,22 @@ function normalizeStr(s) {
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
-function getActiveCityName() {
-  const typedCity = $('clientCity')?.value.trim();
-  if (typedCity) return typedCity;
-  if (store?.city) return store.city;
-  const rawStore = $('storeAddress')?.value.trim() || '';
-  const match = rawStore.match(/,\s*([^,-]+)\s*-\s*[A-Za-z]{2}\s*$/);
-  if (match && match[1]) return match[1].trim();
-  return 'Juazeiro';
-}
-
-function getCityKey() {
-  return normalizeStr(getActiveCityName()) || 'juazeiro';
-}
+// Lookup indexado em memória para todos os bairros oficiais de Juazeiro (independe de localStorage ou GPS da loja)
+const OFFICIAL_STREETS_BY_NORM_KEY = {};
+Object.entries(JUAZEIRO_OFFICIAL_STREETS).forEach(([bairro, lista]) => {
+  const k = normalizeStr(bairro);
+  OFFICIAL_STREETS_BY_NORM_KEY[k] = Array.from(new Set(lista)).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+});
+Object.entries(NEIGHBORHOOD_ALIASES).forEach(([alias, target]) => {
+  const tk = normalizeStr(target);
+  if (OFFICIAL_STREETS_BY_NORM_KEY[tk]) {
+    OFFICIAL_STREETS_BY_NORM_KEY[normalizeStr(alias)] = OFFICIAL_STREETS_BY_NORM_KEY[tk];
+  }
+});
 
 function resolveCanonicalNeighborhoodName(bairro) {
   const norm = normalizeStr(bairro);
@@ -1608,32 +1608,60 @@ function resolveCanonicalNeighborhoodName(bairro) {
   return found || String(bairro || '').trim();
 }
 
+function getActiveCityName() {
+  const typedCity = $('clientCity')?.value.trim();
+  if (typedCity) return typedCity;
+  return 'Juazeiro';
+}
+
+function getCityKey() {
+  return normalizeStr(getActiveCityName()) || 'juazeiro';
+}
+
 function getCacheKey(bairro) {
   const canonical = resolveCanonicalNeighborhoodName(bairro);
-  return `${getCityKey()}::${normalizeStr(canonical)}`;
+  const normBairro = normalizeStr(canonical);
+  const typedCity = normalizeStr($('clientCity')?.value.trim() || '');
+  if (typedCity && typedCity !== 'juazeiro' && !OFFICIAL_STREETS_BY_NORM_KEY[normBairro]) {
+    return `${typedCity}::${normBairro}`;
+  }
+  return `juazeiro::${normBairro}`;
+}
+
+function getStreetsForNeighborhood(bairro) {
+  if (!bairro) return [];
+  const canonical = resolveCanonicalNeighborhoodName(bairro);
+  const normKey = normalizeStr(canonical);
+  const cacheKey = getCacheKey(bairro);
+  const official = OFFICIAL_STREETS_BY_NORM_KEY[normKey] || OFFICIAL_STREETS_BY_NORM_KEY[normalizeStr(bairro)] || [];
+  const cached = Array.isArray(streetCache[cacheKey]) ? streetCache[cacheKey] : [];
+
+  if (!official.length && !cached.length) return [];
+
+  const mergedMap = new Map();
+  [...official, ...cached].forEach(st => {
+    const clean = String(st || '').trim();
+    if (!clean || clean.length < 3) return;
+    const nk = normalizeStr(clean);
+    if (!mergedMap.has(nk)) mergedMap.set(nk, clean);
+  });
+  const result = Array.from(mergedMap.values()).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  streetCache[cacheKey] = result;
+  return result;
 }
 
 function seedOfficialJuazeiroStreets() {
-  Object.entries(JUAZEIRO_OFFICIAL_STREETS).forEach(([bairro, streets]) => {
-    const key = `juazeiro::${normalizeStr(bairro)}`;
-    const existing = Array.isArray(streetCache[key]) ? streetCache[key] : [];
-    const mergedMap = new Map();
-    [...streets, ...existing].forEach(st => {
-      const clean = String(st || '').trim();
-      if (!clean || clean.length < 3) return;
-      const nk = normalizeStr(clean);
-      if (!mergedMap.has(nk)) mergedMap.set(nk, clean);
-    });
-    streetCache[key] = Array.from(mergedMap.values()).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  Object.keys(JUAZEIRO_OFFICIAL_STREETS).forEach(bairro => {
+    getStreetsForNeighborhood(bairro);
   });
 }
 
 function loadCatalog() {
   try {
-    // Limpa caches antigos que podiam conter ruas erradas capturadas pela busca difusa do Photon
     localStorage.removeItem('rota_real_streets_v4');
     localStorage.removeItem('rota_real_streets_v5');
-    streetCache = JSON.parse(localStorage.getItem('rota_real_streets_v6') || '{}');
+    localStorage.removeItem('rota_real_streets_v6');
+    streetCache = JSON.parse(localStorage.getItem('rota_real_streets_v7') || '{}');
   } catch (e) {
     streetCache = {};
   }
@@ -1647,7 +1675,7 @@ function loadCatalog() {
 
 function saveCatalog() {
   try {
-    localStorage.setItem('rota_real_streets_v6', JSON.stringify(streetCache));
+    localStorage.setItem('rota_real_streets_v7', JSON.stringify(streetCache));
     localStorage.setItem('rota_custom_neighborhoods_v2', JSON.stringify(customNeighborhoods));
   } catch (e) {}
 }
@@ -1723,7 +1751,7 @@ function renderNeighborhoodList(filterText) {
 
   const currentSelected = $('clientNeighborhood').value;
   grid.innerHTML = filtered.map(b => {
-    const cachedCount = (streetCache[getCacheKey(b)] || []).length;
+    const cachedCount = getStreetsForNeighborhood(b).length;
     const isSel = b === currentSelected;
     return `
       <button type="button" onclick="selectNeighborhood('${escapeHTML(b).replace(/'/g, "\\'")}')"
@@ -1783,7 +1811,7 @@ function openStreetModal(bairro) {
 
 function renderStreetList(filterText) {
   const norm = normalizeStr(filterText);
-  const streets = streetCache[getCacheKey(activeModalNeighborhood)] || [];
+  const streets = getStreetsForNeighborhood(activeModalNeighborhood);
   const filtered = streets.filter(r => normalizeStr(r).includes(norm));
 
   $('streetCountInfo').textContent = `${streets.length} ${streets.length === 1 ? 'rua encontrada' : 'ruas encontradas'}`;
@@ -1960,7 +1988,7 @@ async function fetchRealStreetsForNeighborhood(bairro) {
     seedOfficialJuazeiroStreets();
   }
 
-  const initialCount = (streetCache[cacheKey] || []).length;
+  const initialCount = getStreetsForNeighborhood(bairro).length;
   renderStreetList($('streetSearch').value);
 
   // Se o bairro já possui sua lista oficial completa carregada (>= 6 ruas), não bloqueia a tela nem polui com bairros vizinhos
@@ -2046,7 +2074,7 @@ async function fetchRealStreetsForNeighborhood(bairro) {
       }
     }
 
-    if ((streetCache[cacheKey] || []).length) {
+    if (getStreetsForNeighborhood(bairro).length) {
       saveCatalog();
     }
   } catch (e) {
@@ -2161,7 +2189,7 @@ $('streetSearch').onkeydown = e => {
     e.preventDefault();
     const val = $('streetSearch').value.trim();
     const norm = normalizeStr(val);
-    const streets = streetCache[getCacheKey(activeModalNeighborhood)] || [];
+    const streets = getStreetsForNeighborhood(activeModalNeighborhood);
     const matches = streets.filter(r => normalizeStr(r).includes(norm));
     if (matches.length === 1) {
       selectStreet(matches[0]);
@@ -3975,4 +4003,3 @@ load();
 </script>
 </body>
 </html>
-```
