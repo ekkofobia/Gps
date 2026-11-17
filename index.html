@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-BR" class="dark">
 <head>
@@ -496,9 +497,6 @@
     <!-- WORKSPACE GRID -->
     <div class="grid grid-cols-1 gap-4 items-start">
 
-      <!-- LEFT CONTROL PANEL -->
-      
-
       <!-- RIGHT STAGE: MAP + TELEMETRY -->
       <div class="space-y-4 min-w-0">
         <!-- MAP CARD (SUPORTA EXPANDIR FULL TELA E MINIMIZAR) -->
@@ -524,28 +522,28 @@
                   <div class="text-[10px] font-mono uppercase tracking-wider text-zinc-500 px-0.5">Mapa e ações</div>
                   <div class="flex flex-wrap gap-1.5">
                     <div class="inline-flex bg-elevated p-0.5 rounded-lg border border-borderline" id="mapModeGroup">
-                <button type="button" data-mode="dark" class="map-mode-btn px-2 py-1 rounded-md text-[11px] font-semibold bg-zinc-700 text-white transition">Escuro</button>
-                <button type="button" data-mode="light" class="map-mode-btn px-2 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition">Claro</button>
-                <button type="button" data-mode="satellite" class="map-mode-btn px-2 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition">Satélite</button>
-              </div>
+                      <button type="button" data-mode="dark" class="map-mode-btn px-2 py-1 rounded-md text-[11px] font-semibold bg-zinc-700 text-white transition">Escuro</button>
+                      <button type="button" data-mode="light" class="map-mode-btn px-2 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition">Claro</button>
+                      <button type="button" data-mode="satellite" class="map-mode-btn px-2 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition">Satélite</button>
+                    </div>
 
-              <button id="centerStoreBtn" type="button" title="Centralizar na loja"
-                class="px-2.5 py-1.5 rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline text-[11px] font-medium text-emerald-400 transition">
-                Loja
-              </button>
+                    <button id="centerStoreBtn" type="button" title="Centralizar na loja"
+                      class="px-2.5 py-1.5 rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline text-[11px] font-medium text-emerald-400 transition">
+                      Loja
+                    </button>
 
-              <button id="fitMap" type="button"
-                class="px-2.5 py-1.5 rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline text-[11px] font-medium text-zinc-300 transition">
-                Enquadrar
-              </button>
+                    <button id="fitMap" type="button"
+                      class="px-2.5 py-1.5 rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline text-[11px] font-medium text-zinc-300 transition">
+                      Enquadrar
+                    </button>
 
-              <button id="openMaps" type="button"
-                class="px-2.5 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-[11px] font-bold text-emerald-400 flex items-center gap-1 transition">
-                <span>GPS</span>
-                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                </svg>
-              </button>
+                    <button id="openMaps" type="button"
+                      class="px-2.5 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-[11px] font-bold text-emerald-400 flex items-center gap-1 transition">
+                      <span>GPS</span>
+                      <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                      </svg>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -651,7 +649,7 @@
           </label>
           <label class="block space-y-1.5">
             <span class="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Número do WhatsApp</span>
-            <input id="cfgWhats" type="tel" placeholder="(73) 99999-9999" class="w-full bg-elevated border border-borderline rounded-xl px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition">
+            <input id="cfgWhats" type="tel" placeholder="(74) 99999-9999" class="w-full bg-elevated border border-borderline rounded-xl px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition">
           </label>
           <button id="cfgSave" type="button" class="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition active:scale-[0.99]">Salvar</button>
         </div>
@@ -834,12 +832,15 @@
 const $ = id => document.getElementById(id);
 
 const JUAZEIRO_NEIGHBORHOODS = [
+  "Água Bela",
   "Alagadiço",
   "Alto da Aliança",
   "Alto da Maravilha",
+  "Alto do Alencar",
   "Alto do Cruzeiro",
   "Angari",
   "Antônio Conselheiro",
+  "Antônio Guilhermino",
   "Argemiro",
   "Cajueiro",
   "Castelo Branco",
@@ -849,6 +850,7 @@ const JUAZEIRO_NEIGHBORHOODS = [
   "Coreia",
   "Coronel João Evangelista",
   "Country Club",
+  "Distrito Industrial",
   "Dom José Rodrigues",
   "Dom Thomaz",
   "Expedito Nascimento",
@@ -857,6 +859,7 @@ const JUAZEIRO_NEIGHBORHOODS = [
   "Jardim Flórida",
   "Jardim Primavera",
   "Jardim São Paulo",
+  "Jardim Universitário",
   "Jardim Vitória",
   "João Paulo II",
   "João XXIII",
@@ -864,23 +867,683 @@ const JUAZEIRO_NEIGHBORHOODS = [
   "Malhada da Areia",
   "Maria Goretti",
   "Maringá",
+  "Matatu",
   "Monte Castelo",
   "Mussambê",
+  "Nossa Senhora das Grotas",
+  "Nova Esperança",
   "Novo Encontro",
+  "Padre Vicente",
   "Palmares",
+  "Parque Centenário",
   "Parque Residencial",
   "Pedra do Lord",
+  "Pedro Raimundo",
   "Penha",
   "Piranga",
+  "Piranga I",
+  "Piranga II",
   "Quidé",
   "Santa Maria Goretti",
   "Santo Antônio",
   "São Geraldo",
+  "Sol Levante",
   "Tabuleiro",
   "Tancredo Neves",
   "Vila Jacaré",
+  "Vila Nova Fé",
   "Vila Tiradentes"
 ];
+
+// Base Oficial de Logradouros (Correios / DNE) de Juazeiro - BA por Bairro
+const JUAZEIRO_OFFICIAL_STREETS = {
+  "Água Bela": [
+    "Avenida Gaspar de Lemos", "Avenida Maria da Glória de Jesus", "Rua 6 (Lot M Bela)", "Vila Água Bela"
+  ],
+  "Alagadiço": [
+    "Avenida Doutor Adolfo Viana", "Avenida Mestre Lula", "Avenida Presidente Tancredo Neves", "Avenida Santos Dumont",
+    "Praça da Mônica", "Praça Hermenegildo Brandão", "Praça Monsenhor Nestor", "Praça Pedro Pereira Primo", "Rodovia BR-407",
+    "Rua Antônio Luiz Ferreira", "Rua Arlindo Natalino de Araújo", "Rua Cícero Feitosa", "Rua do Coliseu", "Rua do Socorro",
+    "Rua dos Ingleses", "Rua Elvira Nunes França", "Rua Esperanto", "Rua Hildete Lomanto", "Rua João Oliveira Souza",
+    "Rua Manoel da Paixão", "Rua Nossa Senhora Imaculada do Perpétuo Socorro", "Rua Nova Veneza", "Rua Nova Veneza 1",
+    "Rua Nova Veneza 2", "Rua Oscar Ribeiro", "Rua Raul de Queirós", "Rua Santa Maria Goretti", "Rua Veneza", "Rua Vila Euza",
+    "Travessa Cícero Feitosa", "Travessa Doutor Edson Ribeiro", "Travessa Elvira Nunes França", "Travessa Entre Rios",
+    "Travessa Hildete Lomanto", "Travessa José Guerra de Santana", "Travessa Maria Alves Brandão", "Travessa Matatu 1",
+    "Travessa Nova Veneza"
+  ],
+  "Alto da Aliança": [
+    "Avenida Epitácio Pessoa", "Avenida Fernandes Rios Campelo", "Avenida Irmã Dulce", "Loteamento Alto da Aliança",
+    "Praça da Liberdade", "Praça da República", "Rodovia BA-210", "Rua 8", "Rua Adalto Moraes", "Rua André Rebouças",
+    "Rua Antônio Conselheiro", "Rua Ayrton Senna", "Rua Beija-flor", "Rua Bento Gonçalves", "Rua Eurico Gaspar Dutra",
+    "Rua Felipe Camarão", "Rua Félix Campelo", "Rua Frei Fernandes", "Rua Jacarandá", "Rua José de Anchieta",
+    "Rua Marquês de Barbacena", "Rua Marquês de Sapucaí", "Rua Padre José Carlos", "Rua Pero Vaz de Caminha",
+    "Rua Professora Carmem Costa", "Rua Saul Rosa", "Rua Simeão Bezerra", "Rua Visconde de Cairu", "Rua Visconde de Mauá",
+    "Rua Visconde de Ouro Preto", "Travessa Bento Gonçalves", "Travessa Marquês de Barbacena", "Travessa Visconde do Rio Preto"
+  ],
+  "Alto da Maravilha": [
+    "Avenida Doutor Adolfo Viana", "Avenida Mestre Lula", "Avenida Paulo Afonso", "Avenida Presidente Tancredo Neves",
+    "Avenida Saara", "Avenida Santos Dumont", "Largo da Feira", "Rua 2", "Rua 7", "Rua Adroaldo de Matos", "Rua André Luiz",
+    "Rua Carolina Cesar", "Rua Cinco", "Rua Dois", "Rua Hermenegildo Luiz Brandão", "Rua João Domingos da Silva",
+    "Rua Manoel Cláudio do Nascimento", "Rua Manoel Crisóstomo", "Rua Manoel Gomes", "Rua Maria Célia de Jesus",
+    "Rua Maria José de Matos", "Rua Matatu 2", "Rua Matatu 3", "Rua Melquíades Augusto de Oliveira", "Rua Oito", "Rua Quatro",
+    "Rua Seis", "Rua Sete", "Rua Três", "Rua Um", "Travessa Chafariz", "Travessa Cícero Feitosa", "Travessa da Lavanderia",
+    "Travessa da Sarjeta", "Travessa do Chafariz", "Travessa Matatu 1", "Travessa Mestre Lula", "Travessa Paulo Afonso",
+    "Travessa Presidente Tancredo Neves", "Travessa Sete", "Travessa Zero", "Vila Santana"
+  ],
+  "Alto do Alencar": [
+    "Avenida Américo Tanury", "Avenida das Nações", "Avenida João Durval Carneiro", "Avenida Machado de Assis",
+    "Rodovia Lomanto Júnior", "Rua Antônio Carlos Magalhães", "Rua Bahia", "Rua Belo Jardim", "Rua Boa Esperança",
+    "Rua Califórnia", "Rua D'Ávila", "Rua da Liberdade", "Rua das Lavadeiras", "Rua do Canal", "Rua do Csu", "Rua Dois",
+    "Rua Humberto de Alencar Castelo Branco", "Rua Jerusalém", "Rua Joana Batista Cordeiro", "Rua Mandacaru",
+    "Rua Miguel Silva Souza", "Rua Natal", "Rua Nossa Senhora das Grotas", "Rua Padre Feijó", "Rua Pio XI",
+    "Rua Presidente Juscelino Kubitschek de Oliveira", "Rua Professora Helena Araújo Pinheiro", "Rua Santo Antônio",
+    "Rua São Francisco", "Rua São João", "Rua São José", "Rua Três", "Rua Um",
+    "Travessa Humberto de Alencar Castelo Branco", "Travessa Machado de Assis", "Travessa Padre Marcos"
+  ],
+  "Alto do Cruzeiro": [
+    "2ª Travessa João Antônio da Silva", "Avenida João Durval Carneiro", "Praça Antônio Matias", "Rodovia Lomanto Júnior",
+    "Rua 6", "Rua A (Lot C Pinto)", "Rua B (Lot C Pinto)", "Rua da Liberdade", "Rua das Lavadeiras", "Rua do Canal",
+    "Rua do Rotary", "Rua Dois", "Rua Ilha de Maré", "Rua João Antônio da Silva", "Rua Nazilda Silva Fonseca",
+    "Rua Nossa Senhora de Fátima", "Rua Nova Jerusalém", "Rua Nove", "Rua Oito", "Rua Padre Feijó", "Rua Quatro",
+    "Rua Rodovia Lomanto Júnior", "Rua Santa Helena", "Rua Santa Isabel", "Rua Santa Luzia", "Rua Sebastião Vital",
+    "Rua Seis", "Rua Sete", "Rua Tancredo Neves", "Rua Três", "Rua Um", "Rua Zero", "Travessa 1º de Maio",
+    "Travessa Dom José Rodrigues", "Travessa Nossa Senhora de Fátima", "Travessa Padre Marcos", "Travessa Santa Helena"
+  ],
+  "Angari": [
+    "1ª Travessa do Angari", "2ª Travessa do Angari", "Avenida Carmela Dutra", "Orla Fluvial", "Rua Angari",
+    "Rua do Angari", "Travessa do Angari", "Travessa Padre Flávio"
+  ],
+  "Antônio Conselheiro": [
+    "Avenida Brasil", "Avenida Cristalina", "Avenida Giuseppe Muccini", "Avenida Guanabara", "Avenida Ludgero Alves de Souza",
+    "Avenida Rio Branco", "Avenida Salvador", "Rodovia BA-210", "Rua 1", "Rua 1º de Maio", "Rua 2", "Rua 3 (Lot V Solaris)",
+    "Rua 4 (Lot V Solaris)", "Rua 5 (Lot V Solaris)", "Rua 6 (Lot V Solaris)", "Rua 7 (Lot V Solaris)", "Rua 15 (Lot Paulo VI)",
+    "Rua 19 (Lot Paulo VI)", "Rua 20 (Lot Paulo VI)", "Rua A (Res Mairi)", "Rua Alvorada", "Rua Américo Tanury",
+    "Rua Armando de Jesus", "Rua Asa Branca", "Rua B (Res Mairi)", "Rua Beija-flor", "Rua Brasil", "Rua C (Res Mairi)",
+    "Rua Canaã", "Rua Capibaribe", "Rua Carnaíba", "Rua D (Res Mairi)", "Rua Dália Amarela", "Rua das Algarobas",
+    "Rua das Flores", "Rua das Jaqueiras", "Rua das Laranjeiras", "Rua das Mangueiras", "Rua das Palmeiras", "Rua do Império",
+    "Rua do Porto", "Rua Dom Lucas Moreira Neves", "Rua dos Cajueiros", "Rua dos Jangadeiros", "Rua dos Limoeiros",
+    "Rua dos Umbuzeiros", "Rua dos Veleiros", "Rua Durval Barbosa", "Rua E (Res Mairi)", "Rua Esmeralda", "Rua F (Res Mairi)",
+    "Rua Flamengo", "Rua Flor de Laranjeira", "Rua Flor-de-Lis", "Rua Formosa", "Rua G (Res Mairi)", "Rua Getúlio Vargas",
+    "Rua Guanabara", "Rua H (Res Mairi)", "Rua I (Res Mairi)", "Rua Imperatriz", "Rua J (Res Mairi)", "Rua Jabuticaba",
+    "Rua José Firmino", "Rua K (Res Mairi)", "Rua L (Res Mairi)", "Rua Leonilda Maria dos Prazeres", "Rua M (Res Mairi)",
+    "Rua Manoel Amâncio dos Santos", "Rua Maria Amora Silva", "Rua N (Res Mairi)", "Rua Nossa Senhora das Graças",
+    "Rua O (Res Mairi)", "Rua Orquídea", "Rua P (Res Mairi)", "Rua Petrolina", "Rua Primavera", "Rua Projetada 13",
+    "Rua Projetada 21", "Rua Q (Res Mairi)", "Rua R (Res Mairi)", "Rua Rosa Dália", "Rua S (Res Mairi)", "Rua Salitre",
+    "Rua Santa Inês", "Rua São Francisco", "Rua São Luiz", "Rua São Sebastião", "Rua Senhor do Bonfim", "Rua T (Res Mairi)",
+    "Rua Tancredo Neves", "Rua Turmalina", "Rua U (Res Mairi)", "Rua Universal", "Rua Vila Nova", "Rua Visconde",
+    "Rua Vitória", "Travessa 1 (Lot V Solaris)", "Travessa 2 (Lot V Solaris)", "Travessa 3 (Lot V Solaris)",
+    "Travessa 4 (Lot V Solaris)", "Travessa 5 (Lot V Solaris)", "Travessa Paraná", "Travessa Universal"
+  ],
+  "Antônio Guilhermino": [
+    "Avenida Cheffy Khoury", "Avenida dos Evangélicos", "Avenida Misael Aguilar da Silva", "Avenida Raimundo Rodrigues",
+    "Rua Alicio Figueiredo", "Rua Alsus Sangalo", "Rua Américo Tanury", "Rua Arnaldo Vieira Nascimento", "Rua Arthur Brandão",
+    "Rua Bartolomeu Ribeiro Granja", "Rua do Esplendor", "Rua do Líbano", "Rua Esperança", "Rua Everton Bandeira",
+    "Rua Genival Conceição", "Rua Iasmine Polliane Duarte Ramos", "Rua Irmã Arcanja", "Rua Otácio Evangelista Pereira",
+    "Rua São José", "Rua São Pedro", "Rua Tancredo Neves", "Travessa do Líbano"
+  ],
+  "Argemiro": [
+    "Avenida Brasil", "Avenida Brilho do Sol", "Avenida Cristalina", "Avenida do Cruzeiro", "Avenida Girassol",
+    "Avenida Giuseppe Muccini", "Avenida Ludgero Alves de Souza", "Avenida Porto Alegre", "Avenida Salvador",
+    "Avenida São Francisco", "Loteamento Argemiro", "Praça do Cruzeiro", "Praça Dom Lucas Moreira Neves", "Rua 1",
+    "Rua 6 (Lot Jd Brasil)", "Rua 7 (Lot Paulo VI)", "Rua 11 (Lot Jd Brasil)", "Rua 12 (Lot Jd Brasil)",
+    "Rua 14 (Lot Paulo VI)", "Rua 16 (Lot Paulo VI)", "Rua 19 (Lot Paulo VI)", "Rua A (Lot Argemiro)", "Rua A3 (Lot Paulo VI)",
+    "Rua Alecrim", "Rua B (Lot Jd Alvorada)", "Rua Baraúna", "Rua Bom Sucesso", "Rua Conceição", "Rua da Paz", "Rua da União",
+    "Rua do Cruzeiro", "Rua José Firmino", "Rua Padre Cícero", "Rua Santa Inês", "Rua Santo Agostinho", "Rua São Francisco",
+    "Rua São Pedro", "Rua Universal", "Travessa 3 (Lot Argemiro)", "Travessa 4 (Lot Argemiro)", "Travessa do Cruzeiro",
+    "Travessa Padre Cícero", "Travessa Universal"
+  ],
+  "Cajueiro": [
+    "Avenida Carmela Dutra", "Avenida Engenheiro Jaime Martins de Souza", "Avenida Flaviano Guimarães", "Avenida Paulo VI",
+    "Loteamento Cajueiro", "Loteamento Nossa Senhora das Graças", "Praça Simões Filho", "Rua Aroeira", "Rua Cajueiro",
+    "Rua Canta Galo", "Rua Caraibeira", "Rua Cezário da Silva", "Rua Coronel Henrique Rocha", "Rua das Acácias",
+    "Rua das Esmeraldas", "Rua das Flores", "Rua do Alecrim", "Rua do Cajueiro", "Rua do Umbuzeiro", "Rua Fernando Santana",
+    "Rua Girassol", "Rua Jacarandá", "Rua Jaqueiras", "Rua Jasmim", "Rua Jequitibá", "Rua Joana Lopes", "Rua Manoel Mesquita",
+    "Rua Moisés Ramos", "Rua Pau Brasil", "Rua Paulo Lopes", "Rua Pompílio Mendes", "Rua Ramiro Ribeiro", "Rua Raul Nunes",
+    "Rua Simões Filho", "Rua Tamarineiro", "Rua Ville de Roma", "Rua XV de Novembro", "Travessa Cajueiro",
+    "Travessa Carmela Dutra", "Travessa do Cajueiro", "Travessa do Umbuzeiro", "Travessa Mário Vicente dos Santos",
+    "Travessa Padre Flávio"
+  ],
+  "Castelo Branco": [
+    "Avenida Bahia", "Avenida das Nações", "Avenida João Durval Carneiro", "Avenida Machado de Assis", "Praça Américo Tanury",
+    "Quadra A (Cj Hab C Branco)", "Quadra B", "Quadra C", "Quadra D", "Quadra E", "Quadra F", "Quadra G", "Quadra H",
+    "Rodovia BR-407", "Rodovia Lomanto Júnior", "Rua 1 (Cj Hab C Branco)", "Rua 2 (Cj Hab C Branco)", "Rua 3 (Cj Hab C Branco)",
+    "Rua 6 (Cj Hab C Branco)", "Rua 7 (Cj Hab C Branco)", "Rua A", "Rua Alan Carino", "Rua da Conquista", "Rua da Rodoviária",
+    "Rua do Modelo", "Rua Porto Seguro"
+  ],
+  "Centenário": [
+    "Alameda Buguenvile", "Avenida Luiz Inácio Lula da Silva", "Praça Américo Tanury", "Praça Durval Barbosa da Cunha",
+    "Rua Alameda Burguenville", "Rua Américo Tanury", "Rua Canafístola", "Rua Canafistula", "Rua Coqueiros",
+    "Rua das Acácias", "Rua das Algarobas", "Rua das Palmeiras", "Rua dos Coqueiros", "Rua Durval Barbosa",
+    "Rua Humberto Dias", "Rua Irmã Dulce", "Rua Palmeira", "Rua Pedro Silva e Santana", "Travessa Buguenvile",
+    "Travessa C (Lot Sta Mª Gorete)", "Travessa das Acácias", "Travessa das Algarobas"
+  ],
+  "Centro": [
+    "Avenida Adolfo Viana", "Avenida Carmela Dutra", "Avenida Doutor Adolfo Viana", "Avenida Lauro de Freitas",
+    "Avenida Mestre Lula", "Avenida Paulo VI", "Avenida Presidente Tancredo Neves", "Avenida Santos Dumont",
+    "Largo Constantini Nascimento", "Largo Constantino Nascimento", "Largo Dois de Julho", "Praça 2 de Julho",
+    "Praça Aprígio Duarte Filho", "Praça Cordeiro de Miranda", "Praça da Bandeira", "Praça Doutor José Inácio da Silva",
+    "Praça Imaculada Conceição", "Praça Ivo Braga", "Praça Simões Filho", "Rodovia BR-407", "Rua 15 de Julho",
+    "Rua 7 de Setembro", "Rua Américo Alves", "Rua Angari", "Rua Antônio Cursino", "Rua Antônio Luiz Ferreira",
+    "Rua Antônio Pedro", "Rua Barão de Cotegipe", "Rua Barão do Rio Branco", "Rua Canta Galo", "Rua Castro Alves",
+    "Rua Cesário da Silva", "Rua Cezário da Silva", "Rua Cícero Feitosa", "Rua Conselheiro Luiz Viana",
+    "Rua Conselheiro Saraiva", "Rua Constantino Nascimento", "Rua Coronel Aprígio Duarte", "Rua Coronel Henrique Rocha",
+    "Rua Coronel João Evangelista", "Rua das Flores", "Rua do Colizeu", "Rua do Socorro", "Rua dos Ingleses",
+    "Rua Doutor Cunha Melo", "Rua Doutor José Gonçalves", "Rua Eduardo Brito", "Rua Esmeraldo Aragão",
+    "Rua Fernandes da Cunha", "Rua Francisco Martins Duarte", "Rua Goes Calmon", "Rua Henrique Rocha", "Rua Hildete Lomanto",
+    "Rua Joaquim de Queiroz", "Rua José Joaquim Seabra", "Rua Juvêncio Alves", "Rua Luiz Cursino",
+    "Rua Marechal Deodoro da Fonseca", "Rua Marechal Floriano Peixoto", "Rua Melo", "Rua Mestre Lula", "Rua Nova Veneza",
+    "Rua Oscar Ribeiro", "Rua Osvaldo Cruz", "Rua Pedro Pereira Primo", "Rua Perpétua", "Rua Professor Luiz Curcino",
+    "Rua Quintino Bocaiúva", "Rua Quinze de Novembro", "Rua Ramiro Ribeiro", "Rua Raul de Queiroz", "Rua Rui Barbosa",
+    "Rua Santa Maria Goretti", "Rua Santos Dumont", "Rua Veneza", "Rua Visconde do Rio Branco", "Rua XV de Novembro",
+    "Travessa Antônio Luiz Ferreira", "Travessa Benjamin Constant", "Travessa da Rosa", "Travessa das Rosas",
+    "Travessa Doutor Edson Ribeiro", "Travessa Duque de Caxias", "Travessa Josino Ribeiro", "Travessa Lauro de Freitas",
+    "Travessa Maravilha", "Travessa Ribeiro", "Travessa Tiro de Guerra"
+  ],
+  "Codevasf": [
+    "Avenida Benedito de Almeida Moraes", "Avenida Comissão do Vale", "Avenida Cristalina", "Avenida Fernandes Rios Campelo",
+    "Avenida Giuseppe Muccini", "Avenida Irmã Dulce", "Praça Comandante Wilson Pereira", "Praça Professor Costa Pinto",
+    "Rua 1", "Rua 3", "Rua Águas Correntes", "Rua Antônio Tanury", "Rua Bacharel José de Souza Filho", "Rua Canaã",
+    "Rua Comissão do Vale", "Rua do Riso", "Rua Domingos Martins Duarte", "Rua Durval Barbosa da Cunha", "Rua Flórida",
+    "Rua Lafaiete Coutinho", "Rua Paulo Bispo de Carvalho", "Rua Pedro Pacheco de Castro",
+    "Rua Professor Divaldo Pereira Franco", "Rua Santa Inês", "Rua Santo Agostinho", "Rua São Pedro", "Rua Tobias Barreto",
+    "Travessa Antônio Tanury", "Travessa CODEVASF", "Travessa Comissão do Vale"
+  ],
+  "Coreia": [
+    "Avenida Doutor Adolfo Viana", "Avenida Elizeu Santos", "Avenida Flaviano Guimarães", "Avenida Luiz Inácio Lula da Silva",
+    "Avenida Paulo VI", "Praça Doutor Dewilson", "Rua 1", "Rua 4", "Rua Adolfo Viana", "Rua Alfredo Nunes de Oliveira",
+    "Rua Argentina", "Rua Canadá", "Rua Chile", "Rua D (Lot N S Graças)", "Rua da Síria", "Rua das Algarobas",
+    "Rua das Flores", "Rua do Canal", "Rua do Cisne", "Rua dos Ingleses", "Rua Doutor Dewilson", "Rua Elizabete Safira",
+    "Rua Equador", "Rua Esperanto", "Rua Francisco Martins Duarte", "Rua Grécia", "Rua Japão", "Rua Joalina",
+    "Rua João Bernadino da Silva", "Rua Juliana", "Rua Monsenhor Gilberto Luna", "Rua Novo Mundo", "Rua Oscar Feitosa Passos",
+    "Rua Pedro Arnaldo da Silva", "Rua Pedro Soares", "Rua Professor Agostinho José Muniz", "Rua Quatro", "Rua Ramiro Ribeiro",
+    "Travessa Alfredo Nunes de Oliveira", "Travessa da Síria", "Travessa do Cajueiro", "Travessa do Canal",
+    "Travessa do Canal 02", "Travessa Esperanto", "Travessa Francisco Martins Duarte", "Travessa Santa Terezinha"
+  ],
+  "Coronel João Evangelista": [
+    "Avenida Carmela Dutra", "Avenida Doutor Adolfo Viana", "Praça Aprígio Duarte Filho", "Praça da Bandeira",
+    "Praça Imaculada Conceição", "Rua 15 de Julho", "Rua Américo Alves", "Rua Antônio Cursino", "Rua Barão de Cotegipe",
+    "Rua Barão do Rio Branco", "Rua Conselheiro Saraiva", "Rua Coronel Aprígio Duarte", "Rua Coronel João Evangelista",
+    "Rua Doutor José Gonçalves", "Rua Goes Calmon", "Rua Juvêncio Alves", "Rua Osvaldo Cruz", "Travessa Duque de Caxias",
+    "Travessa Josino Ribeiro", "Travessa Ribeiro"
+  ],
+  "Country Club": [
+    "Avenida Antônio Carlos Magalhães", "Avenida Comandante Manoel Severo", "Avenida Gaspar de Lemos",
+    "Avenida Papa João Paulo I", "Loteamento Beira Rio", "Loteamento São Francisco", "Praça Alfredo Nunes da Silva",
+    "Praça Alsus Sangalo", "Rua 13 de Itaparica", "Rua Alameda das Rosas", "Rua Alameda dos Ventos", "Rua Almirante Barroso",
+    "Rua Almirante Crochrane", "Rua Almirante Custódio de Mello", "Rua Almirante Custódio de Melo", "Rua Almirante Inhaúma",
+    "Rua Almirante Marques de Leão", "Rua Almirante Paulo de Frontin", "Rua Almirante Saldanha da Gama",
+    "Rua Almirante Tamandaré", "Rua Almirante Taylor", "Rua Antônio Joaquim de Oliveira", "Rua Campo Clube",
+    "Rua Doutor Elizeu Santos", "Rua Engenheiro Geraldo Viana", "Rua Francisco das Chagas Lima", "Rua Jorge Amado",
+    "Rua José Pereira Bispo", "Rua José Rodrigues Lima", "Rua Marcílio Dias", "Rua Princesa Leopoldina", "Rua São Francisco",
+    "Rua Sheila Manuela da Silva Nobre Mota", "Rua Treze de Itaparica", "Rua Walter Dourado", "Rua Wilson Martins da Silva",
+    "Travessa Walter Dourado"
+  ],
+  "Distrito Industrial": [
+    "Avenida 1", "Avenida 2", "Avenida 3", "Avenida 4", "Avenida Antônio Conselheiro", "Avenida Cheffy Khoury",
+    "Rodovia BA-210", "Rodovia BR-235", "Rodovia BR-407", "Rua A", "Rua Arnaldo Vieira Nascimento", "Rua B", "Rua C",
+    "Rua D", "Rua do Cabo Verde", "Rua F", "Travessa 2", "Travessa A", "Travessa da Rodovia"
+  ],
+  "Dom José Rodrigues": [
+    "Avenida Alfa", "Avenida Antônio Conselheiro", "Avenida Beta", "Avenida Edésio Santos", "Rodovia BA-210",
+    "Caminho 1 (Cj Hab Juazeiro IV)", "Caminho 2 (Cj Hab Juazeiro IV)", "Caminho 3 (Cj Hab Juazeiro IV)",
+    "Caminho 4 (Cj Hab Juazeiro IV)", "Caminho 5 (Cj Hab Juazeiro IV)", "Caminho 6 (Cj Hab Juazeiro IV)",
+    "Caminho 7 (Cj Hab Juazeiro IV)", "Caminho 8 (Cj Hab Juazeiro IV)", "Caminho 9 (Cj Hab Juazeiro IV)",
+    "Caminho 10 (Cj Hab Juazeiro IV)", "Caminho 11 (Cj Hab Juazeiro IV)", "Caminho 12 (Cj Hab Juazeiro IV)",
+    "Caminho 13 (Cj Hab Juazeiro IV)", "Caminho 14 (Cj Hab Juazeiro IV)", "Caminho 15 (Cj Hab Juazeiro IV)",
+    "Caminho 16 (Cj Hab Juazeiro IV)", "Caminho 17 (Cj Hab Juazeiro IV)", "Caminho 18 (Cj Hab Juazeiro IV)",
+    "Caminho 19 (Cj Hab Juazeiro IV)", "Caminho 20 (Cj Hab Juazeiro IV)", "Caminho 21 (Cj Hab Juazeiro IV)",
+    "Caminho 22 (Cj Hab Juazeiro IV)", "Caminho 23 (Cj Hab Juazeiro IV)", "Caminho 24 (Cj Hab Juazeiro IV)",
+    "Caminho 25 (Cj Hab Juazeiro IV)", "Caminho 26 (Cj Hab Juazeiro IV)", "Caminho 27 (Cj Hab Juazeiro IV)",
+    "Caminho 28 (Cj Hab Juazeiro IV)", "Caminho 28-A (Cj Hab Juazeiro IV)", "Caminho 29 (Cj Hab Juazeiro IV)",
+    "Caminho 30 (Cj Hab Juazeiro IV)", "Caminho 31 (Cj Hab Juazeiro IV)", "Caminho 32 (Cj Hab Juazeiro IV)",
+    "Caminho 33 (Cj Hab Juazeiro IV)", "Caminho 34 (Cj Hab Juazeiro IV)", "Caminho 35 (Cj Hab Juazeiro IV)",
+    "Caminho 36 (Cj Hab Juazeiro IV)", "Caminho 37 (Cj Hab Juazeiro IV)", "Caminho 38 (Cj Hab Juazeiro IV)",
+    "Caminho 39 (Cj Hab Juazeiro IV)", "Caminho 40 (Cj Hab Juazeiro IV)", "Caminho 41 (Cj Hab Juazeiro IV)",
+    "Caminho 42 (Cj Hab Juazeiro IV)", "Caminho 43 (Cj Hab Juazeiro IV)", "Caminho 44 (Cj Hab Juazeiro IV)",
+    "Caminho 45 (Cj Hab Juazeiro IV)", "Caminho 46 (Cj Hab Juazeiro IV)", "Caminho 47 (Cj Hab Juazeiro IV)",
+    "Caminho 48 (Cj Hab Juazeiro IV)", "Caminho 48A (Cj Hab Juazeiro IV)", "Caminho 49 (Cj Hab Juazeiro IV)",
+    "Caminho 50 (Cj Hab Juazeiro IV)", "Caminho 51 (Cj Hab Juazeiro IV)", "Caminho 52 (Cj Hab Juazeiro IV)",
+    "Caminho 53 (Cj Hab Juazeiro IV)", "Caminho 54 (Cj Hab Juazeiro IV)", "Caminho 55 (Cj Hab Juazeiro IV)",
+    "Caminho 56 (Cj Hab Juazeiro IV)", "Caminho 57 (Cj Hab Juazeiro IV)", "Caminho 58 (Cj Hab Juazeiro IV)",
+    "Caminho 59 (Cj Hab Juazeiro IV)", "Caminho 60 (Cj Hab Juazeiro IV)", "Caminho 61 (Cj Hab Juazeiro IV)",
+    "Caminho 62 (Cj Hab Juazeiro IV)", "Caminho 63 (Cj Hab Juazeiro IV)", "Caminho 64 (Cj Hab Juazeiro IV)",
+    "Caminho 65 (Cj Hab Juazeiro IV)", "Caminho 66 (Cj Hab Juazeiro IV)", "Caminho 67 (Cj Hab Juazeiro IV)",
+    "Caminho 68 (Cj Hab Juazeiro IV)", "Caminho 69 (Cj Hab Juazeiro IV)", "Caminho 70 (Cj Hab Juazeiro IV)",
+    "Caminho 71 (Cj Hab Juazeiro IV)", "Caminho Um", "Caminho Dois", "Caminho Três", "Caminho Quatro", "Caminho Cinco",
+    "Caminho Seis", "Caminho Sete", "Caminho Oito", "Caminho Nove", "Caminho Dez", "Caminho Onze", "Caminho Doze",
+    "Caminho Treze", "Caminho Quatorze", "Caminho Quinze", "Caminho Dezesseis", "Caminho Dezessete", "Caminho Dezoito",
+    "Caminho Dezenove", "Caminho Vinte", "Rua A (Cj Hab Juazeiro IV)", "Rua B", "Rua C", "Rua D", "Rua E (Cj Hab Juazeiro IV)",
+    "Rua F (Cj Hab Juazeiro IV)", "Rua G", "Rua H", "Rua I", "Rua J", "Rua K (Cj Hab Juazeiro IV)", "Rua L", "Rua M",
+    "Rua N (Cj Hab Juazeiro IV)", "Travessa 1 (Cj Hab Juazeiro IV)", "Travessa 16 (Cj Hab Juazeiro IV)",
+    "Travessa 18 (Cj Hab Juazeiro IV)", "Travessa A (Cj Hab Juazeiro IV)", "Travessa Edésio dos Santos"
+  ],
+  "Dom Thomaz": [
+    "Avenida 3 (Lot Canudos)", "Avenida Bahia", "Avenida das Nações", "Avenida Machado de Assis", "Avenida Propriá",
+    "Avenida Rio Preto", "Avenida Sobradinho", "Avenida Vale dos Mulungus", "Praça da República", "Quadra B", "Rodovia BA-210",
+    "Rua 1 (Lot Canudos)", "Rua 2 (Lot Canudos)", "Rua 3 (Lot Canudos)", "Rua 4 (Lot Canudos)", "Rua 5 (Lot Canudos)",
+    "Rua 6 (Lot Canudos)", "Rua Abaré", "Rua Amir Klynk", "Rua Aracaju", "Rua Bahia", "Rua Belém", "Rua Belo Horizonte",
+    "Rua Brasília", "Rua Campo Alegre de Lourdes", "Rua Canaã", "Rua Canudos", "Rua Casa Nova", "Rua Chile", "Rua Chorrochó",
+    "Rua Curaçá", "Rua D", "Rua D'Ávila", "Rua da Amizade", "Rua da Independência", "Rua da Liberdade", "Rua dos Voluntários",
+    "Rua Formosa", "Rua Fortaleza", "Rua Glória", "Rua Imperatriz", "Rua Jeremoabo", "Rua Joana D'Arc",
+    "Rua João Antônio da Silva", "Rua L (Lot Canudos)", "Rua Maceió", "Rua Macururé", "Rua Manoel Faustino da Silva",
+    "Rua Mundo Novo", "Rua Natal", "Rua Olavo Bilac", "Rua Paulicéia", "Rua Paulo Afonso", "Rua Pilão Arcado", "Rua Recife",
+    "Rua Remanso", "Rua Rodelas", "Rua Salvador", "Rua São Luiz", "Rua São Paulo", "Rua Sento Sé", "Rua Ulysses Guimarães",
+    "Rua Zumbi dos Palmares", "Travessa 1 (Lot Vle Mulungus)", "Travessa 2 (Lot Vle Mulungus)",
+    "Travessa 3 (Lot Vle Mulungus)", "Travessa 4 (Lot Vle Mulungus)", "Travessa 5 (Lot Vle Mulungus)",
+    "Travessa 6 (Lot Vle Mulungus)", "Travessa 7 (Lot Vle Mulungus)", "Travessa 8 (Lot Vle Mulungus)",
+    "Travessa 9 (Lot Vle Mulungus)", "Travessa 10 (Lot Vle Mulungus)", "Travessa 11 (Lot Vle Mulungus)",
+    "Travessa 12 (Lot Vle Mulungus)", "Travessa 13 (Lot Vle Mulungus)", "Travessa 14 (Lot Vle Mulungus)",
+    "Travessa E (Lot Canudos)", "Travessa F (Lot Canudos)", "Travessa G (Lot Canudos)", "Travessa H (Lot Canudos)"
+  ],
+  "Expedito Nascimento": [
+    "Avenida Américo Tanury", "Avenida Gaspar de Lemos", "Avenida Manoel Novaes", "Avenida Miguel Silva Souza",
+    "Avenida Nossa Senhora de Nazaré", "Rua A", "Rua B", "Rua C", "Rua D", "Rua E", "Rua F", "Rua Henrique Gomes",
+    "Rua I", "Rua J", "Rua K", "Rua L", "Rua M", "Rua N"
+  ],
+  "Gercino Coelho": [
+    "Avenida Américo Tanury", "Avenida das Nações", "Avenida João Durval Carneiro", "Avenida Machado de Assis",
+    "Rua Antônio Carlos Magalhães", "Rua Bahia", "Rua Boa Esperança", "Rua Califórnia", "Rua da Liberdade",
+    "Rua das Lavadeiras", "Rua do Canal", "Rua Humberto de Alencar Castelo Branco", "Rua Mandacaru",
+    "Rua Miguel Silva Souza", "Rua Nossa Senhora das Grotas", "Rua Padre Feijó", "Rua Santo Antônio", "Rua São Francisco",
+    "Rua São João", "Rua São José"
+  ],
+  "Itaberaba": [
+    "1ª Travessa da Liberdade", "2ª Travessa da Liberdade", "3ª Travessa da Liberdade", "Avenida Misael Aguilar Silva Júnior",
+    "Avenida São Francisco", "Rodovia BA-210", "Rodovia BR-235", "Rua 1º de Maio", "Rua 7", "Rua 8", "Rua A", "Rua Alegria",
+    "Rua Américo Dourado", "Rua Ayrton Senna", "Rua B", "Rua C", "Rua Caminho das Árvores", "Rua Cinco", "Rua D",
+    "Rua da Amizade", "Rua da Felicidade", "Rua da Independência", "Rua da Liberdade", "Rua da Prosperidade",
+    "Rua das Algarobas", "Rua das Esmeraldas", "Rua das Graças", "Rua das Orquídeas", "Rua Deputado Ulysses Guimarães",
+    "Rua Dez", "Rua do Paraíso", "Rua Dois", "Rua Dom José Rodrigues de Souza", "Rua dos Cajueiros", "Rua Duque de Caxias",
+    "Rua E", "Rua F", "Rua Flor de Açucena", "Rua Flor do Nilo", "Rua G", "Rua H", "Rua I", "Rua Irmã Alcina",
+    "Rua Irmã Dulce", "Rua J", "Rua Jardim das Margaridas", "Rua João Gilberto", "Rua K", "Rua L", "Rua M (Res Juazeiro II)",
+    "Rua Maranhão", "Rua Marquesa", "Rua Nova Esperança", "Rua Nova Iguaçú", "Rua Nove", "Rua Novo México", "Rua Oito",
+    "Rua Petronílio B dos Santos", "Rua Prefeito Arnaldo Vieira do Nascimento", "Rua Presidente Abraão Lincoln",
+    "Rua Presidente Getúlio Vargas", "Rua Princesa Isabel", "Rua Quatro", "Rua Secretário Herbet Mouze Rodrigues",
+    "Rua Seis", "Rua Sete", "Rua Shalon", "Rua Três", "Rua Um", "Rua Vitória", "Travessa Caminho das Árvores",
+    "Travessa da Rua 13", "Travessa do Paraíso", "Travessa Dom José Rodrigues de Souza", "Travessa Flor de Açucena",
+    "Travessa Presidente Abraão Lincoln", "Travessa Projetada 11", "Travessa São Francisco"
+  ],
+  "Jardim Flórida": [
+    "Avenida Cristalina", "Avenida Giuseppe Muccini", "Avenida São João", "Rua 9", "Rua 10", "Rua Américo Tanury",
+    "Rua Arnaldo Vieira do Nascimento", "Rua Ayrton Senna", "Rua da Lagoa", "Rua Durval Barbosa da Cunha",
+    "Rua Floriano Peixoto", "Rua Nossa Senhora das Candeias", "Rua Paulo Bispo de Carvalho", "Rua Raimundo Dias de Miranda",
+    "Rua Tito Nunes de Souza", "Travessa Durval Barbosa da Cunha", "Travessa Julio Luiz de Carvalho",
+    "Travessa Raimundo Dias da Silva"
+  ],
+  "Jardim Primavera": [
+    "Avenida das Acácias", "Avenida do Sossego", "Avenida Girassol", "Avenida Mandacaru", "Rua Antônio Avelino Neto",
+    "Rua Assembléia", "Rua Bahia", "Rua da Alegria", "Rua da Inglaterra", "Rua da Palmeira", "Rua da Paz", "Rua das Flores",
+    "Rua das Orquídeas", "Rua das Rosas", "Rua do Cajueiro", "Rua do Sossego", "Rua dos Eucaliptos", "Rua Jasmim",
+    "Rua Nova Esperança", "Rua Novo Horizonte", "Rua Novo Mundo", "Rua Primavera", "Rua São João", "Rua São José",
+    "Rua São Paulo", "Rua São Pedro", "Rua São Rafael", "Rua São Sebastião", "Rua São Vicente"
+  ],
+  "Jardim São Paulo": [
+    "Avenida Benedito de Almeida Moraes", "Avenida Epitácio Pessoa", "Caminho A", "Jardim São Paulo",
+    "Praça Jardim São Paulo", "Rodovia BR-407", "Rua 1º de Maio", "Rua 7 de Setembro", "Rua 8", "Rua Boa Vista",
+    "Rua Cardeal Arcoverde", "Rua da Linha", "Rua da Praça", "Rua Presidente Tancredo Neves", "Rua São Cristóvão",
+    "Rua São Francisco", "Rua Tiradentes"
+  ],
+  "Jardim Universitário": [
+    "Avenida Flaviano Guimarães", "Avenida Papa João Paulo II", "Praça Jardim dos Universitários", "Rua das Algarobas",
+    "Rua das Castanholas", "Rua dos Eucaliptos", "Rua dos Pinheiros", "Rua Edgard Chastinet", "Travessa Ararinha-Azul",
+    "Travessa Asa Branca", "Travessa Beija-flor", "Travessa Cardeal"
+  ],
+  "Jardim Vitória": [
+    "Avenida Armando Pereira de Almeida", "Avenida Laudilino dos Santos", "Avenida Maria da Glória de Jesus",
+    "Avenida Raul Alves", "Avenida São João", "Avenida Valdete Costa Brito", "Avenida Vitória Régia", "Largo da Chaminé",
+    "Praça Augusto Fernandes", "Rua 1 (Res Vitória I)", "Rua 6 (Lot M Bela)", "Rua Adão Pereira", "Rua Agrísio de Brito",
+    "Rua Alameda Almeida", "Rua Anisio José da Silva", "Rua Antônio Oliveira Martins", "Rua Augusto Fernandes de Souza",
+    "Rua Campo Sales", "Rua Cerâmica", "Rua Conselheiro Dantas", "Rua Custódio Nunes da Silva", "Rua da Lagoa",
+    "Rua das Bromélias (Res Vitória II)", "Rua das Margaridas", "Rua das Orquídeas", "Rua das Rosas",
+    "Rua das Violetas (Res Vitória I)", "Rua do Jasmim", "Rua dos Lírios", "Rua Floriano Peixoto",
+    "Rua Gerson Leopoldino de Assis", "Rua Gilvan Alexandre de Sá", "Rua Girassol", "Rua Itajubá",
+    "Rua Jardim de São Vicente", "Rua Juazeiro", "Rua Manoel Lopes", "Rua Maria Delzuita Leite", "Rua Mariano Ventura",
+    "Rua Paraíso", "Rua Santo Antônio (Cond S Antônio)", "Rua Vitória Régia (Res Vitória I)", "Travessa 1 (Res Vitória II)",
+    "Travessa das Bromélias (Res Vitória II)", "Travessa das Margaridas (Res Vitória II)",
+    "Travessa das Orquídeas (Res Vitória I)", "Travessa das Violetas (Res Vitória I)", "Travessa do Paraíso",
+    "Travessa Idália de Mello", "Travessa João Ferreira", "Vila Água Bela"
+  ],
+  "João Paulo II": [
+    "Avenida Antônio Conselheiro", "Avenida Durval Vicente de Lima", "Avenida Ebenezer", "Avenida Engenheiro Manoel Borges",
+    "Loteamento Centro Industrial São Francisco", "Loteamento Parque Residencial Juazeiro",
+    "Quadra 1", "Quadra 2", "Quadra 3", "Quadra 4", "Quadra 5", "Quadra 6", "Quadra 7", "Quadra 8", "Quadra 9", "Quadra 10",
+    "Quadra 11", "Quadra 12", "Quadra 12 A", "Quadra 13", "Quadra 14", "Quadra 15", "Quadra 16", "Quadra 17", "Quadra 18",
+    "Quadra 19", "Quadra 20", "Quadra 21", "Quadra 22", "Quadra 23", "Quadra 24", "Quadra 25", "Quadra 26", "Quadra 27",
+    "Quadra 28", "Quadra 29", "Quadra 30", "Quadra 31", "Quadra 32", "Quadra 33", "Quadra 34", "Quadra 35", "Quadra 36",
+    "Quadra Um", "Quadra Dois", "Quadra Três", "Quadra Quatro", "Quadra Cinco", "Quadra Cinco A", "Quadra Seis",
+    "Quadra Sete", "Quadra Oito", "Quadra Nove", "Quadra Dez", "Quadra Onze", "Quadra Doze", "Quadra Doze A", "Quadra Treze",
+    "Quadra Quatorze", "Quadra Quinze", "Quadra Dezesseis", "Quadra Dezessete", "Quadra Dezoito", "Quadra Dezenove",
+    "Quadra Vinte", "Quadra Vinte e Um", "Quadra Vinte e Dois", "Quadra Vinte e Três", "Quadra Vinte e Quatro",
+    "Quadra Vinte e Cinco", "Quadra Vinte e Seis", "Quadra Vinte e Sete", "Quadra Vinte e Oito", "Quadra Vinte e Nove",
+    "Quadra Trinta", "Quadra Trinta e Um", "Quadra Trinta e Dois", "Quadra Trinta e Três", "Quadra Trinta e Quatro",
+    "Quadra Trinta e Cinco", "Quadra Trinta e Seis", "Rua 4", "Rua 5", "Rua A (Lot B Serra)", "Rua A1 (Lot B Serra)",
+    "Rua B (Lot B Serra)", "Rua B1 (Lot B Serra)", "Rua C (Lot B Serra)", "Rua D (Lot B Serra)", "Rua E (Lot B Serra)",
+    "Rua F (Lot B Serra)", "Rua G (Lot B Serra)", "Rua H (Lot B Serra)", "Rua I (Lot B Serra)", "Rua J (Lot B Serra)",
+    "Rua K (Lot B Serra)", "Rua L (Lot B Serra)", "Rua M (Lot B Serra)", "Rua N (Lot B Serra)", "Rua O (Lot B Serra)",
+    "Rua P (Lot B Serra)", "Rua Q (Lot B Serra)", "Rua R (Lot B Serra)", "Rua S (Lot B Serra)", "Rua T (Lot B Serra)",
+    "Rua U (Lot B Serra)", "Rua V (Lot B Serra)", "Travessa da Quadra 36", "Travessa dos Estudantes"
+  ],
+  "João XXIII": [
+    "2ª Travessa da Caixa", "Avenida Gaudêncio Barros", "Avenida João Durval Carneiro", "Avenida Sul", "Rodovia BR-407",
+    "Rodovia Lomanto Júnior", "Rua Alan Karine", "Rua Alvorada", "Rua Chile", "Rua da Caixa", "Rua da Escócia",
+    "Rua da Lagoa", "Rua Democrata", "Rua do Abrigo", "Rua do Viradouro", "Rua Dom João VI", "Rua Dom Pedro I",
+    "Rua dos Bandeirantes", "Rua Doutor Loreto", "Rua Eurico Gaspar Dutra", "Rua Formosa", "Rua Jasmim", "Rua Largo Alegre",
+    "Rua Luiz Tarquínio", "Rua Mário Borges", "Rua Pedro Calmon", "Rua Riachuelo", "Rua Rio de Janeiro", "Rua Santa Isabel",
+    "Rua São Paulo", "Travessa Alan Karine", "Travessa da Caixa", "Travessa da Escócia", "Travessa do SENAI",
+    "Travessa Dom João VI", "Travessa dos Bandeirantes", "Travessa Doutor Loureto", "Travessa Eurico Gaspar Dutra",
+    "Travessa Riachuelo"
+  ],
+  "Lomanto Júnior": [
+    "Avenida Doutor Adolfo Viana", "Avenida João Durval Carneiro", "Avenida Luiz Inácio Lula da Silva",
+    "Avenida Ulysses Guimarães", "Beco Luiz Inácio Lula da Silva", "Praça Santa Terezinha", "Rua Agostinha Vieira Gondim",
+    "Rua Cinco", "Rua das Flores", "Rua do Sol", "Rua Dois", "Rua Miguel Neponuceno de Souza", "Rua Ozelina Dias da Silva",
+    "Rua Quatro", "Rua Santa Terezinha", "Rua São João Batista", "Rua São Jorge", "Travessa da Igreja", "Travessa Eldorado",
+    "Travessa Lomanto Júnior", "Travessa Santa Luzia", "Travessa São Jorge"
+  ],
+  "Malhada da Areia": [
+    "Avenida Benedito de Almeida Moraes", "Avenida D (Lot Jd V Cruz)", "Avenida da Bandeira", "Avenida Fernandes Rios Campelo",
+    "Avenida Irmã Dulce", "Avenida Pedro Raimundo Rodrigues Rego", "Loteamento Malhada da Areia", "Rodovia BA-210",
+    "Rua 1", "Rua 2", "Rua 3", "Rua 4 (Lot Da Jacy)", "Rua 5 (Lot Da Jacy)", "Rua 13", "Rua 25 de Março", "Rua A",
+    "Rua Abaré", "Rua Amapá", "Rua Amargosa", "Rua Ayrton Senna", "Rua B", "Rua Bento Gonçalves", "Rua C", "Rua Camamu",
+    "Rua D (Lot 13 Maio)", "Rua da Bandeira", "Rua da Olaria", "Rua da Paz", "Rua da Verdade", "Rua E (Lot 13 Maio)",
+    "Rua F", "Rua G", "Rua H", "Rua Henrique Dias", "Rua L", "Rua M", "Rua Maurício de Nassau", "Rua N", "Rua Novo Horizonte",
+    "Rua Pará", "Rua Pedro Pacheco de Castro", "Rua Pedro Raimundo Rodrigues Rego", "Rua Pierre de Souza Ramos",
+    "Rua Professor Divaldo Pereira Franco", "Rua S", "Rua Visconde de Mauá", "Travessa 2 (Lot Da Jacy)",
+    "Travessa 3 (Lot Jd Facilar)", "Travessa A (Lot 13 Maio)", "Travessa Bento Gonçalves", "Travessa G"
+  ],
+  "Maria Goretti": [
+    "Avenida Doutor Adolfo Viana", "Avenida Luiz Inácio Lula da Silva", "Avenida Paulo VI", "Rua 3 (Cond Paulo VI)",
+    "Rua 3-A (Cond Paulo VI)", "Rua A (Cond Paulo VI)", "Rua Argentina", "Rua B (Cond Paulo VI)", "Rua C (Cond Paulo VI)",
+    "Rua Canadá", "Rua Chile", "Rua da Grécia", "Rua E (Cond Paulo VI)", "Rua Eldorado", "Rua Elizabete Safira",
+    "Rua Equador", "Rua Joalina", "Rua Monsenhor José Gilberto Luna", "Rua O (Cond Paulo VI)", "Rua Ozelina Dias da Silva",
+    "Rua Portugal", "Rua Tamarindo", "Rua Venezuela", "Travessa Eldorado", "Travessa Luiz Inácio Lula da Silva",
+    "Travessa Paulo VI"
+  ],
+  "Maringá": [
+    "1ª Travessa José Messias Martins da Silva", "2ª Travessa José Mathias de Moraes", "Avenida Antônio Carlos Magalhães",
+    "Avenida Gaspar de Lemos", "Avenida Papa João Paulo I", "Avenida Senador Teotônio Vilela", "Conjunto Rio Dourado",
+    "Rua 19 de Março", "Rua Araújo Sampaio", "Rua Ayrton Senna", "Rua Batativa do Assare", "Rua Bráulio Sampaio",
+    "Rua Carlos Drummond de Andrade", "Rua Carlos Drumond de Andrade", "Rua Deputado Bolivar Santana",
+    "Rua Dom José Rodrigues", "Rua Emília de Mattos Caje", "Rua Ermir Ferraz Magalhães", "Rua João Cabral de Melo Neto",
+    "Rua Joaquim Bispo dos Santos", "Rua Jorge Amado", "Rua José Anísio Rodrigues", "Rua José Messias de Souza",
+    "Rua José Messias Martins da Silva", "Rua Leopoldo Celso da Cunha", "Rua Maria Romana", "Rua Morãozinho",
+    "Rua Nova Amazonas", "Rua Oito", "Rua Patativa do Assaré", "Rua Paulo Souto", "Rua Paulo Souza",
+    "Rua Porto Seguro (Cond P Seguro)", "Rua Santo Antônio", "Rua São Francisco", "Travessa José Mathias de Moraes",
+    "Travessa Pedro Bandeira"
+  ],
+  "Matatu": [
+    "Rua Dois", "Rua Matatu 2", "Rua Matatu 3", "Rua Três", "Rua Um", "Travessa Matatu", "Travessa Matatu 1"
+  ],
+  "Monte Castelo": [
+    "Avenida Jardim de Alah", "Avenida Monte Castelo", "Avenida Norte", "Avenida Oeste", "Avenida Vale do Canela",
+    "Rua Amaralina", "Rua Barbalho", "Rua Barra", "Rua Barris", "Rua Boca do Rio", "Rua Brotas", "Rua Cabula",
+    "Rua Cajazeiras", "Rua Calabar", "Rua Caminho das Árvores", "Rua Campo Grande", "Rua Costa Azul", "Rua da Federação",
+    "Rua Garcia", "Rua Graça", "Rua Iguatemi", "Rua Ilha de Maré", "Rua Imbuí", "Rua Itaigara", "Rua Itapoã",
+    "Rua Jardim das Margaridas", "Rua Nazaré", "Rua Ondina", "Rua Paripe", "Rua Patamares", "Rua Periperi", "Rua Pernambués",
+    "Rua Piatã", "Rua Pirajá", "Rua Pituba", "Rua Plataforma", "Rua Praça da Sé", "Rua Ribeira", "Rua Rio Vermelho",
+    "Rua São Caetano", "Rua Saramandaia", "Rua Stella Maris", "Rua Vitória", "Travessa 1 (Lot Mte Castelo)"
+  ],
+  "Mussambê": [
+    "Avenida Armando Pereira de Almeida", "Avenida Laudilino dos Santos", "Avenida Maria da Glória de Jesus",
+    "Avenida Raul Alves", "Praça Augusto Bernardino Lopes", "Praça Raymundo Martins Braz", "Rodovia BR-407",
+    "Rua 10 de Julho", "Rua Agenor", "Rua Amazonas", "Rua Augusto Fernandes de Souza", "Rua Austricliano Dias de Souza",
+    "Rua das Emboabas", "Rua do Violão", "Rua do Violino", "Rua Inácio de Brito", "Rua Jesus Cristo de Nazaré",
+    "Rua José Messias Martins da Silva", "Rua Luiz Antônio dos Santos", "Rua Maria Delzuita Leite", "Rua Nova Amazonas",
+    "Rua Oséias Bezerra dos Santos", "Rua Osvaldo Ferreira Gomes", "Rua Raymundo Martins Braz", "Rua Rui Barbosa",
+    "Rua São Jorge", "Rua São Vicente", "Rua Souza Barros", "Rua Waldemar Alves dos Santos", "Travessa das Emboabas",
+    "Travessa Inácio de Brito", "Travessa Oséias Bezerra dos Santos", "Travessa São Miguel"
+  ],
+  "Nossa Senhora das Grotas": [
+    "Avenida 1 (Lot N S Grotas)", "Avenida 2 (Lot N S Grotas)", "Avenida 4 (Lot N S Grotas)", "Avenida 5 (Lot N S Grotas)",
+    "Avenida 6 (Lot N S Grotas)", "Avenida 7", "Avenida 8 (Lot N S Grotas)", "Avenida Cristalina", "Avenida da Urca",
+    "Avenida Giuseppe Muccini", "Avenida José Pereira Lima", "Avenida Maria da Glória de Jesus", "Rua 3 (Lot N S Grotas)",
+    "Rua 5 (Lot N S Grotas)", "Rua 7 (Lot N S Grotas)", "Rua 8 (Lot N S Grotas)", "Rua 9 (Lot N S Grotas)",
+    "Rua 10 (Lot N S Grotas)", "Rua 11 (Lot N S Grotas)", "Rua 12 (Lot N S Grotas)", "Rua 13 (Lot Dular)",
+    "Rua 14 (Lot Dular)", "Rua 15 (Lot Dular)", "Rua Arnaldo Vieira", "Rua da Liberdade", "Rua dos Lírios",
+    "Rua J (Lot Dular)", "Rua L", "Rua M (Lot N S Grotas)", "Rua Maria de Lourdes Lopes da Silva", "Rua N",
+    "Rua Roberto Ângelo", "Rua Santa Maria", "Rua São Gabriel", "Rua São Jorge (Lot N S Grotas)", "Travessa 2 (Lot N S Grotas)"
+  ],
+  "Nova Esperança": [
+    "Avenida Brasil", "Avenida Girassol", "Avenida Giuseppe Muccini", "Avenida Rio Branco", "Avenida São Francisco",
+    "Praça Argemiro José da Cruz", "Rua 7 (Lot Paulo VI)", "Rua 7 de Setembro", "Rua 15 (Lot Paulo VI)", "Rua Bela Vista",
+    "Rua Belo Jardim", "Rua Bom Sucesso", "Rua J (Lot Paulo VI)", "Rua Novo Alvorecer", "Rua Novo Horizonte",
+    "Rua Pôr do Sol", "Rua São Paulo", "Travessa Belo Jardim", "Travessa Girassol"
+  ],
+  "Novo Encontro": [
+    "Avenida Brasil", "Avenida Eliseu Martins do Nascimento", "Avenida Luiz Inácio Lula da Silva", "Praça Maravilha",
+    "Rua Agapanto", "Rua Alecrim Dourado", "Rua Américo Tanury", "Rua B (Lot N Juazeiro II)", "Rua Bahia", "Rua Bela Vista",
+    "Rua C (Lot N Juazeiro II)", "Rua Calêndula", "Rua Colibri", "Rua D (Lot N Juazeiro II)", "Rua das Algarobas",
+    "Rua das Bromélias", "Rua das Oliveiras", "Rua E (Lot N Juazeiro II)", "Rua Eliete Costa", "Rua Espírito Santo",
+    "Rua Evilázio Gonçalves dos Santos", "Rua Irmã Dulce", "Rua Jardim Novo Encontro", "Rua João Ferreira",
+    "Rua João Ferreira de Santana", "Rua Job Marques da Silva", "Rua Job Martins", "Rua Lírio da Paz", "Rua Madressilva",
+    "Rua Novo Juazeiro", "Rua Padre Cícero", "Rua Paraíba", "Rua Pernambuco", "Rua Petronília de Jesus",
+    "Rua Petronília Maria de Jesus", "Rua Piauí", "Rua Projetada 8 (Lot Jd N Encontro)", "Rua Raul Seixas",
+    "Rua Senhor do Bonfim", "Rua Terezinha Dantas de Souza", "Rua Terezinha de Jesus", "Travessa Alecrim",
+    "Travessa Brasil", "Travessa C (Lot Sta Mª Gorete)", "Travessa Maranhão", "Travessa Novo Juazeiro",
+    "Travessa Terezinha Dantas"
+  ],
+  "Padre Vicente": [
+    "Avenida Comissão do Vale", "Avenida Cristalina", "Avenida da Bandeira", "Avenida da Esperança", "Avenida da Paz",
+    "Avenida da União", "Avenida Girassol", "Loteamento Padre Vicente", "Rua 1 (Lot Jd Pe Vicente)", "Rua 1º de Maio",
+    "Rua 2", "Rua 25 de Março", "Rua 3", "Rua 9", "Rua A (Lot D João)", "Rua Água Verde", "Rua Águas Belas", "Rua Alecrim",
+    "Rua Amazonas", "Rua Ametista", "Rua Apocalipse", "Rua Arco Íris", "Rua C (Lot D João)", "Rua da Alegria",
+    "Rua da Amizade", "Rua da Beleza", "Rua da Felicidade", "Rua da Fraternidade", "Rua da Juventude", "Rua da Poesia",
+    "Rua da Saudade", "Rua da Vegetação", "Rua da Verdade", "Rua das Palmeiras", "Rua do Estudante", "Rua do Progresso",
+    "Rua do Sorriso", "Rua do Sossego", "Rua do Trabalho", "Rua do Verde", "Rua dos Namorados", "Rua dos Prazeres",
+    "Rua E (Lot D João)", "Rua F (Lot D João)", "Rua Imperatriz", "Rua Jasmim", "Rua Jovem Guarda", "Rua Novo Horizonte",
+    "Rua Padre Clemente", "Rua Pedro Pacheco de Castro", "Rua Pingo de Ouro", "Rua Planalto", "Rua Raio do Sol",
+    "Rua São Miguel", "Rua Verde Mar", "Rua Verdes Mares", "Rua Vicente Gomes", "Travessa 1º de Maio",
+    "Travessa Comissão do Vale", "Travessa da Liberdade", "Travessa da União", "Travessa do Alecrim", "Travessa do Império",
+    "Travessa do Verde", "Travessa dos Estudantes", "Travessa Nossa Senhora da Aparecida"
+  ],
+  "Palmares": [
+    "Avenida 1", "Avenida 2 (Cond A Maria)", "Avenida 3 (Cond A Maria)", "Avenida Américo Tanury",
+    "Avenida Comandante Manoel Severo", "Avenida Irmã Dulce", "Avenida Miguel Silva Souza", "Avenida Orla (Cond T Sonhos)",
+    "Avenida Principal", "Avenida Saul Rosa", "Avenida Sebastião Almeida Branco", "Praça do Barão", "Rua 1", "Rua 2",
+    "Rua 3", "Rua 4", "Rua 5", "Rua 6", "Rua 7", "Rua 8", "Rua 9", "Rua 10", "Rua 11", "Rua 12 (Cond A Maria)", "Rua 13",
+    "Rua 14 (Cond T Sonhos)", "Rua 17 de Setembro", "Rua 20 de Novembro", "Rua A (Lot T Barão)", "Rua Ana Cristina Santos",
+    "Rua Aurenildes Gonçalves da Cunha", "Rua Ayrton Senna", "Rua B", "Rua Beira Rio (Cond Res C Club)", "Rua Boa Esperança",
+    "Rua C", "Rua Cícera Rodrigues da Silva", "Rua D", "Rua da Liberdade", "Rua da Maravilha", "Rua dos Coqueiros", "Rua E",
+    "Rua F", "Rua G", "Rua H", "Rua I (Cond Res C Club)", "Rua J", "Rua João Batista", "Rua Miguel Silva Souza",
+    "Rua Nossa Senhora de Nazaré", "Rua Novo Horizonte", "Rua Padre Cícero", "Rua Padre José Carlos Oliveira",
+    "Rua Quilombo", "Rua Roseane Calisto Evangelista", "Rua Santa Clara", "Rua São Francisco de Assis", "Rua São Joaquim",
+    "Rua São Jorge", "Rua Sempre Verde", "Travessa da Maravilha", "Travessa José Luís"
+  ],
+  "Parque Centenário": [
+    "Avenida Novo Juazeiro", "Rua 1 (Cond P Centenário)", "Rua 2 (Cond P Centenário)", "Rua 9 (Cond P Centenário)",
+    "Rua Agapanto", "Rua Albatroz", "Rua Gardênia", "Rua Madrepérola", "Rua Madressilva", "Rua Primavera", "Rua Santa Sofia",
+    "Rua Sempreviva", "Travessa 1 (Cond P Centenário)", "Travessa 2 (Cond P Centenário)", "Travessa 3 (Cond P Centenário)",
+    "Travessa 4 (Cond P Centenário)"
+  ],
+  "Parque Residencial": [
+    "Avenida Antônio Conselheiro", "Avenida das Árvores", "Avenida Engenheiro Manoel Borges", "Avenida Leste",
+    "Avenida Oeste", "Avenida Transversal", "Quadra 5A", "Rua 1 (Lot Prq Residencial)", "Rua 2 (Lot P Jatobá)",
+    "Rua Aroeira", "Rua Baraúna", "Rua do Comércio", "Rua do Umbuzeiro", "Rua Engenheiro Manoel Borges",
+    "Rua Ilha da Amélia", "Rua Ilha da Cachoeirinha", "Rua Ilha da Caxeta", "Rua Ilha da Correnteza", "Rua Ilha da Lagoa",
+    "Rua Ilha de Nossa Senhora", "Rua Ilha do Coqueiro", "Rua Ilha do Country", "Rua Ilha do Fogo", "Rua Ilha do Jatobá",
+    "Rua Ilha do Mandacaru", "Rua Ilha do Maroto", "Rua Ilha do Massangano", "Rua Ilha do Rodeadouro",
+    "Rua Ilha Serrote do Urubu", "Rua Jatobá", "Rua Juazeiro", "Rua Mandacaru", "Rua Palmeiras", "Rua São Francisco",
+    "Rua Umburuçú", "Rua Xique-Xique", "Travessa 6 (Lot Prq Residencial)", "Travessa das Árvores", "Travessa do Angico",
+    "Travessa dos Estudantes", "Via Local 7 (Lot Prq Residencial)"
+  ],
+  "Pedra do Lord": [
+    "Alameda dos Ventos (Cond Clna Rio)", "Avenida Principal (Cond V Premium)", "Avenida Saul Rosa",
+    "Avenida Sebastião Almeida Branco", "Rua A (Cond V Premium)", "Rua Anísio José da Costa",
+    "Rua Anísio Rodrigues dos Santos", "Rua Arco Íris (Cond Clna Rio)", "Rua Artur Pereira dos Santos",
+    "Rua Augusto Pereira Rocha", "Rua B (Cond V Premium)", "Rua Bartolomeu de Souza", "Rua C (Cond V Premium)",
+    "Rua Cecílio Matos", "Rua Chicão", "Rua D (Cond V Premium)", "Rua da Aurora (Cond Clna Rio)", "Rua Damião Serafim",
+    "Rua das Estrelas (Cond Clna Rio)", "Rua do Luar (Cond Clna Rio)", "Rua do Sol (Cond Clna Rio)",
+    "Rua do Solar (Cond Clna Rio)", "Rua dos Caris (Cond V Chico)", "Rua dos Dourados (Cond V Chico)",
+    "Rua dos Mandis (Cond V Chico)", "Rua dos Surubins (Cond V Chico)", "Rua dos Tambaquis (Cond V Chico)",
+    "Rua E (Cond V Premium)", "Rua Edgar Bandeira", "Rua F (Cond V Premium)", "Rua Francisco Cabano",
+    "Rua G (Cond V Premium)", "Rua Gabriel Castro", "Rua H (Cond V Premium)", "Rua Hermínio Pereira",
+    "Rua I (Cond V Premium)", "Rua J (Cond V Premium)", "Rua João Domingos", "Rua José Cirilo da Silva",
+    "Rua José Félix Veras", "Rua José Horácio dos Santos", "Rua José Sabino dos Santos", "Rua José Severo Lins",
+    "Rua L (Cond V Premium)", "Rua Leopoldo Celso da Cunha", "Rua Leopoldo Pereira", "Rua M (Cond V Premium)",
+    "Rua Marciano Gomes de Paula", "Rua Mestre Gil", "Rua N (Cond V Premium)", "Rua O (Cond V Premium)",
+    "Rua Pedro Paulo Consenza", "Rua Pedro Severo Lins", "Rua Rachosa", "Rua Teodoro Santos Farias"
+  ],
+  "Pedro Raimundo": [
+    "Avenida Antônio Conselheiro", "Avenida Edésio Santos", "Avenida Luiz Gonzaga", "Avenida Pau Brasil", "Rodovia BA-210",
+    "Rua Arueira", "Rua da Palmeira", "Rua das Flores", "Rua das Pitangueiras", "Rua do Limoeiro", "Rua dos Sargentos",
+    "Rua Faxeiro", "Rua Goiabeira", "Rua Jatobá", "Rua Juazeiro", "Rua Laranjeira", "Rua Pau Brasil", "Rua Sambambaia",
+    "Rua Tamareira", "Rua Tamarineira"
+  ],
+  "Penha": [
+    "Avenida Gaspar de Lemos", "Avenida Maria da Glória de Jesus", "Praça Gaspar de Lemos", "Rua Armando José de Oliveira",
+    "Rua Ayrton Senna", "Rua da Paz", "Rua Damasceno", "Rua das Esmeraldas", "Rua das Figueiras",
+    "Rua Francisco Ricardo Dias", "Rua Frei Gaspar de Lemos", "Rua Gaspar de Lemos", "Rua José Martins Damasceno",
+    "Rua Josino Marcolino Santos", "Rua Mouranzinho", "Rua Pantanal", "Travessa Domingos Severino Costa",
+    "Travessa Frei Gaspar de Lemos"
+  ],
+  "Piranga": [
+    "1ª Travessa do Riso", "2ª Travessa Santa Clara", "Avenida Benedito de Almeida Moraes", "Avenida Comissão do Vale",
+    "Avenida Cristalina", "Avenida Giuseppe Muccini", "Avenida São João", "Praça Antônio Tanury",
+    "Praça Comandante Wilson Pereira", "Praça do Chafariz", "Praça do Riso", "Praça Professor Costa Pinto",
+    "Praça Santa Terezinha", "Rodovia BR-407", "Rodovia do Salitre", "Rua 1", "Rua 3 (Lot Prolar)", "Rua A (Lot Juá)",
+    "Rua Águas Correntes", "Rua Alto da Favela", "Rua Antônio Tanury", "Rua B (Lot Juá)", "Rua Bacharel José de Souza Filho",
+    "Rua Canaã", "Rua Comissão do Vale", "Rua da Estação", "Rua do Curral", "Rua do Riso", "Rua Domingos Martins Duarte",
+    "Rua Durval Barbosa", "Rua Durval Barbosa da Cunha", "Rua Flora Gadelha", "Rua Flórida", "Rua Gravatá",
+    "Rua Imaculada Conceição", "Rua Juca Sento Sé", "Rua Lafaiete Coutinho", "Rua Pacheco de Castro",
+    "Rua Paulo Bispo de Carvalho", "Rua Pedro Pacheco de Castro", "Rua Professor Divaldo Pereira Franco", "Rua Projetada 4",
+    "Rua Santa Clara", "Rua Santa Inês", "Rua Santa Madalena", "Rua Santo Agostinho", "Rua São Gerônimo", "Rua São João",
+    "Rua São Pedro", "Rua Tobias Barreto", "Rua Valdemar Leopoldo", "Travessa Antônio Tanury", "Travessa CODEVASF",
+    "Travessa Comissão do Vale", "Travessa da Esperança", "Travessa da Igreja", "Travessa do Jorrinho",
+    "Travessa do Mercado", "Travessa do Riso", "Travessa Imaculada Conceição", "Travessa José Borges",
+    "Travessa Juca Sento Sé", "Travessa Lafayete Coutinho", "Travessa Maria Onória Medrado", "Travessa Santa Clara",
+    "Travessa Santa Terezinha", "Travessa São Gerônimo", "Travessa São João", "Travessa São Pedro", "Vila do Riso"
+  ],
+  "Piranga I": [
+    "Acesso 4 (Cj Hab Piranga I)", "Avenida Brilho do Sol", "Avenida Campo Formoso", "Avenida Porto Alegre",
+    "Avenida São Francisco", "Rua Alfavile", "Rua Belo Horizonte", "Rua Campos do Jordão", "Rua Conceição",
+    "Rua das Palmeiras", "Rua Diamantina", "Rua Encontro das Águas", "Rua Esmeralda", "Rua Fortaleza", "Rua Imperatriz",
+    "Rua Minas Gerais", "Rua Moisés Rodrigues", "Rua Monte Carmelo", "Rua Moriá", "Rua Santa Isabel", "Rua São Jorge",
+    "Rua Tropical", "Travessa Laje"
+  ],
+  "Piranga II": [
+    "Avenida A (Cj Hab Piranga II)", "Avenida B (Cj Hab Piranga II)", "Avenida Brasil", "Avenida Rio Branco",
+    "Caminho 1 (Cj Hab Piranga II)", "Caminho 2 (Cj Hab Piranga II)", "Caminho 3 (Cj Hab Piranga II)",
+    "Caminho 4 (Cj Hab Piranga II)", "Caminho 5 (Cj Hab Piranga II)", "Caminho 6 (Cj Hab Piranga II)",
+    "Caminho 7 (Cj Hab Piranga II)", "Caminho 8 (Cj Hab Piranga II)", "Caminho 9 (Cj Hab Piranga II)",
+    "Caminho 10 (Cj Hab Piranga II)", "Caminho 11 (Cj Hab Piranga II)", "Caminho 12 (Cj Hab Piranga II)",
+    "Caminho 13 (Cj Hab Piranga II)", "Caminho 14 (Cj Hab Piranga II)", "Caminho 16 (Cj Hab Piranga II)",
+    "Caminho 17 (Cj Hab Piranga II)", "Caminho 18 (Cj Hab Piranga II)", "Caminho 19 (Cj Hab Piranga II)",
+    "Loteamento Piranga II", "Rua Brasil", "Rua São Paulo", "Travessa 1 (Cj Hab Piranga II)"
+  ],
+  "Quidé": [
+    "Avenida 7", "Avenida Américo Tanury", "Avenida Dom José Rodrigues", "Avenida Giuseppe Muccini", "Avenida Irmã Dulce",
+    "Avenida José Pereira Lima", "Avenida Nossa Senhora de Nazaré", "Loteamento Vila do Morro", "Rua 20 de Novembro",
+    "Rua Antônio Conselheiro", "Rua Arnaldo Vieira", "Rua Asa Branca", "Rua Ayrton Senna", "Rua Beija-flor",
+    "Rua Boa Esperança", "Rua Caminho das Estrelas", "Rua Castanholas", "Rua da Alegria", "Rua da Maravilha", "Rua da Paz",
+    "Rua das Algarobas", "Rua das Flores", "Rua das Pérolas", "Rua do Cajueiro", "Rua dos Coqueiros", "Rua dos Pássaros",
+    "Rua Esperança", "Rua Girassol", "Rua Henrique Gomes", "Rua Jasmim", "Rua José Roberto", "Rua Jurema",
+    "Rua Nova Maravilha", "Rua Pingo de Ouro", "Rua Primavera", "Rua Umbuzeiro", "Travessa Antônio Conselheiro",
+    "Travessa Boa Esperança", "Travessa das Rosas", "Travessa Dom José Rodrigues", "Travessa Jorge Khoury"
+  ],
+  "Santa Maria Goretti": [
+    "Avenida Doutor Adolfo Viana", "Avenida Luiz Inácio Lula da Silva", "Avenida Paulo VI", "Rua 3 (Cond Paulo VI)",
+    "Rua 3-A (Cond Paulo VI)", "Rua A (Cond Paulo VI)", "Rua Argentina", "Rua B (Cond Paulo VI)", "Rua C (Cond Paulo VI)",
+    "Rua Canadá", "Rua Chile", "Rua da Grécia", "Rua E (Cond Paulo VI)", "Rua Eldorado", "Rua Elizabete Safira",
+    "Rua Equador", "Rua Joalina", "Rua Monsenhor José Gilberto Luna", "Rua O (Cond Paulo VI)", "Rua Ozelina Dias da Silva",
+    "Rua Portugal", "Rua Tamarindo", "Rua Venezuela", "Travessa Eldorado", "Travessa Luiz Inácio Lula da Silva",
+    "Travessa Paulo VI"
+  ],
+  "Santo Antônio": [
+    "Avenida Antônio Carlos Magalhães", "Avenida Raul Alves", "Jardim Europa", "Loteamento Antônio Vitorino",
+    "Loteamento Maria", "Orla Fluvial Manoel Novaes", "Praça 1º de Maio", "Praça Dom Tomaz", "Rua Aabb",
+    "Rua Agenor Cavalcante", "Rua Allan Kardeck", "Rua Almirante Alexandrino de Alencar", "Rua Almirante João Prado Maia",
+    "Rua Amazonas", "Rua Austricliano Dias De Souza", "Rua Dez De Julho", "Rua Dezoito A", "Rua Dezoito B", "Rua do Paraíso",
+    "Rua Doutor Bezerra de Menezes", "Rua Doutor José Araújo", "Rua Floriano José da Silva", "Rua Getúlio Vargas",
+    "Rua Inácio Brito", "Rua Inês Lúcia", "Rua Jamil Hedayoglu", "Rua Jesus Cristo De Nazaré", "Rua Joana Angélica",
+    "Rua José Petitinga", "Rua Luiz Gonzaga", "Rua Minas Gerais", "Rua Mucambé", "Rua Napoleão Laureano",
+    "Rua Nova Amazonas", "Rua Osvaldo Ferreira Gomes", "Rua Princesa Isabel", "Rua Professor Olavo Balbino",
+    "Rua Raymundo Martins Braz", "Rua Santa Luzia", "Rua São Vicente", "Rua Sebastião Pereira Paulo", "Rua Tiradentes",
+    "Rua Toufic Nicola Khoury", "Rua Vila Do Carmo", "Rua Yorguy Nicola Khoury", "Rua Zumbi dos Palmares",
+    "Travessa do Hospital", "Travessa do Sanatório", "Travessa João Moreno", "Travessa José Mathias De Moraes Filho",
+    "Travessa Princesa Isabel", "Travessa Santo Antônio", "Travessa São José", "Travessa São Miguel"
+  ],
+  "São Geraldo": [
+    "Avenida das Flores", "Avenida Edson Bezerra", "Avenida Papa João Paulo II", "Avenida Paulo Rios Campelo",
+    "Loteamento Universitário", "Praça Antônio Marcelino Reis", "Praça das Algarobas", "Rua 1 (Lot H Florestal)",
+    "Rua 3 (Cond M Árvores)", "Rua 4 (Cond M Árvores)", "Rua 5 (Cond M Árvores)", "Rua 6 (Cond M Árvores)",
+    "Rua 7 (Cond M Árvores)", "Rua 10 (Cond M Árvores)", "Rua 27 de Agosto", "Rua Agostinho Muniz", "Rua Copacabana",
+    "Rua da Síria", "Rua do Aveloz", "Rua do Pajeú", "Rua Dom Thomaz", "Rua Edgard Chastinet", "Rua Flor de Gardênia",
+    "Rua Flor de Juá", "Rua Flor de Maracujá", "Rua Ipanema", "Rua João Paulo II", "Rua Leblon", "Rua Madressilva",
+    "Rua Padre Flávio", "Rua Pajeú", "Rua Samuel Ayres do Nascimento", "Rua São Francisco", "Rua São Geraldo", "Rua Tijuca",
+    "Travessa 4 (Cond M Árvores)", "Travessa Algarobas", "Travessa do Aveloz", "Travessa Dom Tomáz", "Travessa Flor de Juá",
+    "Travessa Horto", "Travessa Pajeú", "Travessa São Geraldo"
+  ],
+  "Sol Levante": [
+    "Avenida 2", "Avenida da Primavera", "Avenida Edson Bezerra", "Rodovia BA-210", "Rua 6", "Rua 7", "Rua 8", "Rua 9",
+    "Rua 10", "Rua 12", "Rua 13", "Rua 15", "Rua 16", "Rua 17", "Rua 25", "Rua 26", "Rua 30", "Rua 31", "Rua 32", "Rua 33",
+    "Rua 34", "Rua 35", "Rua 36", "Rua 37", "Rua 38", "Rua 39", "Rua 40", "Rua 41", "Rua 42", "Rua 43", "Rua 44", "Rua 45",
+    "Rua 46", "Rua 47", "Rua 48", "Rua 49", "Rua Edvaldo Evangelista", "Rua São Jorge", "Travessa 9", "Travessa 10",
+    "Travessa 11", "Travessa Bom Jesus"
+  ],
+  "Tabuleiro": [
+    "Avenida da Primavera", "Avenida Edson Bezerra", "Avenida Frei Roberto", "Avenida Maria Madalena",
+    "Avenida Nossa Senhora das Grotas", "Avenida Projetada 3", "Avenida Santa Luzia", "Avenida São José",
+    "Loteamento Tabuleiro", "Praça do Tabuleiro", "Praça Geraldo Martins Cruz", "Praça São Benedito", "Rodovia BA-210",
+    "Rua Ângelo Faustino", "Rua Baraúna", "Rua Bela Vista", "Rua Bom Jesus", "Rua da Conceição", "Rua da Independência",
+    "Rua da Paz", "Rua da Vitória", "Rua das Flores", "Rua das Laranjeiras", "Rua do Juazeiro", "Rua do Umbuzeiro",
+    "Rua Edvaldo Evangelista", "Rua Ernesto Dias", "Rua Otime de Oliveira", "Rua Padre Cícero",
+    "Rua Padre Reinivaldo Braga da Silva", "Rua Paraíso", "Rua Pedro I", "Rua Perivaldo de Alencar",
+    "Rua Professor Paulo Freire", "Rua Santo André", "Rua São Gabriel", "Rua São Gonçalo", "Rua São João Batista",
+    "Rua São Jorge", "Rua São José", "Rua São Lourenço", "Rua São Sebastião", "Rua Veneza", "Rua Vinícius de Moraes",
+    "Travessa Ângelo Faustino", "Travessa Bom Jesus", "Travessa do Canal", "Travessa do Paraíso", "Travessa Padre Cícero",
+    "Travessa São Jorge"
+  ],
+  "Tancredo Neves": [
+    "Avenida das Nações", "Caminho 1", "Caminho 2", "Caminho 3", "Caminho 4", "Caminho 5", "Caminho 6", "Caminho 7",
+    "Caminho 8", "Caminho 9", "Caminho 10", "Caminho 11", "Caminho 12", "Caminho 13", "Caminho 14", "Caminho 15",
+    "Caminho 16", "Caminho 17", "Caminho 18", "Caminho 19", "Caminho 20", "Caminho 21", "Caminho 22", "Caminho 23",
+    "Caminho 24", "Caminho 25", "Caminho 26", "Caminho 27", "Caminho Um", "Caminho Dois", "Caminho Três", "Caminho Quatro",
+    "Caminho Cinco", "Caminho Seis", "Caminho Sete", "Caminho Oito", "Caminho Nove", "Caminho Dez", "Caminho Onze",
+    "Caminho Doze", "Caminho Treze", "Caminho Quatorze", "Caminho Quinze", "Caminho Dezesseis", "Caminho Dezessete",
+    "Caminho Dezoito", "Caminho Dezenove", "Caminho Vinte", "Caminho Vinte e Um", "Caminho Vinte e Dois",
+    "Caminho Vinte e Três", "Caminho Vinte e Quatro", "Praça Arnulfo Cândido Alves", "Rodovia BA-210", "Rodovia BR-235",
+    "Rodovia BR-407", "Rua 1 (Lot S Jorge Independência)", "Rua A", "Rua B", "Rua C", "Rua D", "Rua da Banana",
+    "Rua da Manga", "Rua da Melancia", "Rua do Melão", "Rua E", "Rua F", "Rua H", "Rua Mundo Novo", "Rua Talismã"
+  ],
+  "Vila Jacaré": [
+    "Avenida Doutor Adolfo Viana", "Avenida Flaviano Guimarães", "Avenida Luiz Inácio Lula da Silva", "Rua 1", "Rua 4",
+    "Rua Alfredo Nunes de Oliveira", "Rua da Síria", "Rua das Algarobas", "Rua das Flores", "Rua do Canal",
+    "Rua Francisco Martins Duarte", "Rua João Bernadino da Silva", "Rua Oscar Feitosa Passos", "Rua Pedro Arnaldo da Silva",
+    "Rua Professor Agostinho José Muniz", "Rua Quatro", "Travessa Alfredo Nunes de Oliveira", "Travessa da Síria",
+    "Travessa do Cajueiro", "Travessa do Canal", "Travessa do Canal 02"
+  ],
+  "Vila Nova Fé": [
+    "Avenida Antônio Conselheiro", "Avenida Cheffy Khoury", "Avenida Vila Nova Fé", "Rua Brasil", "Rua do Cabo Verde",
+    "Rua do Líbano", "Rua Israel", "Rua Porto Rico", "Travessa Brasil", "Travessa Nova Fé"
+  ],
+  "Vila Tiradentes": [
+    "Avenida Epitácio Pessoa", "Avenida Irmã Dulce", "Praça Tiradentes", "Rodovia BA-210", "Rua 1", "Rua 2", "Rua 3",
+    "Rua 4", "Rua 5", "Rua 6", "Rua 7", "Rua 8", "Rua Cinco", "Rua Dois", "Rua Epitácio Pessoa", "Rua Oito", "Rua Quatro",
+    "Rua Seis", "Rua Sete", "Rua Três", "Rua Um", "Travessa 1", "Travessa 2"
+  ]
+};
+
+// Sinônimos de bairros em Juazeiro para garantir correspondência imediata
+const NEIGHBORHOOD_ALIASES = {
+  "angary": "Angari",
+  "coreia": "Coreia",
+  "dom tomaz": "Dom Thomaz",
+  "dom thomaz": "Dom Thomaz",
+  "expedito de almeida nascimento": "Expedito Nascimento",
+  "expedito nascimento": "Expedito Nascimento",
+  "jardim novo encontro": "Novo Encontro",
+  "novo encontro": "Novo Encontro",
+  "maria gorete": "Maria Goretti",
+  "maria goretti": "Maria Goretti",
+  "santa maria gorete": "Santa Maria Goretti",
+  "santa maria goretti": "Santa Maria Goretti",
+  "nossa senhora da penha": "Penha",
+  "penha": "Penha",
+  "mucambe": "Mussambê",
+  "mussambe": "Mussambê",
+  "pedra do lorde": "Pedra do Lord",
+  "pedra do lord": "Pedra do Lord"
+};
 
 let streetCache = {};
 let neighborhoodCenterCache = {};
@@ -899,6 +1562,8 @@ let holdPromptCardId = null;
 let isAutoCalculating = false;
 let pendingRecalc = false;
 let streetLiveSearchTimer = null;
+let clearConfirmPending = false;
+let clearConfirmTimer = null;
 
 // Estado do Mapa Tela Cheia + Seta GPS em Tempo Real
 let isMapExpanded = false;
@@ -936,13 +1601,39 @@ function getCityKey() {
   return normalizeStr(getActiveCityName()) || 'juazeiro';
 }
 
+function resolveCanonicalNeighborhoodName(bairro) {
+  const norm = normalizeStr(bairro);
+  if (NEIGHBORHOOD_ALIASES[norm]) return NEIGHBORHOOD_ALIASES[norm];
+  const found = Object.keys(JUAZEIRO_OFFICIAL_STREETS).find(k => normalizeStr(k) === norm);
+  return found || String(bairro || '').trim();
+}
+
 function getCacheKey(bairro) {
-  return `${getCityKey()}::${normalizeStr(bairro)}`;
+  const canonical = resolveCanonicalNeighborhoodName(bairro);
+  return `${getCityKey()}::${normalizeStr(canonical)}`;
+}
+
+function seedOfficialJuazeiroStreets() {
+  Object.entries(JUAZEIRO_OFFICIAL_STREETS).forEach(([bairro, streets]) => {
+    const key = `juazeiro::${normalizeStr(bairro)}`;
+    const existing = Array.isArray(streetCache[key]) ? streetCache[key] : [];
+    const mergedMap = new Map();
+    [...streets, ...existing].forEach(st => {
+      const clean = String(st || '').trim();
+      if (!clean || clean.length < 3) return;
+      const nk = normalizeStr(clean);
+      if (!mergedMap.has(nk)) mergedMap.set(nk, clean);
+    });
+    streetCache[key] = Array.from(mergedMap.values()).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  });
 }
 
 function loadCatalog() {
   try {
-    streetCache = JSON.parse(localStorage.getItem('rota_real_streets_v4') || '{}');
+    // Limpa caches antigos que podiam conter ruas erradas capturadas pela busca difusa do Photon
+    localStorage.removeItem('rota_real_streets_v4');
+    localStorage.removeItem('rota_real_streets_v5');
+    streetCache = JSON.parse(localStorage.getItem('rota_real_streets_v6') || '{}');
   } catch (e) {
     streetCache = {};
   }
@@ -951,11 +1642,12 @@ function loadCatalog() {
   } catch (e) {
     customNeighborhoods = [];
   }
+  seedOfficialJuazeiroStreets();
 }
 
 function saveCatalog() {
   try {
-    localStorage.setItem('rota_real_streets_v4', JSON.stringify(streetCache));
+    localStorage.setItem('rota_real_streets_v6', JSON.stringify(streetCache));
     localStorage.setItem('rota_custom_neighborhoods_v2', JSON.stringify(customNeighborhoods));
   } catch (e) {}
 }
@@ -1167,6 +1859,14 @@ function fetchWithTimeout(url, options = {}, timeoutMs = 8000) {
   return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(id));
 }
 
+function isSameNeighborhoodName(candidateSuburb, targetBairro) {
+  const a = normalizeStr(candidateSuburb);
+  const b = normalizeStr(targetBairro);
+  const bCanon = normalizeStr(resolveCanonicalNeighborhoodName(targetBairro));
+  if (!a || !b) return false;
+  return a === b || a === bCanon || a.includes(b) || b.includes(a) || a.includes(bCanon) || bCanon.includes(a);
+}
+
 async function resolveNeighborhoodLocation(bairro, cidade) {
   const cacheKey = getCacheKey(bairro);
   if (neighborhoodCenterCache[cacheKey]) {
@@ -1174,17 +1874,23 @@ async function resolveNeighborhoodLocation(bairro, cidade) {
   }
 
   const bias = getBiasCoords();
-  const q1 = `${bairro}, ${cidade}, Brasil`;
+  const isJuazeiro = normalizeStr(cidade) === 'juazeiro';
+  const maxAllowedKm = isJuazeiro ? 18 : 30;
+  const viewboxParam = isJuazeiro
+    ? '&viewbox=-40.62,-9.35,-40.38,-9.55&bounded=1'
+    : `&viewbox=${bias.lon - 0.25},${bias.lat + 0.25},${bias.lon + 0.25},${bias.lat - 0.25}&bounded=1`;
+
+  const q1 = `${bairro}, ${cidade}, Bahia, Brasil`;
   const q2 = `${bairro}, ${cidade}`;
 
   const [nomRes, phoRes] = await Promise.allSettled([
     fetchWithTimeout(
-      `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=br&limit=5&q=${encodeURIComponent(q1)}`,
+      `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=br&limit=8${viewboxParam}&q=${encodeURIComponent(q1)}`,
       { headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' } },
       6500
     ).then(r => r.ok ? r.json() : []),
     fetchWithTimeout(
-      `https://photon.komoot.io/api/?q=${encodeURIComponent(q2)}&lat=${bias.lat}&lon=${bias.lon}&limit=12`,
+      `https://photon.komoot.io/api/?q=${encodeURIComponent(q2)}&lat=${bias.lat}&lon=${bias.lon}&limit=10`,
       {},
       6500
     ).then(r => r.ok ? r.json() : { features: [] })
@@ -1195,38 +1901,43 @@ async function resolveNeighborhoodLocation(bairro, cidade) {
   let bbox = null;
 
   if (nomRes.status === 'fulfilled' && Array.isArray(nomRes.value) && nomRes.value.length) {
-    const items = nomRes.value;
-    const hit = items.find(x => /suburb|neighbourhood|quarter|village|hamlet|residential/.test(x.addresstype || x.type || ''))
-             || items[0];
+    const validItems = nomRes.value.filter(x => {
+      const iLat = parseFloat(x.lat);
+      const iLon = parseFloat(x.lon);
+      if (Number.isNaN(iLat) || Number.isNaN(iLon)) return false;
+      if (haversineKm(bias.lat, bias.lon, iLat, iLon) > maxAllowedKm) return false;
+      const addrCity = normalizeStr(x.address?.city || x.address?.town || x.address?.municipality || '');
+      if (isJuazeiro && addrCity && addrCity !== 'juazeiro') return false;
+      return true;
+    });
+
+    const hit = validItems.find(x => /suburb|neighbourhood|quarter|residential/.test(x.addresstype || x.type || ''))
+             || validItems[0];
     if (hit) {
       lat = parseFloat(hit.lat);
       lon = parseFloat(hit.lon);
       if (Array.isArray(hit.boundingbox) && hit.boundingbox.length === 4) {
         const [s, n, w, e] = hit.boundingbox.map(Number);
-        // Usa bbox apenas se representar uma área real (> ~450m) e menor que a cidade inteira (< ~9km)
-        if ((n - s) > 0.004 && (e - w) > 0.004 && (n - s) < 0.08 && (e - w) < 0.08) {
+        if ((n - s) > 0.003 && (e - w) > 0.003 && (n - s) < 0.035 && (e - w) < 0.035) {
           bbox = [s, n, w, e];
         }
       }
     }
   }
 
-  if (phoRes.status === 'fulfilled' && Array.isArray(phoRes.value?.features)) {
-    const features = phoRes.value.features;
-    for (const f of features) {
+  if (lat === null && phoRes.status === 'fulfilled' && Array.isArray(phoRes.value?.features)) {
+    for (const f of phoRes.value.features) {
       const [fLon, fLat] = f.geometry?.coordinates || [];
       if (typeof fLat !== 'number' || typeof fLon !== 'number') continue;
-      if (haversineKm(bias.lat, bias.lon, fLat, fLon) > 45) continue;
-
+      if (haversineKm(bias.lat, bias.lon, fLat, fLon) > maxAllowedKm) continue;
       const p = f.properties || {};
-      if (lat === null) {
+      const fCity = normalizeStr(p.city || p.town || p.county || '');
+      if (isJuazeiro && fCity && fCity !== 'juazeiro') continue;
+      const fSuburb = p.district || p.suburb || p.locality || p.name || '';
+      if (isSameNeighborhoodName(fSuburb, bairro)) {
         lat = fLat;
         lon = fLon;
-      }
-      // Aproveita nomes de ruas reais que o Photon já retornou para esse bairro
-      const streetName = p.street || (p.osm_key === 'highway' ? p.name : null);
-      if (streetName) {
-        addStreetToCache(bairro, streetName);
+        break;
       }
     }
   }
@@ -1240,13 +1951,28 @@ async function resolveNeighborhoodLocation(bairro, cidade) {
 
 async function fetchRealStreetsForNeighborhood(bairro) {
   const statusEl = $('streetFetchStatus');
+  const cacheKey = getCacheKey(bairro);
+  const cidade = $('clientCity').value.trim() || getActiveCityName() || 'Juazeiro';
+  const isJuazeiro = normalizeStr(cidade) === 'juazeiro';
+
+  // Garante que os logradouros oficiais pré-carregados estejam disponíveis imediatamente
+  if (isJuazeiro) {
+    seedOfficialJuazeiroStreets();
+  }
+
+  const initialCount = (streetCache[cacheKey] || []).length;
+  renderStreetList($('streetSearch').value);
+
+  // Se o bairro já possui sua lista oficial completa carregada (>= 6 ruas), não bloqueia a tela nem polui com bairros vizinhos
+  if (initialCount >= 6) {
+    statusEl.classList.add('hidden');
+    return;
+  }
+
   statusEl.classList.remove('hidden');
   renderStreetList($('streetSearch').value);
 
-  const cacheKey = getCacheKey(bairro);
-  const cidade = $('clientCity').value.trim() || getActiveCityName() || 'Juazeiro';
-  const highways = '"highway"~"^(residential|tertiary|secondary|primary|trunk|unclassified|living_street|pedestrian|service)$"';
-
+  const highways = '"highway"~"^(residential|tertiary|secondary|primary|trunk|unclassified|living_street|pedestrian)$"';
   const endpoints = [
     'https://overpass-api.de/api/interpreter',
     'https://overpass.kumi.systems/api/interpreter',
@@ -1263,11 +1989,11 @@ async function fetchRealStreetsForNeighborhood(bairro) {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: 'data=' + encodeURIComponent(query)
           },
-          8000
+          7500
         );
         if (!res.ok) continue;
         const json = await res.json();
-        if (Array.isArray(json.elements) && json.elements.length) {
+        if (Array.isArray(json.elements)) {
           return json.elements;
         }
       } catch (err) {}
@@ -1276,93 +2002,47 @@ async function fetchRealStreetsForNeighborhood(bairro) {
   }
 
   try {
-    const loc = await resolveNeighborhoodLocation(bairro, cidade);
-    if (activeModalNeighborhood === bairro && !$('streetModal').classList.contains('hidden')) {
-      renderStreetList($('streetSearch').value);
-    }
-
-    let elements = null;
-
-    if (loc) {
-      // 1) Se tiver polígono real do bairro, busca dentro dele; caso contrário usa raio de 950m ao redor do centro do bairro
-      const spatialFilter = loc.bbox
-        ? `(${loc.bbox[0]},${loc.bbox[2]},${loc.bbox[1]},${loc.bbox[3]})`
-        : `(around:950,${loc.lat},${loc.lon})`;
-
-      elements = await runOverpass(`
-        [out:json][timeout:10];
-        way${spatialFilter}[${highways}]["name"];
-        out tags;
-      `);
-
-      // Se o polígono retornou vazio, tenta pelo raio ao redor do centro do bairro
-      if ((!elements || !elements.length) && loc.bbox) {
-        elements = await runOverpass(`
-          [out:json][timeout:10];
-          way(around:950,${loc.lat},${loc.lon})[${highways}]["name"];
-          out tags;
-        `);
-      }
-    }
-
-    // Ruas também vêm dos endereços mapeados nos prédios do bairro (addr:street)
-    if (loc) {
-      const spatialAddr = loc.bbox
-        ? `(${loc.bbox[0]},${loc.bbox[2]},${loc.bbox[1]},${loc.bbox[3]})`
-        : `(around:950,${loc.lat},${loc.lon})`;
-      const addrEls = await runOverpass(`
-        [out:json][timeout:10];
-        nwr${spatialAddr}["addr:street"];
-        out tags;
-      `);
-      if (addrEls && addrEls.length) {
-        const extras = addrEls.map(e => ({ tags: { name: e.tags['addr:street'] } }));
-        elements = [...(elements || []), ...extras];
-      }
-    }
-
-    // 2) Fallback caso o bairro não tenha sido localizado no Nominatim/Photon
-    if (!elements || !elements.length) {
-      const bias = loc || getBiasCoords();
-      const queries = [
-        `Rua ${bairro} ${cidade}`,
-        `Avenida ${bairro} ${cidade}`
-      ];
-      for (const q of queries) {
+    // 1) Consulta ViaCEP para buscar ruas oficiais do bairro nos Correios
+    const viaCepPrefixes = ['Rua', 'Avenida', 'Travessa', 'Praca', 'Caminho'];
+    const uf = 'BA';
+    await Promise.allSettled(
+      viaCepPrefixes.map(async prefix => {
         try {
-          const res = await fetchWithTimeout(
-            `https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&lat=${bias.lat}&lon=${bias.lon}&limit=15`,
-            {},
-            5000
-          );
-          if (res.ok) {
-            const data = await res.json();
-            for (const f of (data.features || [])) {
-              const p = f.properties || {};
-              const st = p.street || (p.osm_key === 'highway' ? p.name : null);
-              if (st) addStreetToCache(bairro, st);
+          const url = `https://viacep.com.br/ws/${uf}/${encodeURIComponent(cidade)}/${encodeURIComponent(prefix)}/json/`;
+          const res = await fetchWithTimeout(url, {}, 5000);
+          if (!res.ok) return;
+          const items = await res.json();
+          if (!Array.isArray(items)) return;
+          for (const item of items) {
+            if (item.logradouro && item.bairro && isSameNeighborhoodName(item.bairro, bairro)) {
+              addStreetToCache(bairro, item.logradouro);
             }
           }
         } catch (e) {}
-      }
-    } else {
-      for (const el of elements) {
-        if (el.tags?.name) {
-          addStreetToCache(bairro, el.tags.name);
-        }
-      }
-    }
+      })
+    );
 
-    // Se encontrou poucas ruas, tenta de novo com um raio maior (1800m), que costuma
-    // pegar travessas e ruas vizinhas que ficaram fora do polígono/raio original
-    if ((streetCache[cacheKey] || []).length < 5 && loc) {
-      const wider = await runOverpass(`
-        [out:json][timeout:12];
-        way(around:1800,${loc.lat},${loc.lon})[${highways}]["name"];
+    // 2) Consulta Overpass estritamente na área do bairro localizado
+    const loc = await resolveNeighborhoodLocation(bairro, cidade);
+    if (loc) {
+      const spatialFilter = loc.bbox
+        ? `(${loc.bbox[0]},${loc.bbox[2]},${loc.bbox[1]},${loc.bbox[3]})`
+        : `(around:650,${loc.lat},${loc.lon})`;
+
+      const elements = await runOverpass(`
+        [out:json][timeout:10];
+        (
+          way${spatialFilter}[${highways}]["name"];
+          nwr${spatialFilter}["addr:street"];
+        );
         out tags;
       `);
-      for (const el of (wider || [])) {
-        if (el.tags?.name) addStreetToCache(bairro, el.tags.name);
+
+      for (const el of (elements || [])) {
+        const stName = el.tags?.['addr:street'] || el.tags?.name;
+        const elSuburb = el.tags?.['addr:suburb'] || el.tags?.['addr:neighbourhood'] || '';
+        if (elSuburb && !isSameNeighborhoodName(elSuburb, bairro)) continue;
+        if (stName) addStreetToCache(bairro, stName);
       }
     }
 
@@ -1372,9 +2052,6 @@ async function fetchRealStreetsForNeighborhood(bairro) {
   } catch (e) {
     console.error('Erro ao buscar ruas de', bairro, e);
   } finally {
-    if (!(streetCache[cacheKey] || []).length) {
-      delete streetCache[cacheKey];
-    }
     statusEl.classList.add('hidden');
     if (activeModalNeighborhood === bairro && !$('streetModal').classList.contains('hidden')) {
       renderStreetList($('streetSearch').value);
@@ -1388,8 +2065,30 @@ async function liveSearchStreetSuggestions(text) {
   if (clean.length < 3 || !bairro) return;
 
   const cidade = $('clientCity').value.trim() || getActiveCityName() || 'Juazeiro';
+  const isJuazeiro = normalizeStr(cidade) === 'juazeiro';
   const loc = neighborhoodCenterCache[getCacheKey(bairro)] || getBiasCoords();
+  let added = false;
 
+  // 1) Busca oficial na API ViaCEP filtrando pelo bairro selecionado
+  try {
+    const viaRes = await fetchWithTimeout(
+      `https://viacep.com.br/ws/BA/${encodeURIComponent(cidade)}/${encodeURIComponent(clean)}/json/`,
+      {},
+      4500
+    );
+    if (viaRes.ok) {
+      const viaData = await viaRes.json();
+      if (Array.isArray(viaData)) {
+        for (const item of viaData) {
+          if (item.logradouro && (!item.bairro || isSameNeighborhoodName(item.bairro, bairro))) {
+            if (addStreetToCache(bairro, item.logradouro)) added = true;
+          }
+        }
+      }
+    }
+  } catch (e) {}
+
+  // 2) Busca complementar no Photon verificando cidade e bairro
   try {
     const q = `${clean}, ${bairro}, ${cidade}`;
     const res = await fetchWithTimeout(
@@ -1397,27 +2096,30 @@ async function liveSearchStreetSuggestions(text) {
       {},
       4500
     );
-    if (!res.ok) return;
-    const data = await res.json();
-    let added = false;
-
-    for (const f of (data.features || [])) {
-      const [fLon, fLat] = f.geometry?.coordinates || [];
-      if (typeof fLat === 'number' && haversineKm(loc.lat, loc.lon, fLat, fLon) > 25) continue;
-      const p = f.properties || {};
-      const st = p.street || (p.osm_key === 'highway' ? p.name : null);
-      if (st && addStreetToCache(bairro, st)) {
-        added = true;
-      }
-    }
-
-    if (added) {
-      saveCatalog();
-      if (activeModalNeighborhood === bairro && !$('streetModal').classList.contains('hidden')) {
-        renderStreetList($('streetSearch').value);
+    if (res.ok) {
+      const data = await res.json();
+      for (const f of (data.features || [])) {
+        const [fLon, fLat] = f.geometry?.coordinates || [];
+        if (typeof fLat === 'number' && haversineKm(loc.lat, loc.lon, fLat, fLon) > 15) continue;
+        const p = f.properties || {};
+        const fCity = normalizeStr(p.city || p.town || '');
+        if (isJuazeiro && fCity && fCity !== 'juazeiro') continue;
+        const fDistrict = p.district || p.suburb || '';
+        if (fDistrict && !isSameNeighborhoodName(fDistrict, bairro)) continue;
+        const st = p.street || (p.osm_key === 'highway' ? p.name : null);
+        if (st && addStreetToCache(bairro, st)) {
+          added = true;
+        }
       }
     }
   } catch (e) {}
+
+  if (added) {
+    saveCatalog();
+    if (activeModalNeighborhood === bairro && !$('streetModal').classList.contains('hidden')) {
+      renderStreetList($('streetSearch').value);
+    }
+  }
 }
 
 $('openNeighborhoodModalBtn').onclick = openNeighborhoodModal;
@@ -1503,9 +2205,9 @@ mapRotor.id = 'mapRotor';
 map.getContainer().insertBefore(mapRotor, map.getContainer().firstChild);
 mapRotor.appendChild(map.getPane('mapPane'));
 let mapRotAngle = 0;
-const MAP_ROTATE_FOLLOW = true; // true = mapa gira no sentido do movimento (ainda em teste)
-let lastGpsHeadingAt = 0; // última direção vinda do movimento do GPS
-const DRAG_RESUME_MS = 6000; // tempo parado após arrastar antes de voltar a seguir
+const MAP_ROTATE_FOLLOW = true;
+let lastGpsHeadingAt = 0;
+const DRAG_RESUME_MS = 6000;
 let userDragging = false;
 let dragPauseUntil = 0;
 let dragResumeTimer = null;
@@ -1515,7 +2217,7 @@ function isFollowingNow() {
 function applyMapRotation() {
   const on = MAP_ROTATE_FOLLOW && isFollowingNow();
   const goal = on ? -currentHeading : 0;
-  const delta = ((goal - mapRotAngle) % 360 + 540) % 360 - 180; // menor caminho
+  const delta = ((goal - mapRotAngle) % 360 + 540) % 360 - 180;
   mapRotAngle += delta;
   mapRotor.style.transform = `rotate(${mapRotAngle}deg)`;
   mapRotor.style.setProperty('--unrot', `${-mapRotAngle}deg`);
@@ -1535,7 +2237,7 @@ function createGoogleStreetsLayer() {
     if (fallbackTriggered) return;
     fallbackTriggered = true;
     map.removeLayer(layer);
-    currentTileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    currentTileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
       maxZoom: 19,
       attribution: '© OpenStreetMap'
     }).addTo(map);
@@ -1819,7 +2521,6 @@ function applyUserMarkerState(lat, lon, acc, headingDeg, shouldPan = false) {
 
 function handleDeviceCompass(e) {
   if (!isMapExpanded || !userMarker) return;
-  // Enquanto o GPS informa a direção do movimento, a bússola não sobrescreve
   if (Date.now() - lastGpsHeadingAt < 5000) return;
   let compassHeading = null;
   if (typeof e.webkitCompassHeading === 'number') {
@@ -1869,8 +2570,6 @@ map.on('dragend', () => {
     }
   }, DRAG_RESUME_MS + 50);
 });
-
-// Toque no mapa não move mais a seta: ela fica na sua posição real.
 
 $('recenterUserBtn').onclick = () => {
   autoFollowUser = true;
@@ -2013,7 +2712,6 @@ function startLiveLocationTracking() {
   autoFollowUser = true;
   updateAutoFollowButtonUI();
 
-  // Sem posição inicial falsa: a seta só aparece com a posição real do GPS
   lastUserCoords = null;
   lastHeadingCoords = null;
 
@@ -2198,10 +2896,12 @@ function updateStats() {
 }
 
 function save() {
-  localStorage.setItem('rota_deliveries', JSON.stringify(deliveries));
-  localStorage.setItem('rota_store_address', $('storeAddress').value);
-  localStorage.setItem('rota_store_coords', store ? JSON.stringify(store) : '');
-  localStorage.setItem('rota_vehicle', $('vehicle').value);
+  try {
+    localStorage.setItem('rota_deliveries', JSON.stringify(deliveries));
+    localStorage.setItem('rota_store_address', $('storeAddress').value);
+    localStorage.setItem('rota_store_coords', store ? JSON.stringify(store) : '');
+    localStorage.setItem('rota_vehicle', $('vehicle').value);
+  } catch (e) {}
 }
 
 async function load() {
@@ -2213,7 +2913,9 @@ async function load() {
     deliveries = [];
   }
 
-  $('storeAddress').value = localStorage.getItem('rota_store_address') || '';
+  try {
+    $('storeAddress').value = localStorage.getItem('rota_store_address') || '';
+  } catch (e) {}
 
   try {
     const savedStore = localStorage.getItem('rota_store_coords');
@@ -2230,7 +2932,11 @@ async function load() {
     store = null;
   }
 
-  setVehicleUI(localStorage.getItem('rota_vehicle') || 'motorcycle');
+  let savedVeh = 'motorcycle';
+  try {
+    savedVeh = localStorage.getItem('rota_vehicle') || 'motorcycle';
+  } catch (e) {}
+  setVehicleUI(savedVeh);
   renderDeliveries();
   updateStats();
 
@@ -2622,7 +3328,22 @@ window.removeDelivery = async id => {
 
 $('clearAll').onclick = () => {
   if (!deliveries.length) return;
-  if (!confirm('Apagar todos os pedidos cadastrados?')) return;
+  const btnSpan = $('clearAll').querySelector('span');
+  if (!clearConfirmPending) {
+    clearConfirmPending = true;
+    if (btnSpan) btnSpan.textContent = 'Confirmar?';
+    toast('Toque em Limpar novamente para apagar todos os pedidos.');
+    clearTimeout(clearConfirmTimer);
+    clearConfirmTimer = setTimeout(() => {
+      clearConfirmPending = false;
+      if (btnSpan) btnSpan.textContent = 'Limpar';
+    }, 3500);
+    return;
+  }
+  clearConfirmPending = false;
+  clearTimeout(clearConfirmTimer);
+  if (btnSpan) btnSpan.textContent = 'Limpar';
+
   deliveries = [];
   selectedStopId = null;
   holdPromptCardId = null;
@@ -2746,7 +3467,7 @@ async function queryNominatim(query, bias, maxKm = null) {
   try {
     let url = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=br&limit=5&q=' + encodeURIComponent(query);
     if (bias && maxKm) {
-      const delta = 0.75;
+      const delta = 0.35;
       url += `&viewbox=${bias.lon - delta},${bias.lat + delta},${bias.lon + delta},${bias.lat - delta}&bounded=1`;
     }
     const res = await fetch(url, {
@@ -2783,14 +3504,14 @@ async function geocodeCandidates(candidates, labelForError, maxKm = null) {
   const unique = [...new Set(candidates.map(c => c.trim()).filter(Boolean))];
 
   for (const q of unique) {
-    const photonRes = await queryPhoton(q, bias, maxKm);
-    if (photonRes) return photonRes;
+    const nomRes = await queryNominatim(q, bias, maxKm);
+    if (nomRes) return nomRes;
+    await sleep(180);
   }
 
   for (const q of unique) {
-    const nomRes = await queryNominatim(q, bias, maxKm);
-    if (nomRes) return nomRes;
-    await sleep(250);
+    const photonRes = await queryPhoton(q, bias, maxKm);
+    if (photonRes) return photonRes;
   }
 
   throw new Error('Endereço não encontrado na região: ' + labelForError);
@@ -2805,12 +3526,14 @@ async function geocodeRawAddress(address) {
 
 async function geocodeDelivery(d) {
   const cityHint = d.city || getStoreCityHint() || 'Juazeiro, BA';
-  const maxKm = d.city ? 400 : 80;
+  const maxKm = d.city ? 400 : 35;
+  const cleanStreet = String(d.street || '').replace(/\s*\([^)]*\)\s*/g, '').trim();
 
   const candidates = [
-    [d.street, d.number, d.neighborhood, cityHint, 'Brasil'].filter(Boolean).join(', '),
+    [cleanStreet, d.number, d.neighborhood, cityHint, 'Brasil'].filter(Boolean).join(', '),
+    [cleanStreet, d.neighborhood, cityHint, 'Brasil'].filter(Boolean).join(', '),
     [d.street, d.neighborhood, cityHint, 'Brasil'].filter(Boolean).join(', '),
-    [d.street, cityHint, 'Brasil'].filter(Boolean).join(', '),
+    [cleanStreet, cityHint, 'Brasil'].filter(Boolean).join(', '),
     [d.neighborhood, cityHint, 'Brasil'].filter(Boolean).join(', ')
   ];
   return geocodeCandidates(candidates, `${d.street}, ${d.neighborhood}`, maxKm);
@@ -3252,3 +3975,4 @@ load();
 </script>
 </body>
 </html>
+```
