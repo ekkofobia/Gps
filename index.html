@@ -1,0 +1,2856 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ROTA // Despacho & Logística</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace'],
+        },
+        colors: {
+          obsidian: '#09090b',
+          surface: '#111114',
+          elevated: '#18181d',
+          borderline: '#23232a',
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  :root {
+    --bg: #09090b;
+    --surface: #111114;
+    --elevated: #18181d;
+    --border: #23232a;
+    --accent: #3b82f6;
+    --emerald: #10b981;
+    --amber: #f59e0b;
+  }
+
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: #f4f4f5;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #27272a;
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3f3f46;
+  }
+
+  /* Leaflet Dark Overrides */
+  .leaflet-container {
+    background: #121316 !important;
+    font-family: 'Inter', sans-serif !important;
+  }
+
+  #map.map-dark-filter .leaflet-tile-pane {
+    filter: invert(100%) hue-rotate(180deg) brightness(94%) contrast(92%) saturate(85%);
+  }
+
+  .leaflet-control-attribution {
+    background: rgba(9, 9, 11, 0.78) !important;
+    color: #71717a !important;
+    font-size: 9px !important;
+    backdrop-filter: blur(4px);
+  }
+  .leaflet-control-attribution a {
+    color: #a1a1aa !important;
+  }
+  .leaflet-control-zoom {
+    border: 1px solid #27272a !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
+    border-radius: 10px !important;
+    overflow: hidden;
+  }
+  .leaflet-control-zoom a {
+    background: #111114 !important;
+    color: #e4e4e7 !important;
+    border-bottom: 1px solid #27272a !important;
+    width: 32px !important;
+    height: 32px !important;
+    line-height: 30px !important;
+  }
+  .leaflet-control-zoom a:hover {
+    background: #1f1f26 !important;
+    color: #fff !important;
+  }
+  .leaflet-popup-content-wrapper,
+  .leaflet-popup-tip {
+    background: #141418 !important;
+    color: #f4f4f5 !important;
+    border: 1px solid #27272a;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.65) !important;
+    border-radius: 12px !important;
+  }
+  .leaflet-popup-content {
+    margin: 10px 14px !important;
+    font-size: 12px !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Custom Map Pins */
+  .pin-wrap {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+  }
+  .pin-badge {
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 800;
+    color: #fff;
+    border: 2px solid #09090b;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.65);
+    transition: transform 0.2s ease;
+  }
+  .pin-store {
+    background: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.28), 0 6px 16px rgba(0,0,0,0.65);
+  }
+  .pin-stop {
+    background: #2563eb;
+  }
+  .pin-active {
+    background: #f59e0b;
+    color: #09090b;
+    transform: scale(1.15);
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.38), 0 6px 18px rgba(0,0,0,0.75);
+  }
+  .pin-done {
+    background: #27272a;
+    color: #71717a;
+    border-color: #3f3f46;
+  }
+
+  /* Seta de Localização Real do Usuário (Tela Cheia) */
+  .user-arrow-wrap {
+    position: relative;
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+  .user-arrow-pulse {
+    position: absolute;
+    inset: 2px;
+    border-radius: 9999px;
+    background: rgba(56, 189, 248, 0.38);
+    animation: radarPulse 1.8s ease-out infinite;
+  }
+  .user-arrow-core {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    border-radius: 9999px;
+    background: #09090b;
+    border: 2.5px solid #38bdf8;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.9), 0 0 16px rgba(56, 189, 248, 0.7);
+    display: grid;
+    place-items: center;
+  }
+  .user-arrow-rotator {
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    transition: transform 0.2s linear;
+    transform-origin: center center;
+  }
+
+  @keyframes radarPulse {
+    0% { transform: scale(0.75); opacity: 0.95; }
+    100% { transform: scale(1.85); opacity: 0; }
+  }
+
+  /* Fullscreen Map Explicit Layout (Mobile-Safe) */
+  .map-fullscreen-active {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    z-index: 9000 !important;
+    border-radius: 0 !important;
+    border: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background: #09090b !important;
+  }
+
+  .map-fullscreen-active #mapWrapper {
+    flex: 1 1 auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Card touch/hold behavior */
+  .queue-card {
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: pan-y;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+  }
+  .animate-pulse-slow {
+    animation: pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .modal-animate {
+    animation: modalIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @media print {
+    body * { visibility: hidden !important; }
+    #printFallbackArea, #printFallbackArea * { visibility: visible !important; }
+    #printFallbackArea {
+      position: fixed;
+      inset: 0;
+      background: #fff !important;
+      color: #000 !important;
+      padding: 16px;
+      z-index: 99999;
+      font-family: 'Courier New', monospace;
+    }
+  }
+</style>
+</head>
+
+<body class="min-h-screen antialiased selection:bg-blue-500/30 selection:text-blue-200">
+
+  <!-- TOP BAR -->
+  <header class="sticky top-0 z-40 h-14 bg-obsidian/85 backdrop-blur-md border-b border-borderline px-4 lg:px-6 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-500/20">
+        <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.418 0-8-4.03-8-9a8 8 0 1116 0c0 4.97-3.582 9-8 9zm0-11a2 2 0 100 4 2 2 0 000-4z"/>
+        </svg>
+      </div>
+      <div class="flex items-baseline gap-2">
+        <span class="font-extrabold tracking-tight text-base text-white">ROTA<span class="text-blue-500">.</span></span>
+        <span class="hidden sm:inline-block text-[11px] font-mono text-zinc-500 uppercase tracking-widest">Dispatch OS</span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2.5">
+      <div id="today" class="hidden md:flex items-center gap-1.5 text-[11px] font-mono text-zinc-400 bg-surface border border-borderline px-2.5 py-1 rounded-md"></div>
+      <div class="flex items-center gap-1.5 text-[11px] font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse-slow"></span>
+        <span>Online</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-[1540px] mx-auto p-3.5 sm:p-5 lg:p-6 space-y-4">
+
+    <!-- KPI TELEMETRY BAR -->
+    <section class="grid grid-cols-3 gap-2.5 sm:gap-3.5">
+      <div class="bg-surface border border-borderline rounded-xl p-3.5 sm:p-4 flex flex-col justify-between">
+        <div class="flex items-center justify-between text-zinc-500 text-[11px] font-medium uppercase tracking-wider">
+          <span>Pedidos</span>
+          <svg class="w-3.5 h-3.5 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+          </svg>
+        </div>
+        <div class="mt-2 flex items-baseline justify-between">
+          <span id="totalStat" class="font-mono text-2xl sm:text-3xl font-extrabold text-white tabular-nums">0</span>
+          <span class="text-[10px] text-zinc-500 hidden sm:inline">na rota</span>
+        </div>
+      </div>
+
+      <div class="bg-surface border border-borderline rounded-xl p-3.5 sm:p-4 flex flex-col justify-between">
+        <div class="flex items-center justify-between text-zinc-500 text-[11px] font-medium uppercase tracking-wider">
+          <span>Entregues</span>
+          <svg class="w-3.5 h-3.5 text-emerald-500/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+        <div class="mt-2 flex items-baseline justify-between">
+          <span id="doneStat" class="font-mono text-2xl sm:text-3xl font-extrabold text-emerald-400 tabular-nums">0</span>
+          <span id="progressPct" class="font-mono text-[10px] text-emerald-500/80">0%</span>
+        </div>
+      </div>
+
+      <div class="bg-surface border border-borderline rounded-xl p-3.5 sm:p-4 flex flex-col justify-between">
+        <div class="flex items-center justify-between text-zinc-500 text-[11px] font-medium uppercase tracking-wider">
+          <span>Restantes</span>
+          <svg class="w-3.5 h-3.5 text-amber-500/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div class="mt-2 flex items-baseline justify-between">
+          <span id="pendingStat" class="font-mono text-2xl sm:text-3xl font-extrabold text-amber-400 tabular-nums">0</span>
+          <span class="text-[10px] text-zinc-500 hidden sm:inline">pendentes</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORKSPACE GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-[400px_minmax(0,1fr)] gap-4 items-start">
+
+      <!-- LEFT CONTROL PANEL -->
+      <aside class="bg-surface border border-borderline rounded-2xl overflow-hidden">
+        <div class="px-4 py-3.5 border-b border-borderline flex items-center justify-between bg-elevated/40">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-zinc-200">Painel de Operação</h2>
+          </div>
+          <span id="countBadge" class="font-mono text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">0 pedidos</span>
+        </div>
+
+        <div class="p-4 space-y-5">
+
+          <!-- 01. PONTO DE PARTIDA (LOJA + BOTÃO GPS AO LADO) -->
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-500">01 // Base / Loja</span>
+              <span id="storeStatus" class="text-[10px] font-mono text-zinc-600">Não fixada</span>
+            </div>
+            <div class="flex gap-2">
+              <input id="storeAddress" type="text" placeholder="Rua, nº, bairro, Juazeiro - BA"
+                class="flex-1 min-w-0 bg-elevated border border-borderline rounded-xl px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 transition">
+              <button id="locateStore" type="button" title="Usar GPS atual para loja e calcular rota"
+                class="px-3 py-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/35 text-xs font-bold flex items-center gap-1.5 shrink-0 transition active:scale-95">
+                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06z"/>
+                </svg>
+                <span>Usar GPS</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="h-px bg-borderline"></div>
+
+          <!-- 02. NOVO PEDIDO -->
+          <form id="deliveryForm" class="space-y-2.5" onsubmit="return false;">
+            <span class="block text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-500">02 // Novo Pedido</span>
+
+            <input id="clientName" type="text" placeholder="Nome do cliente *"
+              class="w-full bg-elevated border border-borderline rounded-xl px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition">
+
+            <!-- BAIRRO & RUA VIA MODAL ENCADEADO -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button type="button" id="openNeighborhoodModalBtn"
+                class="w-full bg-elevated hover:bg-zinc-800/80 border border-borderline hover:border-blue-500/50 rounded-xl px-3 py-2.5 text-left flex items-center justify-between gap-2 transition group">
+                <div class="min-w-0">
+                  <span class="block text-[9px] font-mono uppercase tracking-wider text-zinc-500">Bairro *</span>
+                  <span id="neighborhoodDisplay" class="block text-xs text-zinc-400 truncate">Selecionar...</span>
+                </div>
+                <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-blue-400 shrink-0 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+
+              <button type="button" id="openStreetModalBtn"
+                class="w-full bg-elevated hover:bg-zinc-800/80 border border-borderline hover:border-blue-500/50 rounded-xl px-3 py-2.5 text-left flex items-center justify-between gap-2 transition group">
+                <div class="min-w-0">
+                  <span class="block text-[9px] font-mono uppercase tracking-wider text-zinc-500">Rua / Av. *</span>
+                  <span id="streetDisplay" class="block text-xs text-zinc-400 truncate">Escolha o bairro</span>
+                </div>
+                <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-blue-400 shrink-0 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                </svg>
+              </button>
+            </div>
+
+            <input type="hidden" id="clientNeighborhood">
+            <input type="hidden" id="clientStreet">
+
+            <div class="grid grid-cols-[90px_1fr_100px] gap-2">
+              <input id="clientNumber" type="text" placeholder="Nº (120)"
+                class="w-full bg-elevated border border-borderline rounded-xl px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition">
+              <input id="clientComplement" type="text" placeholder="Complemento / Ref."
+                class="w-full bg-elevated border border-borderline rounded-xl px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition">
+              <input id="clientCity" type="text" placeholder="Cidade (opc.)"
+                class="w-full bg-elevated border border-borderline rounded-xl px-2.5 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition">
+            </div>
+
+            <button id="addDelivery" type="submit"
+              class="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 transition active:scale-[0.99]">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+              </svg>
+              <span>Adicionar à Rota</span>
+            </button>
+          </form>
+
+          <div class="h-px bg-borderline"></div>
+
+          <!-- 03. FILA CADASTRADA (JÁ ORDENADA PELA MELHOR ROTA) -->
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-1.5 min-w-0">
+                <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400 truncate">03 // Melhor Rota</span>
+                <span id="routeAutoBadge" class="hidden text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 shrink-0">OTIMIZADA</span>
+              </div>
+
+              <!-- IMPRIMIR AO LADO ESQUERDO DE LIMPAR -->
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button id="printQueueBtn" type="button" title="Imprimir sequência"
+                  class="px-2 py-1 rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline text-[11px] font-medium text-zinc-300 flex items-center gap-1 transition">
+                  <svg class="w-3 h-3 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                  </svg>
+                  <span>Imprimir</span>
+                </button>
+
+                <button id="clearAll" type="button" title="Limpar fila"
+                  class="px-2 py-1 rounded-lg bg-elevated hover:bg-rose-500/15 border border-borderline hover:border-rose-500/30 text-[11px] font-medium text-zinc-400 hover:text-rose-400 flex items-center gap-1 transition">
+                  <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                  <span>Limpar</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-[10px] text-zinc-500 px-0.5">
+              <span>Toque no card p/ focar rota</span>
+              <span>Segure p/ concluir</span>
+            </div>
+
+            <div id="loading" class="hidden items-center justify-center gap-2 py-2 px-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-300 text-[11px] font-medium">
+              <svg class="w-3.5 h-3.5 animate-spin text-blue-400 shrink-0" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+              </svg>
+              <span id="loadingText">Calculando melhor sequência...</span>
+            </div>
+
+            <div id="deliveryList" class="space-y-2 max-h-[340px] overflow-y-auto pr-0.5">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div class="h-px bg-borderline"></div>
+
+          <!-- 04. VEÍCULO & RECÁLCULO -->
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-500">04 // Modal</span>
+              <div class="grid grid-cols-2 bg-elevated p-1 rounded-lg border border-borderline gap-1" id="vehicleToggle">
+                <button type="button" data-val="motorcycle"
+                  class="veh-btn px-2.5 py-1 rounded-md text-[11px] font-semibold transition">
+                  Moto
+                </button>
+                <button type="button" data-val="car"
+                  class="veh-btn px-2.5 py-1 rounded-md text-[11px] font-semibold transition">
+                  Carro
+                </button>
+              </div>
+              <input type="hidden" id="vehicle" value="motorcycle">
+            </div>
+
+            <button id="calculate" type="button" title="Recalcular melhor rota"
+              class="px-3 py-2 rounded-xl bg-elevated hover:bg-zinc-800 border border-borderline hover:border-blue-500/40 text-blue-400 text-[11px] font-bold flex items-center gap-1.5 transition active:scale-95">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+              <span>Recalcular</span>
+            </button>
+          </div>
+
+        </div>
+      </aside>
+
+      <!-- RIGHT STAGE: MAP + TELEMETRY -->
+      <div class="space-y-4 min-w-0">
+
+        <!-- MAP CARD (SUPORTA EXPANDIR FULL TELA E MINIMIZAR) -->
+        <section id="mapSection" class="bg-surface border border-borderline rounded-2xl overflow-hidden transition-all">
+          <div class="px-3.5 sm:px-4 py-2.5 sm:py-3 border-b border-borderline flex flex-wrap items-center justify-between gap-2 bg-elevated/90 backdrop-blur-md">
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-zinc-200">Google Maps</span>
+              <div class="hidden sm:flex items-center gap-3 text-[11px] text-zinc-400 border-l border-borderline pl-3">
+                <span class="flex items-center gap-1.5"><i class="w-2 h-2 rounded-full bg-emerald-500"></i>Loja</span>
+                <span class="flex items-center gap-1.5"><i class="w-2 h-2 rounded-full bg-amber-500"></i>Rota Ativa</span>
+                <span class="flex items-center gap-1.5"><i class="w-2 h-2 rounded-full bg-blue-500"></i>Sequência</span>
+                <span id="liveLegendItem" class="hidden items-center gap-1.5 text-sky-400 font-medium"><i class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></i>Você</span>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <div class="inline-flex bg-elevated p-0.5 rounded-lg border border-borderline" id="mapModeGroup">
+                <button type="button" data-mode="dark" class="map-mode-btn px-2 py-1 rounded-md text-[11px] font-semibold bg-zinc-700 text-white transition">Escuro</button>
+                <button type="button" data-mode="light" class="map-mode-btn px-2 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition">Claro</button>
+                <button type="button" data-mode="satellite" class="map-mode-btn px-2 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition">Satélite</button>
+              </div>
+
+              <button id="centerStoreBtn" type="button" title="Centralizar na loja"
+                class="px-2.5 py-1.5 rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline text-[11px] font-medium text-emerald-400 transition">
+                Loja
+              </button>
+
+              <button id="fitMap" type="button"
+                class="px-2.5 py-1.5 rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline text-[11px] font-medium text-zinc-300 transition">
+                Enquadrar
+              </button>
+
+              <button id="openMaps" type="button"
+                class="px-2.5 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-[11px] font-bold text-emerald-400 flex items-center gap-1 transition">
+                <span>GPS</span>
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                </svg>
+              </button>
+
+              <!-- BOTÃO EXPANDIR / MINIMIZAR -->
+              <button id="toggleFullscreenMapBtn" type="button" title="Expandir mapa em tela cheia"
+                class="px-2.5 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-[11px] font-bold text-blue-300 flex items-center gap-1.5 transition active:scale-95">
+                <svg id="expandIcon" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+                </svg>
+                <svg id="minimizeIcon" class="w-3.5 h-3.5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25"/>
+                </svg>
+                <span id="fullscreenBtnText">Expandir</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- BANNER DO DESTINO SELECIONADO -->
+          <div id="activeFocusBar" class="hidden px-4 py-2 bg-amber-500/10 border-b border-amber-500/25 flex items-center justify-between gap-2 text-xs">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
+              <span class="text-amber-200 truncate">Destino ativo: <strong id="activeFocusName" class="text-white"></strong></span>
+            </div>
+            <span id="activeFocusLeg" class="font-mono text-[11px] font-bold text-amber-300 shrink-0"></span>
+          </div>
+
+          <!-- CONTAINER RELATIVO DO MAPA + HUD FLUTUANTE EM FULLSCREEN -->
+          <div id="mapWrapper" class="relative w-full h-[360px] sm:h-[460px] lg:h-[510px]">
+            <div id="map" class="map-dark-filter w-full h-full z-10"></div>
+
+            <!-- CONTROLES FLUTUANTES VISÍVEIS SOMENTE EM TELA CHEIA -->
+            <div id="fullscreenHud" class="hidden pointer-events-none absolute inset-x-3 bottom-4 z-[1000] flex flex-col gap-2">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="pointer-events-auto flex items-center gap-2 px-3 py-2 rounded-xl bg-obsidian/90 backdrop-blur-md border border-zinc-800 shadow-2xl">
+                  <span id="gpsSignalDot" class="w-2.5 h-2.5 rounded-full bg-sky-400 animate-pulse shrink-0"></span>
+                  <div class="leading-tight">
+                    <div id="gpsStatusLabel" class="text-[11px] font-bold text-white">Buscando sua posição...</div>
+                    <div id="gpsAccuracyLabel" class="text-[9px] font-mono text-zinc-400">Ativando GPS do aparelho</div>
+                  </div>
+                </div>
+
+                <div class="pointer-events-auto flex items-center gap-1.5 flex-wrap">
+                  <button id="recenterUserBtn" type="button"
+                    class="px-3 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-obsidian font-extrabold text-xs shadow-xl shadow-sky-500/25 flex items-center gap-1.5 transition active:scale-95">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 2L19 21l-7-4-7 4 7-19z"/>
+                    </svg>
+                    <span>Seguir seta</span>
+                  </button>
+
+                  <button id="floatingMinimizeBtn" type="button"
+                    class="px-3 py-2.5 rounded-xl bg-obsidian/95 hover:bg-zinc-800 text-white border border-zinc-700 font-bold text-xs shadow-xl flex items-center gap-1.5 transition active:scale-95">
+                    <svg class="w-4 h-4 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25"/>
+                    </svg>
+                    <span>Minimizar</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TELEMETRY FOOTER -->
+          <div id="mapTelemetryFooter" class="grid grid-cols-3 divide-x divide-borderline border-t border-borderline bg-elevated/30">
+            <div class="px-4 py-3">
+              <div class="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Distância Total</div>
+              <div id="distance" class="font-mono text-sm sm:text-base font-extrabold text-white mt-0.5 tabular-nums">—</div>
+            </div>
+            <div class="px-4 py-3">
+              <div class="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Tempo Estimado</div>
+              <div id="duration" class="font-mono text-sm sm:text-base font-extrabold text-white mt-0.5 tabular-nums">—</div>
+            </div>
+            <div class="px-4 py-3">
+              <div class="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Paradas</div>
+              <div id="stops" class="font-mono text-sm sm:text-base font-extrabold text-blue-400 mt-0.5 tabular-nums">0</div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL 01: SELECIONAR BAIRRO -->
+  <div id="neighborhoodModal" class="fixed inset-0 z-[9500] hidden items-center justify-center p-3.5 sm:p-5 bg-black/75 backdrop-blur-sm">
+    <div class="modal-animate w-full max-w-lg bg-surface border border-borderline rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+      <div class="px-4 py-3.5 border-b border-borderline bg-elevated/50 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded bg-blue-500/15 border border-blue-500/30 font-mono text-[10px] font-bold text-blue-400">ETAPA 1/2</span>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-white">Selecionar Bairro</h3>
+        </div>
+        <button type="button" onclick="closeAllModals()" class="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-3.5 border-b border-borderline bg-obsidian/40 space-y-2">
+        <div class="relative">
+          <svg class="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
+          </svg>
+          <input id="neighborhoodSearch" type="text" placeholder="Buscar ou digitar novo bairro..."
+            class="w-full bg-elevated border border-borderline rounded-xl pl-9 pr-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition">
+        </div>
+
+        <button type="button" id="useCustomNeighborhoodBtn"
+          class="hidden w-full py-2 px-3 rounded-xl bg-blue-600/15 hover:bg-blue-600/25 border border-blue-500/30 text-blue-300 text-xs font-semibold items-center justify-between transition">
+          <span id="customNeighborhoodLabel"></span>
+          <span class="font-mono text-[10px] uppercase">Avançar →</span>
+        </button>
+      </div>
+
+      <div id="neighborhoodGrid" class="p-3.5 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 02: SELECIONAR RUA REAL DO BAIRRO ESCOLHIDO -->
+  <div id="streetModal" class="fixed inset-0 z-[9500] hidden items-center justify-center p-3.5 sm:p-5 bg-black/75 backdrop-blur-sm">
+    <div class="modal-animate w-full max-w-lg bg-surface border border-borderline rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+      <div class="px-4 py-3.5 border-b border-borderline bg-elevated/50 flex items-center justify-between gap-2">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 font-mono text-[10px] font-bold text-emerald-400">ETAPA 2/2</span>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-white truncate">Selecionar Rua / Av.</h3>
+          </div>
+          <div class="mt-1 flex items-center gap-2">
+            <span class="text-[11px] text-zinc-400 truncate">Bairro: <strong id="selectedNeighborhoodBadge" class="text-zinc-200"></strong></span>
+            <button type="button" id="changeNeighborhoodBtn" class="text-[10px] font-mono text-blue-400 hover:text-blue-300 underline shrink-0">
+              Trocar bairro
+            </button>
+          </div>
+        </div>
+
+        <button type="button" onclick="closeAllModals()" class="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition shrink-0">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-3.5 border-b border-borderline bg-obsidian/40 space-y-2">
+        <div class="relative">
+          <svg class="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
+          </svg>
+          <input id="streetSearch" type="text" placeholder="Filtrar ou digitar o nome da rua..."
+            class="w-full bg-elevated border border-borderline rounded-xl pl-9 pr-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition">
+        </div>
+
+        <button type="button" id="useCustomStreetBtn"
+          class="hidden w-full py-2 px-3 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-semibold items-center justify-between transition">
+          <span id="customStreetLabel"></span>
+          <span class="font-mono text-[10px] uppercase">Confirmar ✓</span>
+        </button>
+
+        <div class="flex items-center justify-between text-[10px] font-mono text-zinc-500 px-0.5">
+          <span id="streetCountInfo">0 ruas mapeadas</span>
+          <span id="streetFetchStatus" class="text-blue-400 hidden flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping"></span>
+            Carregando ruas reais...
+          </span>
+        </div>
+      </div>
+
+      <div id="streetList" class="p-3.5 overflow-y-auto space-y-1.5">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 translate-y-24 opacity-0 pointer-events-none z-[9999] px-4 py-2.5 rounded-xl bg-zinc-900 text-white border border-zinc-700 shadow-2xl text-xs font-medium flex items-center gap-2 transition-all duration-300 max-w-[92vw]">
+    <span class="w-2 h-2 rounded-full bg-blue-500 shrink-0"></span>
+    <span id="toastMsg"></span>
+  </div>
+
+  <!-- ÁREA OCULTA PARA IMPRESSÃO DIRETA SEM POP-UP -->
+  <div id="printFallbackArea" class="hidden"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+
+const JUAZEIRO_NEIGHBORHOODS = [
+  "Alagadiço",
+  "Alto da Aliança",
+  "Alto da Maravilha",
+  "Alto do Cruzeiro",
+  "Angari",
+  "Antônio Conselheiro",
+  "Argemiro",
+  "Cajueiro",
+  "Castelo Branco",
+  "Centenário",
+  "Centro",
+  "Codevasf",
+  "Coreia",
+  "Coronel João Evangelista",
+  "Country Club",
+  "Dom José Rodrigues",
+  "Dom Thomaz",
+  "Expedito Nascimento",
+  "Gercino Coelho",
+  "Itaberaba",
+  "Jardim Flórida",
+  "Jardim Primavera",
+  "Jardim São Paulo",
+  "Jardim Vitória",
+  "João Paulo II",
+  "João XXIII",
+  "Lomanto Júnior",
+  "Malhada da Areia",
+  "Maria Goretti",
+  "Maringá",
+  "Monte Castelo",
+  "Mussambê",
+  "Novo Encontro",
+  "Palmares",
+  "Parque Residencial",
+  "Pedra do Lord",
+  "Penha",
+  "Piranga",
+  "Quidé",
+  "Santa Maria Goretti",
+  "Santo Antônio",
+  "São Geraldo",
+  "Tabuleiro",
+  "Tancredo Neves",
+  "Vila Jacaré",
+  "Vila Tiradentes"
+];
+
+let streetCache = {};
+let neighborhoodCenterCache = {};
+let customNeighborhoods = [];
+let deliveries = [];
+let store = null;
+let routeLayer = null;
+let focusLegLayer = null;
+let markers = [];
+let routeReady = false;
+let currentTileLayer = null;
+let activeModalNeighborhood = '';
+let selectedStopId = null;
+let holdPromptCardId = null;
+let isAutoCalculating = false;
+let pendingRecalc = false;
+let streetLiveSearchTimer = null;
+
+// Estado do Mapa Tela Cheia + Seta GPS Real do Usuário
+let isMapExpanded = false;
+let geoWatchId = null;
+let userMarker = null;
+let userAccuracyCircle = null;
+let lastUserCoords = null;
+let lastHeadingCoords = null;
+let lastLegRefreshTime = 0;
+let currentHeading = 0;
+let autoFollowUser = true;
+let compassListenerActive = false;
+
+function normalizeStr(s) {
+  return String(s || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
+}
+
+function getActiveCityName() {
+  const typedCity = $('clientCity')?.value.trim();
+  if (typedCity) return typedCity;
+  if (store?.city) return store.city;
+  const rawStore = $('storeAddress')?.value.trim() || '';
+  const match = rawStore.match(/,\s*([^,-]+)\s*-\s*[A-Za-z]{2}\s*$/);
+  if (match && match[1]) return match[1].trim();
+  return 'Juazeiro';
+}
+
+function getCityKey() {
+  return normalizeStr(getActiveCityName()) || 'juazeiro';
+}
+
+function getCacheKey(bairro) {
+  return `${getCityKey()}::${normalizeStr(bairro)}`;
+}
+
+function loadCatalog() {
+  try {
+    streetCache = JSON.parse(localStorage.getItem('rota_real_streets_v3') || '{}');
+  } catch (e) {
+    streetCache = {};
+  }
+  try {
+    customNeighborhoods = JSON.parse(localStorage.getItem('rota_custom_neighborhoods_v2') || '[]');
+  } catch (e) {
+    customNeighborhoods = [];
+  }
+}
+
+function saveCatalog() {
+  try {
+    localStorage.setItem('rota_real_streets_v3', JSON.stringify(streetCache));
+    localStorage.setItem('rota_custom_neighborhoods_v2', JSON.stringify(customNeighborhoods));
+  } catch (e) {}
+}
+
+function getAllNeighborhoods() {
+  const mapNames = new Map();
+  [...JUAZEIRO_NEIGHBORHOODS, ...customNeighborhoods].forEach(n => {
+    const k = normalizeStr(n);
+    if (k && !mapNames.has(k)) mapNames.set(k, n.trim());
+  });
+  return Array.from(mapNames.values()).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+}
+
+function addStreetToCache(bairro, streetName) {
+  const clean = String(streetName || '').trim();
+  if (!clean || clean.length < 3) return false;
+  if (/^\d+$/.test(clean)) return false;
+  const key = getCacheKey(bairro);
+  if (!streetCache[key]) streetCache[key] = [];
+  if (!streetCache[key].some(s => normalizeStr(s) === normalizeStr(clean))) {
+    streetCache[key].push(clean);
+    streetCache[key].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+    return true;
+  }
+  return false;
+}
+
+// ==========================================
+// CONTROLE DOS MODAIS (BAIRRO -> RUAS REAIS)
+// ==========================================
+function closeAllModals() {
+  $('neighborhoodModal').classList.add('hidden');
+  $('neighborhoodModal').classList.remove('flex');
+  $('streetModal').classList.add('hidden');
+  $('streetModal').classList.remove('flex');
+}
+
+function openNeighborhoodModal() {
+  closeAllModals();
+  $('neighborhoodSearch').value = '';
+  renderNeighborhoodList('');
+  $('neighborhoodModal').classList.remove('hidden');
+  $('neighborhoodModal').classList.add('flex');
+  setTimeout(() => $('neighborhoodSearch').focus(), 40);
+}
+
+function renderNeighborhoodList(filterText) {
+  const norm = normalizeStr(filterText);
+  const allNeighborhoods = getAllNeighborhoods();
+  const filtered = allNeighborhoods.filter(b => normalizeStr(b).includes(norm));
+
+  const customBtn = $('useCustomNeighborhoodBtn');
+  const exactMatch = allNeighborhoods.some(b => normalizeStr(b) === norm);
+
+  if (filterText.trim() && !exactMatch) {
+    customBtn.classList.remove('hidden');
+    customBtn.classList.add('flex');
+    $('customNeighborhoodLabel').textContent = `+ Usar "${filterText.trim()}"`;
+    customBtn.onclick = () => selectNeighborhood(filterText.trim());
+  } else {
+    customBtn.classList.add('hidden');
+    customBtn.classList.remove('flex');
+  }
+
+  const grid = $('neighborhoodGrid');
+  if (!filtered.length) {
+    grid.innerHTML = `
+      <div class="col-span-full py-6 text-center text-xs text-zinc-500">
+        Nenhum bairro encontrado na lista.<br>Clique no botão azul acima para usar <strong class="text-zinc-300">"${escapeHTML(filterText.trim())}"</strong>.
+      </div>`;
+    return;
+  }
+
+  const currentSelected = $('clientNeighborhood').value;
+  grid.innerHTML = filtered.map(b => {
+    const cachedCount = (streetCache[getCacheKey(b)] || []).length;
+    const isSel = b === currentSelected;
+    return `
+      <button type="button" onclick="selectNeighborhood('${escapeHTML(b).replace(/'/g, "\\'")}')"
+        class="p-3 rounded-xl border text-left flex items-center justify-between gap-2 transition active:scale-[0.99] ${
+          isSel
+            ? 'bg-blue-500/15 border-blue-500/50 text-white'
+            : 'bg-elevated/70 hover:bg-zinc-800 border-borderline hover:border-zinc-700 text-zinc-200'
+        }">
+        <span class="text-xs font-semibold truncate">${escapeHTML(b)}</span>
+        ${cachedCount > 0 ? `<span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-obsidian/70 text-zinc-400 shrink-0">${cachedCount} ruas</span>` : `<span class="text-[10px] font-mono text-zinc-600 shrink-0">→</span>`}
+      </button>
+    `;
+  }).join('');
+}
+
+window.selectNeighborhood = function(bairro) {
+  const cleanBairro = bairro.trim();
+  if (!cleanBairro) return;
+
+  if (!getAllNeighborhoods().some(n => normalizeStr(n) === normalizeStr(cleanBairro))) {
+    customNeighborhoods.push(cleanBairro);
+    saveCatalog();
+  }
+
+  const prevBairro = $('clientNeighborhood').value;
+  $('clientNeighborhood').value = cleanBairro;
+  $('neighborhoodDisplay').textContent = cleanBairro;
+  $('neighborhoodDisplay').className = 'block text-xs font-semibold text-white truncate';
+
+  if (prevBairro !== cleanBairro) {
+    $('clientStreet').value = '';
+    $('streetDisplay').textContent = 'Selecionar rua...';
+    $('streetDisplay').className = 'block text-xs text-blue-400 font-medium truncate';
+  }
+
+  openStreetModal(cleanBairro);
+};
+
+function openStreetModal(bairro) {
+  activeModalNeighborhood = bairro || $('clientNeighborhood').value;
+  if (!activeModalNeighborhood) {
+    openNeighborhoodModal();
+    return;
+  }
+
+  closeAllModals();
+  $('selectedNeighborhoodBadge').textContent = activeModalNeighborhood;
+  $('streetSearch').value = '';
+  renderStreetList('');
+
+  $('streetModal').classList.remove('hidden');
+  $('streetModal').classList.add('flex');
+  setTimeout(() => $('streetSearch').focus(), 40);
+
+  fetchRealStreetsForNeighborhood(activeModalNeighborhood);
+}
+
+function renderStreetList(filterText) {
+  const norm = normalizeStr(filterText);
+  const streets = streetCache[getCacheKey(activeModalNeighborhood)] || [];
+  const filtered = streets.filter(r => normalizeStr(r).includes(norm));
+
+  $('streetCountInfo').textContent = `${streets.length} ${streets.length === 1 ? 'rua encontrada' : 'ruas encontradas'}`;
+
+  const customBtn = $('useCustomStreetBtn');
+  const exactMatch = streets.some(r => normalizeStr(r) === norm);
+
+  if (filterText.trim() && !exactMatch) {
+    customBtn.classList.remove('hidden');
+    customBtn.classList.add('flex');
+    $('customStreetLabel').textContent = `+ Confirmar "${filterText.trim()}"`;
+    customBtn.onclick = () => selectStreet(filterText.trim());
+  } else {
+    customBtn.classList.add('hidden');
+    customBtn.classList.remove('flex');
+  }
+
+  const list = $('streetList');
+  if (!filtered.length) {
+    const isFetching = !$('streetFetchStatus').classList.contains('hidden');
+    list.innerHTML = `
+      <div class="py-7 px-3 text-center text-xs text-zinc-500">
+        ${isFetching
+          ? 'Buscando as ruas reais deste bairro no mapa...'
+          : filterText.trim()
+            ? `Nenhuma rua filtrada. Clique em <strong class="text-emerald-400">Confirmar "${escapeHTML(filterText.trim())}"</strong> acima para usar.`
+            : 'Nenhuma rua listada ainda. Digite o nome da rua acima para buscar ou confirmar.'}
+      </div>`;
+    return;
+  }
+
+  const currentStreet = $('clientStreet').value;
+  list.innerHTML = filtered.map(rua => {
+    const isSel = rua === currentStreet;
+    return `
+      <button type="button" onclick="selectStreet('${escapeHTML(rua).replace(/'/g, "\\'")}')"
+        class="w-full p-3 rounded-xl border text-left flex items-center justify-between gap-2.5 transition active:scale-[0.99] ${
+          isSel
+            ? 'bg-emerald-500/15 border-emerald-500/50 text-white'
+            : 'bg-elevated/70 hover:bg-zinc-800 border-borderline hover:border-zinc-700 text-zinc-200'
+        }">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <svg class="w-3.5 h-3.5 text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+          </svg>
+          <span class="text-xs font-medium truncate">${escapeHTML(rua)}</span>
+        </div>
+        <span class="text-[10px] font-mono text-zinc-500 shrink-0">Selecionar</span>
+      </button>
+    `;
+  }).join('');
+}
+
+window.selectStreet = function(rua) {
+  const cleanRua = rua.trim();
+  if (!cleanRua) return;
+
+  if (addStreetToCache(activeModalNeighborhood, cleanRua)) {
+    saveCatalog();
+  }
+
+  $('clientStreet').value = cleanRua;
+  $('streetDisplay').textContent = cleanRua;
+  $('streetDisplay').className = 'block text-xs font-semibold text-white truncate';
+
+  closeAllModals();
+  $('clientNumber').focus();
+};
+
+function fetchWithTimeout(url, options = {}, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(id));
+}
+
+async function resolveNeighborhoodLocation(bairro, cidade) {
+  const cacheKey = getCacheKey(bairro);
+  if (neighborhoodCenterCache[cacheKey]) {
+    return neighborhoodCenterCache[cacheKey];
+  }
+
+  const bias = getBiasCoords();
+  const q1 = `${bairro}, ${cidade}, Brasil`;
+  const q2 = `${bairro}, ${cidade}`;
+
+  const [nomRes, phoRes] = await Promise.allSettled([
+    fetchWithTimeout(
+      `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=br&limit=5&q=${encodeURIComponent(q1)}`,
+      { headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' } },
+      6500
+    ).then(r => r.ok ? r.json() : []),
+    fetchWithTimeout(
+      `https://photon.komoot.io/api/?q=${encodeURIComponent(q2)}&lat=${bias.lat}&lon=${bias.lon}&limit=12`,
+      {},
+      6500
+    ).then(r => r.ok ? r.json() : { features: [] })
+  ]);
+
+  let lat = null;
+  let lon = null;
+  let bbox = null;
+
+  if (nomRes.status === 'fulfilled' && Array.isArray(nomRes.value) && nomRes.value.length) {
+    const items = nomRes.value;
+    const hit = items.find(x => /suburb|neighbourhood|quarter|village|hamlet|residential/.test(x.addresstype || x.type || ''))
+             || items[0];
+    if (hit) {
+      lat = parseFloat(hit.lat);
+      lon = parseFloat(hit.lon);
+      if (Array.isArray(hit.boundingbox) && hit.boundingbox.length === 4) {
+        const [s, n, w, e] = hit.boundingbox.map(Number);
+        if ((n - s) > 0.004 && (e - w) > 0.004 && (n - s) < 0.08 && (e - w) < 0.08) {
+          bbox = [s, n, w, e];
+        }
+      }
+    }
+  }
+
+  if (phoRes.status === 'fulfilled' && Array.isArray(phoRes.value?.features)) {
+    const features = phoRes.value.features;
+    for (const f of features) {
+      const [fLon, fLat] = f.geometry?.coordinates || [];
+      if (typeof fLat !== 'number' || typeof fLon !== 'number') continue;
+      if (haversineKm(bias.lat, bias.lon, fLat, fLon) > 45) continue;
+
+      const p = f.properties || {};
+      if (lat === null) {
+        lat = fLat;
+        lon = fLon;
+      }
+      const streetName = p.street || (p.osm_key === 'highway' ? p.name : null);
+      if (streetName) {
+        addStreetToCache(bairro, streetName);
+      }
+    }
+  }
+
+  const resolved = (lat !== null && lon !== null) ? { lat, lon, bbox } : null;
+  if (resolved) {
+    neighborhoodCenterCache[cacheKey] = resolved;
+  }
+  return resolved;
+}
+
+async function fetchRealStreetsForNeighborhood(bairro) {
+  const statusEl = $('streetFetchStatus');
+  statusEl.classList.remove('hidden');
+  renderStreetList($('streetSearch').value);
+
+  const cacheKey = getCacheKey(bairro);
+  const cidade = $('clientCity').value.trim() || getActiveCityName() || 'Juazeiro';
+  const highways = '"highway"~"^(residential|tertiary|secondary|primary|trunk|unclassified|living_street|pedestrian|service)$"';
+
+  const endpoints = [
+    'https://overpass-api.de/api/interpreter',
+    'https://overpass.kumi.systems/api/interpreter',
+    'https://overpass.private.coffee/api/interpreter'
+  ];
+
+  async function runOverpass(query) {
+    for (const ep of endpoints) {
+      try {
+        const res = await fetchWithTimeout(
+          ep,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'data=' + encodeURIComponent(query)
+          },
+          8000
+        );
+        if (!res.ok) continue;
+        const json = await res.json();
+        if (Array.isArray(json.elements) && json.elements.length) {
+          return json.elements;
+        }
+      } catch (err) {}
+    }
+    return null;
+  }
+
+  try {
+    const loc = await resolveNeighborhoodLocation(bairro, cidade);
+    if (activeModalNeighborhood === bairro && !$('streetModal').classList.contains('hidden')) {
+      renderStreetList($('streetSearch').value);
+    }
+
+    let elements = null;
+
+    if (loc) {
+      const spatialFilter = loc.bbox
+        ? `(${loc.bbox[0]},${loc.bbox[2]},${loc.bbox[1]},${loc.bbox[3]})`
+        : `(around:950,${loc.lat},${loc.lon})`;
+
+      elements = await runOverpass(`
+        [out:json][timeout:10];
+        way${spatialFilter}[${highways}]["name"];
+        out tags;
+      `);
+
+      if ((!elements || !elements.length) && loc.bbox) {
+        elements = await runOverpass(`
+          [out:json][timeout:10];
+          way(around:950,${loc.lat},${loc.lon})[${highways}]["name"];
+          out tags;
+        `);
+      }
+    }
+
+    if (!elements || !elements.length) {
+      const bias = loc || getBiasCoords();
+      const queries = [
+        `Rua ${bairro} ${cidade}`,
+        `Avenida ${bairro} ${cidade}`
+      ];
+      for (const q of queries) {
+        try {
+          const res = await fetchWithTimeout(
+            `https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&lat=${bias.lat}&lon=${bias.lon}&limit=15`,
+            {},
+            5000
+          );
+          if (res.ok) {
+            const data = await res.json();
+            for (const f of (data.features || [])) {
+              const p = f.properties || {};
+              const st = p.street || (p.osm_key === 'highway' ? p.name : null);
+              if (st) addStreetToCache(bairro, st);
+            }
+          }
+        } catch (e) {}
+      }
+    } else {
+      for (const el of elements) {
+        if (el.tags?.name) {
+          addStreetToCache(bairro, el.tags.name);
+        }
+      }
+    }
+
+    if ((streetCache[cacheKey] || []).length) {
+      saveCatalog();
+    }
+  } catch (e) {
+    console.error('Erro ao buscar ruas de', bairro, e);
+  } finally {
+    if (!(streetCache[cacheKey] || []).length) {
+      delete streetCache[cacheKey];
+    }
+    statusEl.classList.add('hidden');
+    if (activeModalNeighborhood === bairro && !$('streetModal').classList.contains('hidden')) {
+      renderStreetList($('streetSearch').value);
+    }
+  }
+}
+
+async function liveSearchStreetSuggestions(text) {
+  const clean = text.trim();
+  const bairro = activeModalNeighborhood;
+  if (clean.length < 3 || !bairro) return;
+
+  const cidade = $('clientCity').value.trim() || getActiveCityName() || 'Juazeiro';
+  const loc = neighborhoodCenterCache[getCacheKey(bairro)] || getBiasCoords();
+
+  try {
+    const q = `${clean}, ${bairro}, ${cidade}`;
+    const res = await fetchWithTimeout(
+      `https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&lat=${loc.lat}&lon=${loc.lon}&limit=10`,
+      {},
+      4500
+    );
+    if (!res.ok) return;
+    const data = await res.json();
+    let added = false;
+
+    for (const f of (data.features || [])) {
+      const [fLon, fLat] = f.geometry?.coordinates || [];
+      if (typeof fLat === 'number' && haversineKm(loc.lat, loc.lon, fLat, fLon) > 25) continue;
+      const p = f.properties || {};
+      const st = p.street || (p.osm_key === 'highway' ? p.name : null);
+      if (st && addStreetToCache(bairro, st)) {
+        added = true;
+      }
+    }
+
+    if (added) {
+      saveCatalog();
+      if (activeModalNeighborhood === bairro && !$('streetModal').classList.contains('hidden')) {
+        renderStreetList($('streetSearch').value);
+      }
+    }
+  } catch (e) {}
+}
+
+$('openNeighborhoodModalBtn').onclick = openNeighborhoodModal;
+$('openStreetModalBtn').onclick = () => {
+  if (!$('clientNeighborhood').value) {
+    openNeighborhoodModal();
+  } else {
+    openStreetModal($('clientNeighborhood').value);
+  }
+};
+$('changeNeighborhoodBtn').onclick = openNeighborhoodModal;
+
+$('neighborhoodSearch').oninput = e => renderNeighborhoodList(e.target.value);
+$('streetSearch').oninput = e => {
+  const val = e.target.value;
+  renderStreetList(val);
+  clearTimeout(streetLiveSearchTimer);
+  if (val.trim().length >= 3) {
+    streetLiveSearchTimer = setTimeout(() => liveSearchStreetSuggestions(val), 350);
+  }
+};
+
+$('neighborhoodSearch').onkeydown = e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const val = $('neighborhoodSearch').value.trim();
+    const norm = normalizeStr(val);
+    const matches = getAllNeighborhoods().filter(b => normalizeStr(b).includes(norm));
+    if (matches.length === 1) {
+      selectNeighborhood(matches[0]);
+    } else if (val) {
+      selectNeighborhood(val);
+    }
+  }
+};
+
+$('streetSearch').onkeydown = e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const val = $('streetSearch').value.trim();
+    const norm = normalizeStr(val);
+    const streets = streetCache[getCacheKey(activeModalNeighborhood)] || [];
+    const matches = streets.filter(r => normalizeStr(r).includes(norm));
+    if (matches.length === 1) {
+      selectStreet(matches[0]);
+    } else if (val) {
+      selectStreet(val);
+    }
+  }
+};
+
+['neighborhoodModal', 'streetModal'].forEach(id => {
+  $(id).addEventListener('click', e => {
+    if (e.target.id === id) closeAllModals();
+  });
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (!$('neighborhoodModal').classList.contains('hidden') || !$('streetModal').classList.contains('hidden')) {
+      closeAllModals();
+      return;
+    }
+    if (isMapExpanded) {
+      setMapFullscreen(false);
+      return;
+    }
+    if (holdPromptCardId) {
+      holdPromptCardId = null;
+      renderDeliveries();
+    }
+  }
+});
+
+// ==========================================
+// MAPA (GOOGLE MAPS + FALLBACK OSM)
+// ==========================================
+const map = L.map('map', { zoomControl: true }).setView([-9.4167, -40.5033], 15);
+
+function createGoogleStreetsLayer() {
+  const layer = L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&hl=pt-BR&x={x}&y={y}&z={z}', {
+    subdomains: ['0', '1', '2', '3'],
+    maxZoom: 20,
+    attribution: '© Google Maps'
+  });
+
+  let fallbackTriggered = false;
+  layer.on('tileerror', () => {
+    if (fallbackTriggered) return;
+    fallbackTriggered = true;
+    map.removeLayer(layer);
+    currentTileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+  });
+
+  return layer;
+}
+
+function createGoogleHybridLayer() {
+  return L.tileLayer('https://mt{s}.google.com/vt/lyrs=y&hl=pt-BR&x={x}&y={y}&z={z}', {
+    subdomains: ['0', '1', '2', '3'],
+    maxZoom: 20,
+    attribution: '© Google Satellite'
+  });
+}
+
+function setMapMode(mode) {
+  const mapEl = $('map');
+  if (currentTileLayer) {
+    map.removeLayer(currentTileLayer);
+  }
+
+  if (mode === 'satellite') {
+    mapEl.classList.remove('map-dark-filter');
+    currentTileLayer = createGoogleHybridLayer().addTo(map);
+  } else if (mode === 'light') {
+    mapEl.classList.remove('map-dark-filter');
+    currentTileLayer = createGoogleStreetsLayer().addTo(map);
+  } else {
+    mapEl.classList.add('map-dark-filter');
+    currentTileLayer = createGoogleStreetsLayer().addTo(map);
+  }
+
+  document.querySelectorAll('.map-mode-btn').forEach(btn => {
+    const active = btn.dataset.mode === mode;
+    btn.className = active
+      ? 'map-mode-btn px-2 py-1 rounded-md text-[11px] font-semibold bg-zinc-700 text-white transition'
+      : 'map-mode-btn px-2 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition';
+  });
+}
+
+document.querySelectorAll('.map-mode-btn').forEach(btn => {
+  btn.onclick = () => setMapMode(btn.dataset.mode);
+});
+
+setMapMode('dark');
+
+// ==========================================
+// BOTÃO AO LADO DA LOJA: CAPTURA GPS + GEOCODIFICAÇÃO REVERSA + CALCULA ROTA
+// ==========================================
+async function reverseGeocodeStore(lat, lon) {
+  try {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1&lat=${lat}&lon=${lon}`;
+    const res = await fetch(url, {
+      headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const a = data.address || {};
+      const street = a.road || a.pedestrian || a.footway || '';
+      const number = a.house_number || '';
+      const suburb = a.suburb || a.neighbourhood || a.quarter || '';
+      const city = a.city || a.town || a.village || a.municipality || '';
+      const state = a.state_code || a.state || '';
+
+      const formatted = [
+        street && number ? `${street}, ${number}` : street,
+        suburb,
+        city && state ? `${city} - ${state}` : city
+      ].filter(Boolean).join(', ');
+
+      if (formatted) {
+        return { address: formatted, city, state };
+      }
+    }
+  } catch (e) {}
+
+  try {
+    const res = await fetch(`https://photon.komoot.io/reverse?lat=${lat}&lon=${lon}`);
+    if (res.ok) {
+      const data = await res.json();
+      const p = data.features?.[0]?.properties || {};
+      const street = p.street || p.name || '';
+      const number = p.housenumber || '';
+      const suburb = p.district || p.suburb || '';
+      const city = p.city || p.town || '';
+      const state = p.state || '';
+      const formatted = [
+        street && number ? `${street}, ${number}` : street,
+        suburb,
+        city && state ? `${city} - ${state}` : city
+      ].filter(Boolean).join(', ');
+
+      if (formatted) {
+        return { address: formatted, city, state };
+      }
+    }
+  } catch (e) {}
+
+  return {
+    address: `${lat.toFixed(5)}, ${lon.toFixed(5)}`,
+    city: '',
+    state: ''
+  };
+}
+
+function getCurrentPositionPromise(highAccuracy = true, timeoutMs = 6000) {
+  return new Promise((resolve, reject) => {
+    if (!('geolocation' in navigator)) {
+      reject(new Error('GPS indisponível'));
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(resolve, reject, {
+      enableHighAccuracy: highAccuracy,
+      maximumAge: highAccuracy ? 2000 : 30000,
+      timeout: timeoutMs
+    });
+  });
+}
+
+async function useGpsForStoreAndCalculate() {
+  const btn = $('locateStore');
+  btn.disabled = true;
+  $('loading').classList.remove('hidden');
+  $('loading').classList.add('flex');
+  $('loadingText').textContent = 'Obtendo GPS da loja...';
+
+  try {
+    let pos = null;
+    try {
+      pos = await getCurrentPositionPromise(true, 5000);
+    } catch (e1) {
+      try {
+        pos = await getCurrentPositionPromise(false, 5000);
+      } catch (e2) {
+        pos = null;
+      }
+    }
+
+    if (pos) {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+
+      $('loadingText').textContent = 'Identificando endereço...';
+      const rev = await reverseGeocodeStore(lat, lon);
+
+      $('storeAddress').value = rev.address;
+      store = {
+        lat,
+        lon,
+        city: rev.city,
+        state: rev.state
+      };
+
+      clearMapLayers(false);
+      addMarker(store.lat, store.lon, 'L', 'store');
+      map.setView([store.lat, store.lon], 16);
+
+      $('storeStatus').textContent = store.city ? `GPS Fixado (${store.city})` : 'GPS Fixado';
+      $('storeStatus').className = 'text-[10px] font-mono text-emerald-400';
+      save();
+
+      if (deliveries.length) {
+        await calculate(false, true);
+      } else {
+        toast('Loja fixada pelo GPS!');
+      }
+      return;
+    }
+
+    const typed = fullStoreAddress();
+    if (typed) {
+      const ok = await geocodeTypedStoreAddress();
+      if (ok && deliveries.length) {
+        await calculate(false, true);
+      }
+      toast('GPS bloqueado neste modo — rota calculada pelo endereço!');
+    } else {
+      const c = map.getCenter();
+      const rev = await reverseGeocodeStore(c.lat, c.lng);
+      $('storeAddress').value = rev.address;
+      store = { lat: c.lat, lon: c.lng, city: rev.city, state: rev.state };
+      clearMapLayers(false);
+      addMarker(store.lat, store.lon, 'L', 'store');
+      map.setView([store.lat, store.lon], 16);
+      $('storeStatus').textContent = 'Fixada no mapa';
+      $('storeStatus').className = 'text-[10px] font-mono text-emerald-400';
+      save();
+      if (deliveries.length) {
+        await calculate(false, true);
+      } else {
+        toast('Base fixada no centro do mapa! Digite o endereço se desejar ajustar.');
+      }
+    }
+  } finally {
+    btn.disabled = false;
+    $('loading').classList.add('hidden');
+    $('loading').classList.remove('flex');
+  }
+}
+
+$('locateStore').onclick = useGpsForStoreAndCalculate;
+
+// ==========================================
+// EXPANDIR TELA CHEIA + SETA NA LOCALIZAÇÃO REAL DO USUÁRIO
+// ==========================================
+function calculateBearing(lat1, lon1, lat2, lon2) {
+  const toRad = d => d * Math.PI / 180;
+  const toDeg = r => r * 180 / Math.PI;
+  const φ1 = toRad(lat1);
+  const φ2 = toRad(lat2);
+  const Δλ = toRad(lon2 - lon1);
+  const y = Math.sin(Δλ) * Math.cos(φ2);
+  const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+  return (toDeg(Math.atan2(y, x)) + 360) % 360;
+}
+
+function buildUserArrowIcon(headingDeg) {
+  return L.divIcon({
+    className: '',
+    html: `
+      <div class="user-arrow-wrap">
+        <div class="user-arrow-pulse"></div>
+        <div class="user-arrow-core">
+          <div class="user-arrow-rotator" style="transform: rotate(${Math.round(headingDeg)}deg);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L19.5 20.5L12 16.5L4.5 20.5L12 2Z" fill="#38bdf8" stroke="#ffffff" stroke-width="1.6" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    `,
+    iconSize: [52, 52],
+    iconAnchor: [26, 26]
+  });
+}
+
+function applyUserMarkerState(lat, lon, acc, headingDeg, shouldPan = false) {
+  currentHeading = (headingDeg + 360) % 360;
+
+  if (!userMarker) {
+    userMarker = L.marker([lat, lon], {
+      icon: buildUserArrowIcon(currentHeading),
+      zIndexOffset: 2500,
+      interactive: false
+    }).addTo(map);
+  } else {
+    userMarker.setLatLng([lat, lon]);
+    const el = userMarker.getElement();
+    const rotator = el?.querySelector('.user-arrow-rotator');
+    if (rotator) {
+      rotator.style.transform = `rotate(${Math.round(currentHeading)}deg)`;
+    } else {
+      userMarker.setIcon(buildUserArrowIcon(currentHeading));
+    }
+  }
+
+  if (acc > 0 && acc <= 250) {
+    if (!userAccuracyCircle) {
+      userAccuracyCircle = L.circle([lat, lon], {
+        radius: acc,
+        color: '#38bdf8',
+        weight: 1,
+        opacity: 0.35,
+        fillColor: '#38bdf8',
+        fillOpacity: 0.1,
+        interactive: false
+      }).addTo(map);
+    } else {
+      userAccuracyCircle.setLatLng([lat, lon]);
+      userAccuracyCircle.setRadius(acc);
+    }
+  }
+
+  if (shouldPan && autoFollowUser) {
+    map.setView([lat, lon], Math.max(map.getZoom(), 17), { animate: true, duration: 0.35 });
+  }
+}
+
+function handleDeviceCompass(e) {
+  if (!isMapExpanded || !userMarker) return;
+  let compassHeading = null;
+  if (typeof e.webkitCompassHeading === 'number') {
+    compassHeading = e.webkitCompassHeading;
+  } else if (e.absolute && typeof e.alpha === 'number') {
+    compassHeading = (360 - e.alpha) % 360;
+  }
+  if (compassHeading !== null && !Number.isNaN(compassHeading)) {
+    currentHeading = (compassHeading + 360) % 360;
+    const rotator = userMarker.getElement()?.querySelector('.user-arrow-rotator');
+    if (rotator) {
+      rotator.style.transform = `rotate(${Math.round(currentHeading)}deg)`;
+    }
+  }
+}
+
+function updateAutoFollowButtonUI() {
+  const btn = $('recenterUserBtn');
+  if (!btn) return;
+  if (autoFollowUser) {
+    btn.className = 'px-3 py-2.5 rounded-xl bg-sky-500/20 border border-sky-400/50 text-sky-300 font-bold text-xs shadow-xl flex items-center gap-1.5 transition';
+    btn.querySelector('span').textContent = 'Acompanhando';
+  } else {
+    btn.className = 'px-3 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-obsidian font-extrabold text-xs shadow-xl shadow-sky-500/25 flex items-center gap-1.5 transition active:scale-95';
+    btn.querySelector('span').textContent = 'Seguir seta';
+  }
+}
+
+map.on('dragstart', () => {
+  if (isMapExpanded && autoFollowUser) {
+    autoFollowUser = false;
+    updateAutoFollowButtonUI();
+  }
+});
+
+$('recenterUserBtn').onclick = () => {
+  autoFollowUser = true;
+  updateAutoFollowButtonUI();
+  if (lastUserCoords) {
+    map.setView([lastUserCoords.lat, lastUserCoords.lon], Math.max(map.getZoom(), 17), { animate: true });
+  } else {
+    startLiveLocationTracking();
+  }
+};
+
+function processLivePosition(pos) {
+  if (!isMapExpanded) return;
+
+  const lat = pos.coords.latitude;
+  const lon = pos.coords.longitude;
+  const acc = Math.round(pos.coords.accuracy || 0);
+  const speed = pos.coords.speed;
+  const rawHeading = pos.coords.heading;
+  const isFirstRealFix = !lastUserCoords;
+
+  let nextHeading = currentHeading;
+  if (rawHeading !== null && !Number.isNaN(rawHeading) && (speed === null || speed > 0.6)) {
+    nextHeading = rawHeading;
+    lastHeadingCoords = { lat, lon };
+  } else if (lastHeadingCoords) {
+    const movedSinceAnchor = haversineKm(lastHeadingCoords.lat, lastHeadingCoords.lon, lat, lon) * 1000;
+    if (movedSinceAnchor >= 3) {
+      nextHeading = calculateBearing(lastHeadingCoords.lat, lastHeadingCoords.lon, lat, lon);
+      lastHeadingCoords = { lat, lon };
+    }
+  } else {
+    lastHeadingCoords = { lat, lon };
+  }
+
+  lastUserCoords = { lat, lon };
+  applyUserMarkerState(lat, lon, acc, nextHeading, true);
+
+  $('gpsSignalDot').className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0';
+  $('gpsStatusLabel').textContent = 'Sua localização ativa';
+  $('gpsAccuracyLabel').textContent = acc ? `GPS ±${acc}m · Acompanhando` : 'GPS ativo em tempo real';
+
+  // Atualiza a linha âmbar saindo de onde você está até a entrega ativa
+  const now = Date.now();
+  if ((isFirstRealFix || now - lastLegRefreshTime > 7000) && getActiveStop()) {
+    lastLegRefreshTime = now;
+    focusRouteToSelectedCard(false);
+  }
+}
+
+function attachGeoWatch(highAccuracy) {
+  if (geoWatchId !== null) {
+    navigator.geolocation.clearWatch(geoWatchId);
+    geoWatchId = null;
+  }
+
+  geoWatchId = navigator.geolocation.watchPosition(
+    processLivePosition,
+    err => {
+      if (!isMapExpanded) return;
+      if (highAccuracy && err.code === 3) {
+        attachGeoWatch(false);
+        return;
+      }
+
+      $('gpsSignalDot').className = 'w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0';
+      if (!window.isSecureContext) {
+        $('gpsStatusLabel').textContent = 'GPS bloqueado (arquivo local)';
+        $('gpsAccuracyLabel').textContent = 'Abra via HTTPS ou localhost';
+      } else if (err.code === 1) {
+        $('gpsStatusLabel').textContent = 'Permissão de GPS negada';
+        $('gpsAccuracyLabel').textContent = 'Libere a localização no navegador';
+      } else {
+        $('gpsStatusLabel').textContent = 'Sinal GPS indisponível';
+        $('gpsAccuracyLabel').textContent = 'Toque em Seguir seta p/ tentar';
+      }
+      toast('Não foi possível acessar sua localização GPS.');
+    },
+    {
+      enableHighAccuracy: highAccuracy,
+      maximumAge: 0,
+      timeout: highAccuracy ? 10000 : 20000
+    }
+  );
+}
+
+function startLiveLocationTracking() {
+  stopLiveLocationTracking();
+  autoFollowUser = true;
+  updateAutoFollowButtonUI();
+
+  // Nunca coloca a seta na loja: aguarda a coordenada real do usuário
+  $('gpsSignalDot').className = 'w-2.5 h-2.5 rounded-full bg-sky-400 animate-pulse shrink-0';
+  $('gpsStatusLabel').textContent = 'Buscando sua posição...';
+  $('gpsAccuracyLabel').textContent = 'Aguardando GPS do aparelho';
+
+  if (!('geolocation' in navigator)) {
+    $('gpsSignalDot').className = 'w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0';
+    $('gpsStatusLabel').textContent = 'GPS não suportado';
+    $('gpsAccuracyLabel').textContent = 'Navegador sem geolocalização';
+    toast('Geolocalização não suportada neste navegador.');
+    return;
+  }
+
+  if (window.DeviceOrientationEvent) {
+    window.addEventListener('deviceorientationabsolute', handleDeviceCompass, true);
+    window.addEventListener('deviceorientation', handleDeviceCompass, true);
+    compassListenerActive = true;
+  }
+
+  // 1. Leitura rápida inicial (rede/Wi-Fi/GPS) para posicionar a seta imediatamente onde você está
+  navigator.geolocation.getCurrentPosition(
+    processLivePosition,
+    () => {},
+    { enableHighAccuracy: false, maximumAge: 15000, timeout: 7000 }
+  );
+
+  // 2. Monitoramento contínuo de alta precisão conforme você se movimenta
+  attachGeoWatch(true);
+}
+
+function stopLiveLocationTracking() {
+  if (geoWatchId !== null) {
+    navigator.geolocation.clearWatch(geoWatchId);
+    geoWatchId = null;
+  }
+  if (compassListenerActive) {
+    window.removeEventListener('deviceorientationabsolute', handleDeviceCompass, true);
+    window.removeEventListener('deviceorientation', handleDeviceCompass, true);
+    compassListenerActive = false;
+  }
+  if (userMarker) {
+    map.removeLayer(userMarker);
+    userMarker = null;
+  }
+  if (userAccuracyCircle) {
+    map.removeLayer(userAccuracyCircle);
+    userAccuracyCircle = null;
+  }
+  lastUserCoords = null;
+  lastHeadingCoords = null;
+}
+
+function setMapFullscreen(expand) {
+  isMapExpanded = Boolean(expand);
+  const section = $('mapSection');
+  const footer = $('mapTelemetryFooter');
+
+  if (isMapExpanded) {
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+      DeviceOrientationEvent.requestPermission().catch(() => {});
+    }
+
+    // Inicia o GPS sincronamente no clique para garantir o prompt de permissão no Android/iOS
+    startLiveLocationTracking();
+
+    document.body.classList.add('overflow-hidden');
+    section.classList.add('map-fullscreen-active');
+    footer.classList.add('hidden');
+
+    $('expandIcon').classList.add('hidden');
+    $('minimizeIcon').classList.remove('hidden');
+    $('fullscreenBtnText').textContent = 'Minimizar';
+    $('toggleFullscreenMapBtn').title = 'Minimizar mapa';
+    $('fullscreenHud').classList.remove('hidden');
+    $('liveLegendItem').classList.remove('hidden');
+    $('liveLegendItem').classList.add('flex');
+
+    [0, 80, 250].forEach(delay => {
+      setTimeout(() => {
+        map.invalidateSize(true);
+        if (lastUserCoords && autoFollowUser) {
+          map.setView([lastUserCoords.lat, lastUserCoords.lon], Math.max(map.getZoom(), 17), { animate: false });
+        }
+      }, delay);
+    });
+  } else {
+    document.body.classList.remove('overflow-hidden');
+    section.classList.remove('map-fullscreen-active');
+    footer.classList.remove('hidden');
+
+    $('expandIcon').classList.remove('hidden');
+    $('minimizeIcon').classList.add('hidden');
+    $('fullscreenBtnText').textContent = 'Expandir';
+    $('toggleFullscreenMapBtn').title = 'Expandir mapa em tela cheia';
+    $('fullscreenHud').classList.add('hidden');
+    $('liveLegendItem').classList.add('hidden');
+    $('liveLegendItem').classList.remove('flex');
+
+    stopLiveLocationTracking();
+
+    [0, 100].forEach(delay => {
+      setTimeout(() => {
+        map.invalidateSize(true);
+        if (store?.lat && store?.lon) {
+          map.setView([store.lat, store.lon], 16);
+        }
+      }, delay);
+    });
+  }
+}
+
+$('toggleFullscreenMapBtn').onclick = () => setMapFullscreen(!isMapExpanded);
+$('floatingMinimizeBtn').onclick = () => setMapFullscreen(false);
+
+$('centerStoreBtn').onclick = () => {
+  if (store?.lat && store?.lon) {
+    autoFollowUser = false;
+    updateAutoFollowButtonUI();
+    map.setView([store.lat, store.lon], 16, { animate: true });
+  } else {
+    toast('Fixe o endereço da loja primeiro.');
+  }
+};
+
+$('today').textContent = new Date().toLocaleDateString('pt-BR', {
+  weekday: 'short', day: '2-digit', month: 'short'
+}).toUpperCase();
+
+function toast(message) {
+  const el = $('toast');
+  $('toastMsg').textContent = message;
+  el.classList.remove('translate-y-24', 'opacity-0');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => {
+    el.classList.add('translate-y-24', 'opacity-0');
+  }, 3500);
+}
+
+function escapeHTML(str) {
+  return String(str ?? '').replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[c]);
+}
+
+function setVehicleUI(val) {
+  $('vehicle').value = val;
+  document.querySelectorAll('.veh-btn').forEach(btn => {
+    const active = btn.dataset.val === val;
+    btn.className = active
+      ? 'veh-btn px-2.5 py-1 rounded-md text-[11px] font-bold bg-blue-600 text-white shadow transition'
+      : 'veh-btn px-2.5 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition';
+  });
+}
+
+document.querySelectorAll('.veh-btn').forEach(btn => {
+  btn.onclick = () => {
+    setVehicleUI(btn.dataset.val);
+    save();
+    if (routeReady) calculate(true, true);
+  };
+});
+
+function updateStats() {
+  const total = deliveries.length;
+  const done = deliveries.filter(d => d.done).length;
+  const pending = total - done;
+  const pct = total ? Math.round((done / total) * 100) : 0;
+
+  $('totalStat').textContent = total;
+  $('doneStat').textContent = done;
+  $('pendingStat').textContent = pending;
+  $('progressPct').textContent = pct + '%';
+  $('countBadge').textContent = total + (total === 1 ? ' pedido' : ' pedidos');
+}
+
+function save() {
+  localStorage.setItem('rota_deliveries', JSON.stringify(deliveries));
+  localStorage.setItem('rota_store_address', $('storeAddress').value);
+  localStorage.setItem('rota_store_coords', store ? JSON.stringify(store) : '');
+  localStorage.setItem('rota_vehicle', $('vehicle').value);
+}
+
+async function load() {
+  loadCatalog();
+
+  try {
+    deliveries = JSON.parse(localStorage.getItem('rota_deliveries') || '[]');
+  } catch (e) {
+    deliveries = [];
+  }
+
+  $('storeAddress').value = localStorage.getItem('rota_store_address') || '';
+
+  try {
+    const savedStore = localStorage.getItem('rota_store_coords');
+    if (savedStore) {
+      store = JSON.parse(savedStore);
+      if (store?.lat && store?.lon) {
+        addMarker(store.lat, store.lon, 'L', 'store');
+        map.setView([store.lat, store.lon], 16);
+        $('storeStatus').textContent = store.city ? `Fixada (${store.city})` : 'Fixada no mapa';
+        $('storeStatus').className = 'text-[10px] font-mono text-emerald-400';
+      }
+    }
+  } catch (e) {
+    store = null;
+  }
+
+  setVehicleUI(localStorage.getItem('rota_vehicle') || 'motorcycle');
+  renderDeliveries();
+  updateStats();
+
+  if (!store && fullStoreAddress()) {
+    await geocodeTypedStoreAddress();
+  }
+
+  if (deliveries.length && (store || fullStoreAddress())) {
+    await calculate(true, true);
+  }
+}
+
+function clearMapLayers(keepStore = false) {
+  if (routeLayer) {
+    map.removeLayer(routeLayer);
+    routeLayer = null;
+  }
+  if (focusLegLayer) {
+    map.removeLayer(focusLegLayer);
+    focusLegLayer = null;
+  }
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
+  if (keepStore && store) {
+    addMarker(store.lat, store.lon, 'L', 'store');
+  }
+}
+
+function getActiveStop() {
+  if (selectedStopId) {
+    const chosen = deliveries.find(d => d.id === selectedStopId && !d.done);
+    if (chosen) return chosen;
+  }
+  return deliveries.find(d => !d.done) || null;
+}
+
+// ==========================================
+// RENDERIZAÇÃO DA FILA (JÁ NA MELHOR ROTA) + CLIQUE + SEGURAR
+// ==========================================
+function renderDeliveries() {
+  const list = $('deliveryList');
+  const activeStop = getActiveStop();
+  if (activeStop) selectedStopId = activeStop.id;
+
+  if (!deliveries.length) {
+    $('routeAutoBadge').classList.add('hidden');
+    $('activeFocusBar').classList.add('hidden');
+    list.innerHTML = `
+      <div class="py-7 px-3 border border-dashed border-borderline rounded-xl text-center text-[11px] text-zinc-500">
+        Nenhum pedido cadastrado.<br>Adicione acima para gerar a melhor rota automaticamente.
+      </div>`;
+    updateStats();
+    return;
+  }
+
+  if (routeReady) {
+    $('routeAutoBadge').classList.remove('hidden');
+  } else {
+    $('routeAutoBadge').classList.add('hidden');
+  }
+
+  list.innerHTML = deliveries.map((d, idx) => {
+    const isCurrent = activeStop && d.id === activeStop.id && !d.done;
+    const isHoldOpen = holdPromptCardId === d.id;
+
+    return `
+      <div
+        data-card-id="${d.id}"
+        oncontextmenu="return false;"
+        class="queue-card relative rounded-xl p-3 border transition cursor-pointer ${
+          d.done
+            ? 'bg-obsidian/60 border-borderline opacity-55'
+            : isCurrent
+              ? 'bg-amber-500/[0.08] border-amber-500/50 shadow-md shadow-amber-500/5'
+              : 'bg-elevated/70 hover:bg-zinc-800/80 border-borderline hover:border-zinc-700'
+        }">
+
+        <div class="flex items-start justify-between gap-2.5">
+          <div class="flex items-start gap-2.5 min-w-0">
+            <span class="w-6 h-6 rounded-lg font-mono text-[10px] font-extrabold grid place-items-center shrink-0 mt-0.5 ${
+              d.done
+                ? 'bg-zinc-800 text-zinc-500'
+                : isCurrent
+                  ? 'bg-amber-500 text-obsidian'
+                  : routeReady
+                    ? 'bg-blue-500/15 text-blue-400 border border-blue-500/30'
+                    : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
+            }">
+              ${d.done ? '✓' : idx + 1}
+            </span>
+
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-bold text-zinc-100 truncate ${d.done ? 'line-through text-zinc-500' : ''}">
+                  ${escapeHTML(d.name)}
+                </span>
+                ${isCurrent ? '<span class="text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0">Rota Ativa</span>' : ''}
+                ${d.done ? '<span class="text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 shrink-0">Entregue</span>' : ''}
+              </div>
+
+              <div class="text-[11px] text-zinc-400 truncate mt-0.5">
+                ${escapeHTML(d.street)}, ${escapeHTML(d.number || 's/n')} · <span class="text-zinc-300">${escapeHTML(d.neighborhood)}</span>
+              </div>
+              ${d.complement ? `<div class="text-[10px] text-zinc-500 truncate mt-0.5">Obs: ${escapeHTML(d.complement)}</div>` : ''}
+            </div>
+          </div>
+
+          <button type="button" onclick="event.stopPropagation(); removeDelivery('${d.id}')" title="Remover pedido"
+            class="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition shrink-0">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        ${isHoldOpen ? `
+          <div onclick="event.stopPropagation()" class="mt-2.5 pt-2.5 border-t border-zinc-700/80 grid grid-cols-2 gap-2">
+            <button type="button" onclick="confirmToggleDelivered('${d.id}')"
+              class="py-2 px-2.5 rounded-lg font-bold text-[11px] flex items-center justify-center gap-1.5 transition active:scale-95 ${
+                d.done
+                  ? 'bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/35'
+                  : 'bg-emerald-500 hover:bg-emerald-400 text-obsidian shadow-lg shadow-emerald-500/20'
+              }">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+              </svg>
+              <span>${d.done ? 'Desmarcar entregue' : 'Marcar entregue'}</span>
+            </button>
+
+            <button type="button" onclick="cancelHoldPrompt()"
+              class="py-2 px-2.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-semibold text-[11px] transition active:scale-95">
+              Cancelar
+            </button>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
+
+  bindCardInteractions();
+  updateStats();
+}
+
+function bindCardInteractions() {
+  document.querySelectorAll('.queue-card').forEach(card => {
+    const id = card.dataset.cardId;
+    let pressTimer = null;
+    let longPressed = false;
+    let startX = 0;
+    let startY = 0;
+
+    const startPress = (clientX, clientY) => {
+      longPressed = false;
+      startX = clientX;
+      startY = clientY;
+      clearTimeout(pressTimer);
+      pressTimer = setTimeout(() => {
+        longPressed = true;
+        if (navigator.vibrate) navigator.vibrate(30);
+        holdPromptCardId = id;
+        renderDeliveries();
+      }, 450);
+    };
+
+    const cancelPress = () => {
+      clearTimeout(pressTimer);
+    };
+
+    card.addEventListener('touchstart', e => {
+      if (e.target.closest('button')) return;
+      const t = e.touches[0];
+      startPress(t.clientX, t.clientY);
+    }, { passive: true });
+
+    card.addEventListener('touchmove', e => {
+      const t = e.touches[0];
+      if (Math.abs(t.clientX - startX) > 10 || Math.abs(t.clientY - startY) > 10) {
+        cancelPress();
+      }
+    }, { passive: true });
+
+    card.addEventListener('touchend', () => cancelPress());
+    card.addEventListener('touchcancel', () => cancelPress());
+
+    card.addEventListener('mousedown', e => {
+      if (e.button !== 0 || e.target.closest('button')) return;
+      startPress(e.clientX, e.clientY);
+    });
+
+    card.addEventListener('mousemove', e => {
+      if (Math.abs(e.clientX - startX) > 8 || Math.abs(e.clientY - startY) > 8) {
+        cancelPress();
+      }
+    });
+
+    card.addEventListener('mouseup', () => cancelPress());
+    card.addEventListener('mouseleave', () => cancelPress());
+
+    card.addEventListener('click', e => {
+      if (e.target.closest('button')) return;
+      if (longPressed) {
+        longPressed = false;
+        return;
+      }
+      if (holdPromptCardId === id) return;
+      holdPromptCardId = null;
+      selectRouteTargetCard(id);
+    });
+  });
+}
+
+window.cancelHoldPrompt = function() {
+  holdPromptCardId = null;
+  renderDeliveries();
+};
+
+window.confirmToggleDelivered = function(id) {
+  const delivery = deliveries.find(d => d.id === id);
+  if (!delivery) return;
+
+  delivery.done = !delivery.done;
+  holdPromptCardId = null;
+
+  if (delivery.done && selectedStopId === id) {
+    const nextPending = deliveries.find(d => !d.done);
+    selectedStopId = nextPending ? nextPending.id : null;
+  } else if (!delivery.done) {
+    selectedStopId = id;
+  }
+
+  save();
+  renderDeliveries();
+  redrawMarkers();
+  focusRouteToSelectedCard(false);
+  toast(delivery.done ? `Entrega de ${delivery.name} concluída!` : `Entrega de ${delivery.name} reaberta.`);
+};
+
+async function selectRouteTargetCard(id) {
+  const target = deliveries.find(d => d.id === id);
+  if (!target) return;
+
+  if (target.done) {
+    toast('Este pedido já está entregue. Segure o card para reabrir.');
+    return;
+  }
+
+  selectedStopId = id;
+  renderDeliveries();
+  redrawMarkers();
+
+  const markerObj = markers.find(m => m._deliveryId === id);
+  if (markerObj) markerObj.openPopup();
+
+  await focusRouteToSelectedCard(true);
+}
+
+async function focusRouteToSelectedCard(zoomToLeg = true) {
+  const target = getActiveStop();
+
+  if (focusLegLayer) {
+    map.removeLayer(focusLegLayer);
+    focusLegLayer = null;
+  }
+
+  const originPoint = (isMapExpanded && lastUserCoords) ? lastUserCoords : store;
+
+  if (!target || !originPoint || !target.lat || !target.lon) {
+    $('activeFocusBar').classList.add('hidden');
+    return;
+  }
+
+  $('activeFocusBar').classList.remove('hidden');
+  $('activeFocusName').textContent = `${target.name} (${target.street}, ${target.number || 's/n'})`;
+  $('activeFocusLeg').textContent = 'Traçando...';
+
+  try {
+    const url = `https://router.project-osrm.org/route/v1/driving/${originPoint.lon},${originPoint.lat};${target.lon},${target.lat}?overview=full&geometries=geojson`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    const leg = data.routes?.[0];
+    if (!leg) throw new Error();
+
+    focusLegLayer = L.geoJSON({
+      type: 'Feature',
+      geometry: leg.geometry
+    }, {
+      style: {
+        color: '#f59e0b',
+        weight: 6,
+        opacity: 0.95,
+        lineJoin: 'round'
+      }
+    }).addTo(map);
+
+    const km = (leg.distance / 1000).toFixed(1).replace('.', ',');
+    const time = formatDuration(leg.duration);
+    $('activeFocusLeg').textContent = `${km} km · ${time}`;
+
+    if (zoomToLeg && !isMapExpanded) {
+      map.fitBounds(focusLegLayer.getBounds(), { padding: [48, 48] });
+    }
+  } catch (e) {
+    $('activeFocusLeg').textContent = '';
+  }
+}
+
+function resetNewDeliveryForm() {
+  ['clientName', 'clientNeighborhood', 'clientStreet', 'clientNumber', 'clientComplement'].forEach(id => $(id).value = '');
+  $('neighborhoodDisplay').textContent = 'Selecionar...';
+  $('neighborhoodDisplay').className = 'block text-xs text-zinc-400 truncate';
+  $('streetDisplay').textContent = 'Escolha o bairro';
+  $('streetDisplay').className = 'block text-xs text-zinc-400 truncate';
+}
+
+$('addDelivery').onclick = async () => {
+  const name = $('clientName').value.trim();
+  const neighborhood = $('clientNeighborhood').value.trim();
+  const street = $('clientStreet').value.trim();
+
+  if (!name) {
+    toast('Informe o nome do cliente.');
+    $('clientName').focus();
+    return;
+  }
+  if (!neighborhood) {
+    toast('Selecione o bairro do cliente.');
+    openNeighborhoodModal();
+    return;
+  }
+  if (!street) {
+    toast('Selecione a rua do cliente.');
+    openStreetModal(neighborhood);
+    return;
+  }
+
+  const newItem = {
+    id: crypto.randomUUID(),
+    name,
+    neighborhood,
+    street,
+    city: $('clientCity').value.trim(),
+    number: $('clientNumber').value.trim(),
+    complement: $('clientComplement').value.trim(),
+    done: false,
+    lat: null,
+    lon: null
+  };
+
+  deliveries.push(newItem);
+  resetNewDeliveryForm();
+  $('clientName').focus();
+
+  renderDeliveries();
+  save();
+
+  if (fullStoreAddress() || store) {
+    await calculate(true, false);
+  } else {
+    toast('Pedido adicionado! Fixe o endereço da loja para otimizar a rota.');
+  }
+};
+
+window.removeDelivery = async id => {
+  deliveries = deliveries.filter(d => d.id !== id);
+  if (selectedStopId === id) selectedStopId = null;
+  if (holdPromptCardId === id) holdPromptCardId = null;
+  save();
+
+  if (!deliveries.length) {
+    routeReady = false;
+    $('distance').textContent = '—';
+    $('duration').textContent = '—';
+    $('stops').textContent = '0';
+    clearMapLayers(true);
+    if (store?.lat && store?.lon) map.setView([store.lat, store.lon], 16);
+    renderDeliveries();
+    return;
+  }
+
+  renderDeliveries();
+  if (fullStoreAddress() || store) {
+    await calculate(true, false);
+  }
+};
+
+$('clearAll').onclick = () => {
+  if (!deliveries.length) return;
+  if (!confirm('Apagar todos os pedidos cadastrados?')) return;
+  deliveries = [];
+  selectedStopId = null;
+  holdPromptCardId = null;
+  routeReady = false;
+  $('distance').textContent = '—';
+  $('duration').textContent = '—';
+  $('stops').textContent = '0';
+  clearMapLayers(true);
+  if (store?.lat && store?.lon) map.setView([store.lat, store.lon], 16);
+  renderDeliveries();
+  save();
+  toast('Fila limpa.');
+};
+
+async function geocodeTypedStoreAddress() {
+  const address = fullStoreAddress();
+  if (!address) return false;
+
+  $('loading').classList.remove('hidden');
+  $('loading').classList.add('flex');
+  $('loadingText').textContent = 'Localizando loja...';
+
+  try {
+    store = await geocodeRawAddress(address);
+    clearMapLayers(false);
+    addMarker(store.lat, store.lon, 'L', 'store');
+    map.setView([store.lat, store.lon], 16);
+    $('storeStatus').textContent = store.city ? `Fixada (${store.city})` : 'Fixada no mapa';
+    $('storeStatus').className = 'text-[10px] font-mono text-emerald-400';
+    save();
+    return true;
+  } catch (e) {
+    toast(e.message);
+    return false;
+  } finally {
+    $('loading').classList.add('hidden');
+    $('loading').classList.remove('flex');
+  }
+}
+
+$('storeAddress').onchange = async () => {
+  store = null;
+  $('storeStatus').textContent = 'Não fixada';
+  $('storeStatus').className = 'text-[10px] font-mono text-zinc-600';
+  save();
+  if (fullStoreAddress()) {
+    const ok = await geocodeTypedStoreAddress();
+    if (ok && deliveries.length) {
+      await calculate(true, true);
+    }
+  }
+};
+
+$('storeAddress').onkeydown = e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    $('storeAddress').blur();
+  }
+};
+
+function haversineKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function getBiasCoords() {
+  if (store?.lat && store?.lon) return { lat: store.lat, lon: store.lon };
+  const c = map.getCenter();
+  return { lat: c.lat, lon: c.lng };
+}
+
+function getStoreCityHint() {
+  if (store?.city) {
+    return [store.city, store.state].filter(Boolean).join(', ');
+  }
+  const raw = $('storeAddress').value.trim();
+  if (!raw) return '';
+  const parts = raw.split(',').map(p => p.trim()).filter(Boolean);
+  if (parts.length >= 2) {
+    return parts.slice(-2).join(', ');
+  }
+  return '';
+}
+
+async function queryPhoton(query, bias, maxKm = null) {
+  try {
+    let url = 'https://photon.komoot.io/api/?q=' + encodeURIComponent(query) + '&limit=6';
+    if (bias) {
+      url += `&lat=${bias.lat}&lon=${bias.lon}`;
+    }
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const features = data.features || [];
+
+    for (const f of features) {
+      const [lon, lat] = f.geometry.coordinates;
+      if (maxKm && bias && haversineKm(bias.lat, bias.lon, lat, lon) > maxKm) {
+        continue;
+      }
+      const p = f.properties || {};
+      return {
+        lon,
+        lat,
+        city: p.city || p.town || p.village || p.municipality || '',
+        state: p.state || ''
+      };
+    }
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function queryNominatim(query, bias, maxKm = null) {
+  try {
+    let url = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=br&limit=5&q=' + encodeURIComponent(query);
+    if (bias && maxKm) {
+      const delta = 0.75;
+      url += `&viewbox=${bias.lon - delta},${bias.lat + delta},${bias.lon + delta},${bias.lat - delta}&bounded=1`;
+    }
+    const res = await fetch(url, {
+      headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' }
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!Array.isArray(data) || !data.length) return null;
+
+    for (const item of data) {
+      const lat = parseFloat(item.lat);
+      const lon = parseFloat(item.lon);
+      if (maxKm && bias && haversineKm(bias.lat, bias.lon, lat, lon) > maxKm) {
+        continue;
+      }
+      const addr = item.address || {};
+      return {
+        lon,
+        lat,
+        city: addr.city || addr.town || addr.village || addr.municipality || '',
+        state: addr.state || ''
+      };
+    }
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+async function geocodeCandidates(candidates, labelForError, maxKm = null) {
+  const bias = getBiasCoords();
+  const unique = [...new Set(candidates.map(c => c.trim()).filter(Boolean))];
+
+  for (const q of unique) {
+    const photonRes = await queryPhoton(q, bias, maxKm);
+    if (photonRes) return photonRes;
+  }
+
+  for (const q of unique) {
+    const nomRes = await queryNominatim(q, bias, maxKm);
+    if (nomRes) return nomRes;
+    await sleep(250);
+  }
+
+  throw new Error('Endereço não encontrado na região: ' + labelForError);
+}
+
+async function geocodeRawAddress(address) {
+  const clean = address.trim();
+  const withCountry = /brasil|brazil/i.test(clean) ? clean : `${clean}, Brasil`;
+  const withoutNumber = withCountry.replace(/,\s*\d+[a-zA-Z0-9\-\/]*\s*,/, ', ');
+  return geocodeCandidates([withCountry, withoutNumber], clean, null);
+}
+
+async function geocodeDelivery(d) {
+  const cityHint = d.city || getStoreCityHint() || 'Juazeiro, BA';
+  const maxKm = d.city ? 400 : 80;
+
+  const candidates = [
+    [d.street, d.number, d.neighborhood, cityHint, 'Brasil'].filter(Boolean).join(', '),
+    [d.street, d.neighborhood, cityHint, 'Brasil'].filter(Boolean).join(', '),
+    [d.street, cityHint, 'Brasil'].filter(Boolean).join(', '),
+    [d.neighborhood, cityHint, 'Brasil'].filter(Boolean).join(', ')
+  ];
+  return geocodeCandidates(candidates, `${d.street}, ${d.neighborhood}`, maxKm);
+}
+
+function fullStoreAddress() {
+  return $('storeAddress').value.trim();
+}
+
+function addMarker(lat, lon, label, state = 'stop', popupTitle = '', deliveryId = null) {
+  const cls = state === 'store' ? 'pin-store'
+            : state === 'active' ? 'pin-active'
+            : state === 'done' ? 'pin-done'
+            : 'pin-stop';
+
+  const html = `<div class="pin-wrap"><div class="pin-badge ${cls}">${label}</div></div>`;
+
+  const marker = L.marker([lat, lon], {
+    icon: L.divIcon({
+      className: '',
+      html,
+      iconSize: [32, 32],
+      iconAnchor: [16, 16]
+    })
+  }).addTo(map);
+
+  marker._deliveryId = deliveryId;
+
+  marker.bindPopup(
+    state === 'store'
+      ? '<strong style="color:#10b981">BASE // LOJA</strong><br><span style="color:#a1a1aa">Ponto de partida e retorno</span>'
+      : `<strong>Parada #${label}</strong>${popupTitle ? '<br><span style="color:#a1a1aa">' + escapeHTML(popupTitle) + '</span>' : ''}`
+  );
+
+  markers.push(marker);
+  return marker;
+}
+
+async function getCoordinates() {
+  if (!store) {
+    const address = fullStoreAddress();
+    if (!address) throw new Error('Informe o endereço da loja ou clique em Usar GPS.');
+
+    $('loadingText').textContent = 'Localizando base...';
+    store = await geocodeRawAddress(address);
+    map.setView([store.lat, store.lon], 16);
+    $('storeStatus').textContent = store.city ? `Fixada (${store.city})` : 'Fixada no mapa';
+    $('storeStatus').className = 'text-[10px] font-mono text-emerald-400';
+    save();
+  }
+
+  const locations = [];
+  for (let i = 0; i < deliveries.length; i++) {
+    const d = deliveries[i];
+    if (d.lat && d.lon) {
+      locations.push({ lat: d.lat, lon: d.lon, id: d.id });
+      continue;
+    }
+    $('loadingText').textContent = `Localizando pedido ${i + 1} de ${deliveries.length}...`;
+    const coords = await geocodeDelivery(d);
+    d.lat = coords.lat;
+    d.lon = coords.lon;
+    locations.push({ ...coords, id: d.id });
+  }
+  return locations;
+}
+
+async function optimizeRoute(points) {
+  const coords = [store, ...points, store].map(p => `${p.lon},${p.lat}`).join(';');
+  const url = `https://router.project-osrm.org/trip/v1/driving/${coords}?roundtrip=false&source=first&destination=last&overview=full&geometries=geojson&steps=true`;
+
+  const response = await fetch(url);
+  if (!response.ok) throw new Error('Erro de conexão com o roteirizador.');
+
+  const data = await response.json();
+  if (data.code !== 'Ok' || !data.trips?.length) {
+    throw new Error('Trajeto não encontrado nas vias. Revise os endereços.');
+  }
+
+  const trip = data.trips[0];
+  const waypoints = data.waypoints;
+
+  const orderedIds = waypoints
+    .map((w, index) => ({ w, index }))
+    .filter(x => x.index !== 0 && x.index !== waypoints.length - 1)
+    .sort((a, b) => a.w.waypoint_index - b.w.waypoint_index)
+    .map(x => deliveries[x.index - 1]?.id)
+    .filter(Boolean);
+
+  const orderedDeliveries = orderedIds
+    .map(id => deliveries.find(d => d.id === id))
+    .filter(Boolean);
+
+  if (orderedDeliveries.length !== deliveries.length) {
+    throw new Error('Falha ao ordenar todos os pontos. Tente novamente.');
+  }
+
+  return { trip, ordered: orderedDeliveries };
+}
+
+function formatDuration(seconds) {
+  const factor = $('vehicle').value === 'motorcycle' ? 0.82 : 1;
+  const min = Math.max(1, Math.round((seconds * factor) / 60));
+  const hours = Math.floor(min / 60);
+  const remaining = min % 60;
+  return hours ? `${hours}h ${remaining}min` : `${remaining} min`;
+}
+
+function redrawMarkers() {
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
+
+  if (store) {
+    addMarker(store.lat, store.lon, 'L', 'store');
+  }
+
+  const activeStop = getActiveStop();
+
+  deliveries.forEach((d, index) => {
+    if (!d.lat || !d.lon) return;
+    const state = d.done ? 'done' : (activeStop && d.id === activeStop.id ? 'active' : 'stop');
+    addMarker(d.lat, d.lon, index + 1, state, `${d.name} — ${d.street}, ${d.number || 's/n'}`, d.id);
+  });
+}
+
+function drawRoute(trip, preserveStoreCenter = false) {
+  clearMapLayers(false);
+
+  routeLayer = L.geoJSON({
+    type: 'Feature',
+    geometry: trip.geometry
+  }, {
+    style: {
+      color: '#3b82f6',
+      weight: 4,
+      opacity: 0.65,
+      lineJoin: 'round'
+    }
+  }).addTo(map);
+
+  redrawMarkers();
+
+  if (preserveStoreCenter && store?.lat && store?.lon) {
+    map.setView([store.lat, store.lon], 16);
+  } else if (!isMapExpanded) {
+    map.fitBounds(routeLayer.getBounds(), { padding: [40, 40] });
+  }
+}
+
+async function calculate(silent = false, preserveStoreCenter = false) {
+  if (!deliveries.length) {
+    if (!silent) toast('Adicione pelo menos um pedido.');
+    return;
+  }
+  if (!store && !fullStoreAddress()) {
+    if (!silent) toast('Informe o endereço da loja ou clique em Usar GPS.');
+    return;
+  }
+
+  if (isAutoCalculating) {
+    pendingRecalc = true;
+    return;
+  }
+
+  isAutoCalculating = true;
+  $('calculate').disabled = true;
+  $('loading').classList.remove('hidden');
+  $('loading').classList.add('flex');
+  $('loadingText').textContent = 'Calculando melhor sequência...';
+
+  try {
+    const points = await getCoordinates();
+    $('loadingText').textContent = 'Otimizando rota nas vias...';
+
+    const result = await optimizeRoute(points);
+
+    deliveries = result.ordered;
+    const trip = result.trip;
+
+    routeReady = true;
+    drawRoute(trip, preserveStoreCenter);
+    renderDeliveries();
+    await focusRouteToSelectedCard(false);
+
+    $('distance').textContent = (trip.distance / 1000).toFixed(1).replace('.', ',') + ' km';
+    $('duration').textContent = formatDuration(trip.duration);
+    $('stops').textContent = deliveries.length;
+
+    save();
+    if (!silent) toast('Melhor rota atualizada!');
+  } catch (e) {
+    toast(e.message || 'Erro ao calcular rota.');
+  } finally {
+    isAutoCalculating = false;
+    $('calculate').disabled = false;
+    $('loading').classList.add('hidden');
+    $('loading').classList.remove('flex');
+
+    if (pendingRecalc) {
+      pendingRecalc = false;
+      calculate(true, preserveStoreCenter);
+    }
+  }
+}
+
+$('calculate').onclick = () => calculate(false, false);
+
+$('fitMap').onclick = () => {
+  const groupItems = [...markers];
+  if (userMarker) groupItems.push(userMarker);
+
+  if (routeLayer && !isMapExpanded) {
+    map.fitBounds(routeLayer.getBounds(), { padding: [40, 40] });
+  } else if (groupItems.length) {
+    autoFollowUser = false;
+    updateAutoFollowButtonUI();
+    map.fitBounds(L.featureGroup(groupItems).getBounds(), { padding: [45, 45] });
+  } else {
+    toast('Nenhum ponto marcado no mapa.');
+  }
+};
+
+function openExternalUrlSafe(url) {
+  const a = document.createElement('a');
+  a.href = url;
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+$('openMaps').onclick = () => {
+  if (!deliveries.length || (!store && !lastUserCoords)) {
+    toast('Cadastre a loja e os pedidos primeiro.');
+    return;
+  }
+
+  const activeStop = getActiveStop();
+  const pendingOthers = deliveries.filter(d => !d.done && (!activeStop || d.id !== activeStop.id));
+  const orderedForGps = activeStop ? [activeStop, ...pendingOthers] : deliveries;
+
+  const startCoord = lastUserCoords || store;
+  const origin = `${startCoord.lat},${startCoord.lon}`;
+  const destination = `${orderedForGps[orderedForGps.length - 1].lat},${orderedForGps[orderedForGps.length - 1].lon}`;
+  const waypoints = orderedForGps.slice(0, -1).map(d => `${d.lat},${d.lon}`).join('|');
+
+  let url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&travelmode=driving`;
+  if (waypoints) {
+    url += `&waypoints=${encodeURIComponent(waypoints)}`;
+  }
+
+  openExternalUrlSafe(url);
+};
+
+$('printQueueBtn').onclick = () => {
+  if (!deliveries.length) {
+    toast('Nenhum pedido na fila para imprimir.');
+    return;
+  }
+
+  const rows = deliveries.map((d, i) => `
+    <div style="padding:8px 0;border-bottom:1px dashed #666;font-size:12px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:2px;">
+        <strong>#${i + 1} — ${escapeHTML(d.name)}</strong>
+        <span>[ ${d.done ? 'OK' : '  '} ]</span>
+      </div>
+      <div>${escapeHTML(d.street)}, ${escapeHTML(d.number || 's/n')} — ${escapeHTML(d.neighborhood)}</div>
+      ${d.complement ? `<div style="font-size:11px;margin-top:2px;">Obs: ${escapeHTML(d.complement)}</div>` : ''}
+    </div>
+  `).join('');
+
+  const htmlContent = `
+    <h2 style="margin:0 0 4px;font-size:16px;border-bottom:2px solid #000;padding-bottom:6px;">ROTA // MELHOR SEQUÊNCIA</h2>
+    <div style="font-size:11px;margin-bottom:12px;">Paradas: ${deliveries.length} | Distância: ${$('distance').textContent} | Tempo: ${$('duration').textContent}</div>
+    ${rows}
+  `;
+
+  const win = window.open('', '_blank');
+  if (win) {
+    win.document.write(`<!DOCTYPE html><html><head><title>Manifesto de Rota</title></head><body style="font-family:'Courier New',monospace;padding:16px;max-width:380px;margin:auto;color:#000;">${htmlContent}<script>window.onload=()=>window.print();<\/script></body></html>`);
+    win.document.close();
+  } else {
+    const area = $('printFallbackArea');
+    area.innerHTML = htmlContent;
+    area.classList.remove('hidden');
+    window.print();
+    setTimeout(() => area.classList.add('hidden'), 1000);
+  }
+};
+
+load();
+</script>
+</body>
+</html>
