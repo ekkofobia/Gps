@@ -4206,6 +4206,8 @@ $('cfgSave').onclick = () => {
   } catch (e) {}
   toast('Configuração salva');
   showConfig(false);
+  // se o motoboy já está disponível, regrava na hora com o nome/loja novos (sem precisar recarregar a página)
+  if (!headerStageCross) motoGrava(true).catch(() => {});
 };
 loadConfig();
 $('menuOverlay').onclick = closeMenu;
