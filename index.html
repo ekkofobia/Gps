@@ -4062,11 +4062,79 @@ document.addEventListener('click', e => {
 
 $('menuBtn').onclick = toggleMenu;
 
-let headerStageCross = false;
-$('headerStageToggleBtn').onclick = () => {
-  headerStageCross = !headerStageCross;
+/* ===== Integração com o painel (disponibilidade e rotas via Supabase) =====
+   O número do WhatsApp em Configurações (logo) é a chave que liga este site ao painel. */
+const SUPA_URL = 'https://brcbqmjqvpemjleerrvb.supabase.co';
+const SUPA_KEY = 'sb_publishable_WBQAGB3skSRbEfbwxympYg_X__XUuUA';
+const supaH = { apikey: SUPA_KEY, Authorization: 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json' };
+const motoCfg = () => { try { return JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}'); } catch (e) { return {}; } };
+const motoWhats = () => String(motoCfg().whats || '').replace(/\D/g, '');
+let motoHeartbeat = null;
+async function motoGrava(pronto) {
+  const w = motoWhats(); if (!w) return false;
+  const r = await fetch(`${SUPA_URL}/rest/v1/entregadores?on_conflict=whats`, {
+    method: 'POST', headers: { ...supaH, Prefer: 'resolution=merge-duplicates,return=minimal' },
+    body: JSON.stringify({ whats: w, nome: (motoCfg().name || '').trim(), pronto, atualizado: new Date().toISOString() })
+  });
+  return r.ok;
+}
+async function motoSetPronto(on, silencio) {
+  if (on && !motoWhats()) { if (!silencio) toast('Informe seu WhatsApp nas configurações (logo)'); return false; }
+  try {
+    if (!(await motoGrava(on))) throw new Error('falhou');
+  } catch (e) { if (!silencio) toast('Sem conexão para mudar sua disponibilidade'); return false; }
+  clearInterval(motoHeartbeat);
+  if (on) motoHeartbeat = setInterval(() => motoGrava(true).catch(() => {}), 60000);
+  if (!silencio) toast(on ? 'Você está disponível para entregas' : 'Você está indisponível');
+  return true;
+}
+// recebe as entregas que o painel enviar (cada rota tem um "ref" único; já vistas não entram de novo)
+async function motoBuscaRotas() {
+  const w = motoWhats(); if (!w) return;
+  try {
+    const r = await fetch(`${SUPA_URL}/rest/v1/entregadores?whats=eq.${w}&select=rota`, { headers: supaH });
+    if (!r.ok) return;
+    const [row] = await r.json();
+    if (!row || !Array.isArray(row.rota)) return;
+    const vistas = new Set(JSON.parse(localStorage.getItem('rota_refs_vistas') || '[]'));
+    const novos = row.rota.filter(x => x.ref && !vistas.has(x.ref));
+    if (!novos.length) return;
+    novos.forEach(x => {
+      vistas.add(x.ref);
+      // mesmo formato do site: bairro e rua no nome oficial da lista (sem erro de grafia/acento)
+      const bairroOk = resolveCanonicalNeighborhoodName(String(x.neighborhood || '').trim());
+      const oficiais = OFFICIAL_STREETS_BY_NORM_KEY[normalizeStr(bairroOk)] || [];
+      const ruaTxt = String(x.street || '').trim();
+      const ruaOk = oficiais.find(r => normalizeStr(r) === normalizeStr(ruaTxt)) || ruaTxt;
+      deliveries.push({ id: crypto.randomUUID(), ref: x.ref, name: x.name || 'Cliente', neighborhood: bairroOk, street: ruaOk, city: x.city || '', number: x.number || '', complement: x.complement || '', done: false, lat: null, lon: null });
+    });
+    localStorage.setItem('rota_refs_vistas', JSON.stringify([...vistas].slice(-300)));
+    renderDeliveries(); save();
+    toast(`${novos.length} nova(s) entrega(s) recebida(s) do painel`);
+    if (fullStoreAddress() || store) await calculate(true, false);
+  } catch (e) {}
+}
+setInterval(motoBuscaRotas, 8000);
+
+// começa indisponível (ícone de X); o botão alterna entre disponível e indisponível
+// o estado (disponível/indisponível) fica guardado no celular e volta ao abrir o site
+let headerStageCross = true;
+function mostraEstagio() {
   $('stageIconCheck').classList.toggle('hidden', headerStageCross);
   $('stageIconCross').classList.toggle('hidden', !headerStageCross);
+}
+mostraEstagio();
+if (localStorage.getItem('rota_pronto') === '1') {
+  headerStageCross = false;
+  mostraEstagio();
+  motoSetPronto(true, true).then(ok => { if (!ok) { headerStageCross = true; mostraEstagio(); localStorage.setItem('rota_pronto', '0'); } });
+}
+$('headerStageToggleBtn').onclick = async () => {
+  const ficaPronto = headerStageCross;
+  if (!(await motoSetPronto(ficaPronto))) return;
+  headerStageCross = !ficaPronto;
+  mostraEstagio();
+  localStorage.setItem('rota_pronto', ficaPronto ? '1' : '0');
 };
 
 $('brandTitle').onclick = () => {
@@ -4096,6 +4164,7 @@ $('cfgSave').onclick = () => {
     localStorage.setItem(CONFIG_KEY, JSON.stringify({ name: $('cfgName').value.trim(), whats: $('cfgWhats').value.trim() }));
   } catch (e) {}
   toast('Configuração salva');
+  showConfig(false);
 };
 loadConfig();
 $('menuOverlay').onclick = closeMenu;
