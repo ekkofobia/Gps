@@ -4119,7 +4119,6 @@ async function motoSetPronto(on, silencio) {
     if (!(await motoGrava(on))) throw new Error('falhou');
   } catch (e) { if (!silencio) toast('Sem conexão para mudar sua disponibilidade'); return false; }
   clearInterval(motoHeartbeat);
-  if (on) motoHeartbeat = setInterval(() => motoGrava(true).catch(() => {}), 60000);
   if (!silencio) toast(on ? 'Você está disponível para entregas' : 'Você está indisponível');
   return true;
 }
@@ -4150,6 +4149,13 @@ async function motoBuscaRotas() {
   } catch (e) {}
 }
 setInterval(motoBuscaRotas, 8000);
+// se o site fechar ou o celular apagar a tela estando disponível, avisa o Supabase que saiu (sem depender de timer)
+addEventListener('pagehide', () => {
+  if (headerStageCross || !motoWhats()) return;
+  fetch(`${SUPA_URL}/rest/v1/entregadores?on_conflict=whats`, { method: 'POST', keepalive: true,
+    headers: { ...supaH, Prefer: 'resolution=merge-duplicates,return=minimal' },
+    body: JSON.stringify({ whats: motoWhats(), nome: (motoCfg().name || '').trim(), loja: chaveLoja(motoCfg().loja), pronto: false, atualizado: new Date().toISOString() }) }).catch(() => {});
+});
 
 // começa indisponível (ícone de X); o botão alterna entre disponível e indisponível
 // o estado (disponível/indisponível) fica guardado no celular e volta ao abrir o site
