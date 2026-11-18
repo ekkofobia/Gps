@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="pt-BR" class="dark">
 <head>
@@ -267,7 +266,22 @@
   /* Rotação do mapa (modo seguir) */
   #mapWrapper { overflow: hidden; }
   #fullscreenBtnText { display: none; }
-  #toggleFullscreenMapBtn { width: 36px; height: 36px; padding: 0 !important; justify-content: center; }
+  #toggleFullscreenMapBtn,
+  #mapMenuBtn,
+  #quickFitMapBtn {
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    justify-content: center !important;
+    background-color: #18181d !important;
+    border: 1px solid #23232a !important;
+    opacity: 1 !important;
+  }
+  #toggleFullscreenMapBtn:hover,
+  #mapMenuBtn:hover,
+  #quickFitMapBtn:hover {
+    background-color: #27272a !important;
+  }
   .map-fullscreen-active #mapHeaderRow {
     position: absolute !important; right: 12px; top: 50% !important; bottom: auto !important; left: auto !important; transform: translateY(-50%);
     z-index: 1000 !important; background: transparent !important; border: 0 !important; padding: 0 !important;
@@ -278,6 +292,15 @@
   .map-fullscreen-active #toggleFullscreenMapBtn { order: -1; }
   .map-fullscreen-active #mapMenuPanel { top: auto !important; bottom: 44px; }
   .map-fullscreen-active #activeFocusBar { display: none !important; }
+  .map-fullscreen-active #miniCardStrip {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    background: rgba(9, 9, 11, 0.48) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
+  }
   #simulateWalkBtn, #recenterUserBtn, #floatingMinimizeBtn { display: none !important; }
   #mapRotor { position: absolute; left: -50%; top: -50%; width: 200%; height: 200%; transform-origin: 50% 50%; transition: transform .35s linear; --unrot: 0deg; }
   #mapRotor > .leaflet-map-pane { left: 25%; top: 25%; }
@@ -299,12 +322,24 @@
         </svg>
       </div>
       <div class="flex items-baseline gap-2">
-        <span class="font-extrabold tracking-tight text-base text-white"><span class="relative">ROTA<span title="Online" aria-label="Online" class="absolute -top-1 -right-2 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-obsidian animate-pulse-slow"></span></span><span class="text-blue-500">.</span></span>
+        <span id="brandTitle" role="button" tabindex="0" title="Abrir mapa expandido" class="cursor-pointer select-none font-extrabold tracking-tight text-base text-white hover:text-blue-400 transition"><span class="relative">ROTA<span title="Online" aria-label="Online" class="absolute -top-1 -right-2 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-obsidian animate-pulse-slow"></span></span><span class="text-blue-500">.</span></span>
         <span class="hidden sm:inline-block text-[11px] font-mono text-zinc-500 uppercase tracking-widest">Dispatch OS</span>
       </div>
     </div>
 
     <div class="flex items-center gap-2.5">
+      <button id="headerStageToggleBtn" type="button" aria-label="Alternar estágio" title="Alternar estágio" class="w-9 h-9 rounded-lg bg-surface border border-borderline flex items-center justify-center transition active:scale-95">
+        <!-- Estágio 1: Círculo verde com check -->
+        <svg id="stageIconCheck" class="w-5 h-5" viewBox="0 0 24 24" fill="none">
+          <path d="M16.2 4.3A9 9 0 1 0 20.6 14.5" stroke="#6cc400" stroke-width="2.8" stroke-linecap="round"/>
+          <path d="M7.8 12.3L11.2 15.8L20.2 5.6" stroke="#6cc400" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <!-- Estágio 2: Círculo vermelho com X -->
+        <svg id="stageIconCross" class="w-5 h-5 hidden" viewBox="0 0 24 24" fill="none">
+          <path d="M16.2 4.3A9 9 0 1 0 20.6 10.2" stroke="#f00000" stroke-width="2.8" stroke-linecap="round"/>
+          <path d="M8.5 8.8L16.2 16.5M8.5 16.5L19.8 5.8" stroke="#f00000" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
       <button id="menuBtn" type="button" aria-label="Abrir menu" class="w-9 h-9 rounded-lg bg-surface border border-borderline flex items-center justify-center text-zinc-300 hover:text-white transition active:scale-95">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
@@ -548,13 +583,21 @@
                 </div>
               </div>
 
-              <!-- BOTÃO EXPANDIR / MINIMIZAR -->
-              <button id="toggleFullscreenMapBtn" type="button" title="Expandir mapa em tela cheia"
-                class="px-2.5 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-[11px] font-bold text-blue-300 flex items-center gap-1.5 transition active:scale-95">
-                <svg id="expandIcon" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <!-- BOTÃO ENQUADRAR ROTA NO MAPA (ABAIXO DO MENU HAMBÚRGUER DO MAPA) -->
+              <button id="quickFitMapBtn" type="button" title="Enquadrar rota no mapa" aria-label="Enquadrar rota no mapa"
+                class="w-8 h-8 rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline flex items-center justify-center text-zinc-200 hover:text-white shadow-lg transition active:scale-95">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V5a1 1 0 011-1h3M20 8V5a1 1 0 00-1-1h-3M4 16v3a1 1 0 001 1h3M20 16v3a1 1 0 01-1 1h-3M9 12h6M12 9v6"/>
+                </svg>
+              </button>
+
+              <!-- BOTÃO EXPANDIR / MINIMIZAR (COR SÓLIDA, MESMO TAMANHO 32x32 DO MENU DO MAPA) -->
+              <button id="toggleFullscreenMapBtn" type="button" title="Expandir mapa em tela cheia" aria-label="Expandir ou minimizar mapa"
+                class="w-8 h-8 rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline text-zinc-200 hover:text-white flex items-center justify-center shadow-lg transition active:scale-95">
+                <svg id="expandIcon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
                 </svg>
-                <svg id="minimizeIcon" class="w-3.5 h-3.5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                <svg id="minimizeIcon" class="w-4 h-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25"/>
                 </svg>
                 <span id="fullscreenBtnText">Expandir</span>
@@ -572,11 +615,11 @@
           </div>
 
           <!-- MINI CARDS DA MELHOR ROTA (TELA CHEIA) -->
-          <div id="miniCardStrip" class="hidden border-b border-borderline bg-elevated/60">
+          <div id="miniCardStrip" class="hidden border-b border-white/15 bg-obsidian/50">
             <div id="miniCardList" class="flex gap-2 overflow-x-auto px-3 py-2.5" style="scrollbar-width:none"></div>
             <div id="miniActions" class="hidden flex items-center gap-2 px-3 pb-2.5">
-              <button id="miniDelivered" type="button" class="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition active:scale-95">Entregue</button>
-              <button id="miniBack" type="button" class="flex-1 py-2 rounded-xl bg-elevated border border-borderline text-zinc-200 text-xs font-bold transition active:scale-95">Voltar</button>
+              <button id="miniDelivered" type="button" style="background-color:#059669;opacity:1;" class="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md transition active:scale-95">Entregue</button>
+              <button id="miniBack" type="button" style="background-color:#18181d;opacity:1;" class="flex-1 py-2 rounded-xl bg-elevated hover:bg-zinc-800 border border-zinc-700 text-white text-xs font-bold shadow-md transition active:scale-95">Voltar</button>
             </div>
           </div>
 
@@ -3793,20 +3836,39 @@ async function calculate(silent = false, preserveStoreCenter = false) {
 
 $('calculate').onclick = () => calculate(false, false);
 
-$('fitMap').onclick = () => {
+function fitRouteOnMap() {
+  userDragging = false;
+  dragPauseUntil = 0;
+  clearTimeout(dragResumeTimer);
+
   const groupItems = [...markers];
   if (userMarker) groupItems.push(userMarker);
 
-  if (routeLayer && !isMapExpanded) {
-    map.fitBounds(routeLayer.getBounds(), { padding: [40, 40] });
+  if (focusLegLayer && isMapExpanded) {
+    autoFollowUser = false;
+    updateAutoFollowButtonUI();
+    map.fitBounds(focusLegLayer.getBounds(), { padding: [55, 55] });
+  } else if (routeLayer) {
+    if (isMapExpanded) {
+      autoFollowUser = false;
+      updateAutoFollowButtonUI();
+    }
+    map.fitBounds(routeLayer.getBounds(), { padding: [48, 48] });
   } else if (groupItems.length) {
     autoFollowUser = false;
     updateAutoFollowButtonUI();
-    map.fitBounds(L.featureGroup(groupItems).getBounds(), { padding: [45, 45] });
+    map.fitBounds(L.featureGroup(groupItems).getBounds(), { padding: [48, 48] });
+  } else if (store?.lat && store?.lon) {
+    map.setView([store.lat, store.lon], 16, { animate: true });
+  } else if (lastUserCoords) {
+    map.setView([lastUserCoords.lat, lastUserCoords.lon], 17, { animate: true });
   } else {
     toast('Nenhum ponto marcado no mapa.');
   }
-};
+}
+
+$('fitMap').onclick = fitRouteOnMap;
+$('quickFitMapBtn').onclick = fitRouteOnMap;
 
 function openExternalUrlSafe(url) {
   const a = document.createElement('a');
@@ -3899,7 +3961,7 @@ function renderMiniCards() {
   const active = getActiveStop();
   $('miniCardList').innerHTML = pendentes.map(d => {
     const isActive = active && active.id === d.id;
-    return `<button type="button" data-mini="${d.id}" class="shrink-0 px-3.5 py-2 rounded-xl border text-xs font-bold whitespace-nowrap transition active:scale-95 ${isActive ? 'bg-amber-500/15 border-amber-500/50 text-amber-300' : 'bg-surface border-borderline text-zinc-200'}">${escapeHTML(d.name)}</button>`;
+    return `<button type="button" data-mini="${d.id}" style="background-color:${isActive ? '#f59e0b' : '#18181d'};opacity:1;" class="shrink-0 px-3.5 py-2 rounded-xl border text-xs font-extrabold whitespace-nowrap shadow-md transition active:scale-95 ${isActive ? 'bg-amber-500 border-amber-400 text-obsidian' : 'bg-elevated border-zinc-700 text-white'}">${escapeHTML(d.name)}</button>`;
   }).join('');
   const selecionadoPendente = miniSelectedId && pendentes.some(d => d.id === miniSelectedId);
   if (!selecionadoPendente) miniSelectedId = null;
@@ -3999,6 +4061,26 @@ document.addEventListener('click', e => {
 });
 
 $('menuBtn').onclick = toggleMenu;
+
+let headerStageCross = false;
+$('headerStageToggleBtn').onclick = () => {
+  headerStageCross = !headerStageCross;
+  $('stageIconCheck').classList.toggle('hidden', headerStageCross);
+  $('stageIconCross').classList.toggle('hidden', !headerStageCross);
+};
+
+$('brandTitle').onclick = () => {
+  showView('home');
+  setMapFullscreen(true);
+};
+$('brandTitle').onkeydown = e => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    showView('home');
+    setMapFullscreen(true);
+  }
+};
+
 $('gpsPill').onclick = () => {
   if (!isMapExpanded) return;
   toast('Buscando sua localização...');
@@ -4025,4 +4107,3 @@ load();
 </script>
 </body>
 </html>
-```
