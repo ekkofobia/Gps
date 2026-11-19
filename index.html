@@ -3071,7 +3071,7 @@ async function load() {
   }
 
   try {
-    $('storeAddress').value = localStorage.getItem('rota_store_address') || '';
+    $('storeAddress').value = ''; // o endereço vem sempre do painel, nunca do cache antigo
   } catch (e) {}
 
   try {
@@ -4350,6 +4350,10 @@ async function carregaEnderecoDoPainel() {
     const c = await fetch(`${SUPA_URL}/rest/v1/site_config?loja_id=eq.${loja.id}&key=eq.site&select=value`, { headers: supaH });
     const [cfg] = c.ok ? await c.json() : [];
     const v = cfg && cfg.value;
+    if (!v || !v.endereco) {
+      if ($('storeAddress').value) { $('storeAddress').value = ''; store = null; save(); }
+      return;
+    }
     if (v && v.endereco) {
       const mudou = $('storeAddress').value.trim() !== String(v.endereco).trim();
       $('storeAddress').value = v.endereco;
