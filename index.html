@@ -3679,7 +3679,12 @@ async function geocodeRawAddress(address) {
   const clean = address.trim();
   const withCountry = /brasil|brazil/i.test(clean) ? clean : `${clean}, Brasil`;
   const withoutNumber = withCountry.replace(/,\s*\d+[a-zA-Z0-9\-\/]*\s*,/, ', ');
-  return geocodeCandidates([withCountry, withoutNumber], clean, null);
+  // rua pode não existir no mapa: tenta também só o bairro (formato "Rua, n - Bairro, Juazeiro - BA")
+  const partes = clean.split(' - ');
+  const bairro = (partes[1] || '').replace(/,?\s*Juazeiro.*$/i, '').trim();
+  const rua = (partes[0] || '').replace(/,\s*\d+.*$/, '').trim();
+  const extras = bairro ? [`${rua}, ${bairro}, Juazeiro, Bahia, Brasil`, `${bairro}, Juazeiro, Bahia, Brasil`] : [];
+  return geocodeCandidates([withCountry, withoutNumber, ...extras], clean, null);
 }
 
 async function geocodeDelivery(d) {
@@ -3694,7 +3699,18 @@ async function geocodeDelivery(d) {
     [cleanStreet, cityHint, 'Brasil'].filter(Boolean).join(', '),
     [d.neighborhood, cityHint, 'Brasil'].filter(Boolean).join(', ')
   ];
-  return geocodeCandidates(candidates, `${d.street}, ${d.neighborhood}`, maxKm);
+  try {
+    return await geocodeCandidates(candidates, `${d.street}, ${d.neighborhood}`, maxKm);
+  } catch (e) {
+    // último recurso: sem o limite de distância e só com o bairro/rua em Juazeiro (o nome do site nem sempre bate com o do mapa)
+    const bairro = String(d.neighborhood || '').trim();
+    const extra = [
+      [cleanStreet, 'Juazeiro, Bahia, Brasil'].filter(Boolean).join(', '),
+      [bairro, 'Juazeiro, Bahia, Brasil'].filter(Boolean).join(', '),
+      [bairro, 'Juazeiro, BA'].filter(Boolean).join(', ')
+    ];
+    return geocodeCandidates(extra, `${d.street}, ${d.neighborhood}`, null);
+  }
 }
 
 function fullStoreAddress() {
