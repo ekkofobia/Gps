@@ -2236,7 +2236,6 @@ function buildRasterStyle(tiles, attribution, bgColor = '#0d0e11') {
 }
 
 const MAP_STYLES = {
-  // Estilos vetoriais 100% gratuitos e sem chave de API (OpenFreeMap)
   dark: 'https://tiles.openfreemap.org/styles/dark',
   light: 'https://tiles.openfreemap.org/styles/positron',
   satellite: buildRasterStyle(
@@ -2265,9 +2264,19 @@ const map = new maplibregl.Map({
   attributionControl: true
 });
 
-// Garante que as camadas de rota (OSRM) existam após cada troca de estilo do mapa
+// Garante que todos os gestos (arrastar, pinça/zoom e rotação) fiquem livres e nativos
+map.dragPan.enable();
+map.scrollZoom.enable();
+map.touchZoomRotate.enable();
+map.doubleClickZoom.enable();
+
+// Garante que as camadas de rota (OSRM) existam após trocar o estilo do mapa
 function ensureRouteLayers() {
-  if (!map.isStyleLoaded()) return;
+  try {
+    if (!map.getStyle()) return;
+  } catch (e) {
+    return;
+  }
 
   if (!map.getSource('route-source')) {
     map.addSource('route-source', {
@@ -2320,25 +2329,33 @@ function ensureRouteLayers() {
   }
 }
 
-map.on('style.load', ensureRouteLayers);
+map.on('style.load', () => {
+  ensureRouteLayers();
+  if (fullRouteGeoJSON) {
+    const rSrc = map.getSource('route-source');
+    if (rSrc) rSrc.setData(fullRouteGeoJSON);
+  }
+  if (focusLegGeoJSON) {
+    const fSrc = map.getSource('focus-source');
+    if (fSrc) fSrc.setData(focusLegGeoJSON);
+  }
+});
 
 function setFullRouteData(featureOrNull) {
   fullRouteGeoJSON = featureOrNull;
+  ensureRouteLayers();
   const src = map.getSource('route-source');
   if (src) {
     src.setData(featureOrNull || { type: 'FeatureCollection', features: [] });
-  } else if (map.isStyleLoaded()) {
-    ensureRouteLayers();
   }
 }
 
 function setFocusLegData(featureOrNull) {
   focusLegGeoJSON = featureOrNull;
+  ensureRouteLayers();
   const src = map.getSource('focus-source');
   if (src) {
     src.setData(featureOrNull || { type: 'FeatureCollection', features: [] });
-  } else if (map.isStyleLoaded()) {
-    ensureRouteLayers();
   }
 }
 
@@ -2350,31 +2367,30 @@ function getGeometryBounds(geometry) {
   return bounds;
 }
 
-// Rotação e inclinação 3D estilo Uber/99 via MapLibre bearing & pitch
+// Rotação e inclinação 3D estilo Uber/99 via MapLibre bearing & pitch sem interferir nos gestos
 const MAP_ROTATE_FOLLOW = true;
 let lastGpsHeadingAt = 0;
 const DRAG_RESUME_MS = 6000;
-let userDragging = false;
+let userInteracting = false;
 let dragPauseUntil = 0;
 let dragResumeTimer = null;
 
 function isFollowingNow() {
-  return isMapExpanded && autoFollowUser && !userDragging && Date.now() >= dragPauseUntil;
+  return isMapExpanded && autoFollowUser && !userInteracting && Date.now() >= dragPauseUntil;
 }
 
 function applyMapRotation() {
+  if (userInteracting || Date.now() < dragPauseUntil) return;
   const on = MAP_ROTATE_FOLLOW && isFollowingNow();
   if (on) {
-    map.easeTo({
+    map.jumpTo({
       bearing: currentHeading,
-      pitch: 52,
-      duration: 320
+      pitch: 52
     });
   } else if (!isMapExpanded && (map.getBearing() !== 0 || map.getPitch() !== 0)) {
-    map.easeTo({
+    map.jumpTo({
       bearing: 0,
-      pitch: 0,
-      duration: 300
+      pitch: 0
     });
   }
 }
@@ -2421,6 +2437,9 @@ $('mostraMinhaSeta').onclick = () => {
     lastUserCoords = { lat, lon };
     applyUserMarkerState(lat, lon, Math.round(acc || 0), currentHeading || 0, true);
     map.flyTo({ center: [lon, lat], zoom: Math.max(map.getZoom(), 16) });
+    if (getActiveStop()) {
+      focusRouteToSelectedCard(false);
+    }
   }, () => toast('Não consegui sua localização. Verifique a permissão do GPS.'), { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 });
 };
 setMapMode('dark');
@@ -2527,8 +2546,7 @@ async function useGpsForStoreAndCalculate() {
       $('storeAddress').value = rev.address;
       store = { lat, lon, city: rev.city, state: rev.state };
 
-      clearMapLayers(false);
-      addMarker(store.lat, store.lon, 'L', 'store');
+      redrawMarkers();
       map.flyTo({ center: [store.lon, store.lat], zoom: 16 });
 
       $('storeStatus').textContent = store.city ? `GPS Fixado (${store.city})` : 'GPS Fixado';
@@ -2556,8 +2574,7 @@ async function useGpsForStoreAndCalculate() {
       const rev = await reverseGeocodeStore(c.lat, c.lng);
       $('storeAddress').value = rev.address;
       store = { lat: c.lat, lon: c.lng, city: rev.city, state: rev.state };
-      clearMapLayers(false);
-      addMarker(store.lat, store.lon, 'L', 'store');
+      redrawMarkers();
       map.flyTo({ center: [store.lon, store.lat], zoom: 16 });
       $('storeStatus').textContent = 'Fixada no mapa';
       $('storeStatus').className = 'text-[10px] font-mono text-emerald-400';
@@ -2627,18 +2644,17 @@ function applyUserMarkerState(lat, lon, acc, headingDeg, shouldPan = false) {
   }
 
   if (shouldPan && isFollowingNow()) {
-    map.easeTo({
+    map.jumpTo({
       center: [lon, lat],
       zoom: Math.max(map.getZoom(), 16.8),
       bearing: currentHeading,
-      pitch: 52,
-      duration: 350
+      pitch: 52
     });
   }
 }
 
 function handleDeviceCompass(e) {
-  if (!isMapExpanded || !userMarker) return;
+  if (!isMapExpanded || !userMarker || userInteracting) return;
   if (Date.now() - lastGpsHeadingAt < 5000) return;
   let compassHeading = null;
   if (typeof e.webkitCompassHeading === 'number') {
@@ -2666,36 +2682,42 @@ function updateAutoFollowButtonUI() {
   }
 }
 
-map.on('dragstart', () => {
-  userDragging = true;
+// Eventos oficiais do MapLibre para gestos de arraste e pinça (zoom) sem bloquear o toque
+map.on('movestart', e => {
+  if (e && e.originalEvent) {
+    userInteracting = true;
+    clearTimeout(dragResumeTimer);
+  }
 });
 
-map.on('dragend', () => {
-  userDragging = false;
-  dragPauseUntil = Date.now() + DRAG_RESUME_MS;
-  clearTimeout(dragResumeTimer);
-  dragResumeTimer = setTimeout(() => {
-    if (isFollowingNow() && lastUserCoords) {
-      map.easeTo({
-        center: [lastUserCoords.lon, lastUserCoords.lat],
-        bearing: currentHeading,
-        pitch: 52,
-        duration: 450
-      });
-    }
-  }, DRAG_RESUME_MS + 50);
+map.on('moveend', e => {
+  if (e && e.originalEvent) {
+    userInteracting = false;
+    dragPauseUntil = Date.now() + DRAG_RESUME_MS;
+    clearTimeout(dragResumeTimer);
+    dragResumeTimer = setTimeout(() => {
+      if (isFollowingNow() && lastUserCoords) {
+        map.jumpTo({
+          center: [lastUserCoords.lon, lastUserCoords.lat],
+          bearing: currentHeading,
+          pitch: 52
+        });
+      }
+    }, DRAG_RESUME_MS + 50);
+  }
 });
 
 $('recenterUserBtn').onclick = () => {
   autoFollowUser = true;
+  userInteracting = false;
+  dragPauseUntil = 0;
   updateAutoFollowButtonUI();
   if (lastUserCoords) {
-    map.easeTo({
+    map.jumpTo({
       center: [lastUserCoords.lon, lastUserCoords.lat],
       zoom: Math.max(map.getZoom(), 16.8),
       bearing: currentHeading,
-      pitch: 52,
-      duration: 400
+      pitch: 52
     });
   } else {
     startLiveLocationTracking();
@@ -2703,8 +2725,6 @@ $('recenterUserBtn').onclick = () => {
 };
 
 function processLivePosition(pos) {
-  if (!isMapExpanded) return;
-
   gpsHardwareBlocked = false;
   $('simulateWalkBtn').classList.add('hidden');
   stopRouteSimulation();
@@ -2731,14 +2751,17 @@ function processLivePosition(pos) {
     lastHeadingCoords = { lat, lon };
   }
 
+  const isFirstFix = !lastUserCoords;
   lastUserCoords = { lat, lon };
-  applyUserMarkerState(lat, lon, acc, nextHeading, true);
+  applyUserMarkerState(lat, lon, acc, nextHeading, isMapExpanded);
 
-  $('gpsStatusLabel').textContent = 'GPS ativo em tempo real';
-  $('gpsAccuracyLabel').textContent = acc ? `Precisão ±${acc}m` : 'Acompanhando movimento';
+  if (isMapExpanded) {
+    $('gpsStatusLabel').textContent = 'GPS ativo em tempo real';
+    $('gpsAccuracyLabel').textContent = acc ? `Precisão ±${acc}m` : 'Acompanhando movimento';
+  }
 
   const now = Date.now();
-  if (now - lastLegRefreshTime > 8000 && getActiveStop()) {
+  if ((isFirstFix || now - lastLegRefreshTime > 6000) && getActiveStop()) {
     lastLegRefreshTime = now;
     focusRouteToSelectedCard(false);
   }
@@ -2753,12 +2776,12 @@ function attachGeoWatch(highAccuracy) {
   geoWatchId = navigator.geolocation.watchPosition(
     processLivePosition,
     err => {
-      if (!isMapExpanded) return;
       if (highAccuracy && err.code === 3) {
         attachGeoWatch(false);
         return;
       }
       gpsHardwareBlocked = true;
+      if (!isMapExpanded) return;
       const motivos = {
         1: ['Permissão de localização negada', 'Libere a localização para o navegador'],
         2: ['Sinal de GPS indisponível', 'Saia para um lugar aberto e tente de novo'],
@@ -2771,7 +2794,7 @@ function attachGeoWatch(highAccuracy) {
     },
     {
       enableHighAccuracy: highAccuracy,
-      maximumAge: 0,
+      maximumAge: 2000,
       timeout: highAccuracy ? 8000 : 15000
     }
   );
@@ -2789,6 +2812,8 @@ function startRouteSimulation() {
   }
 
   autoFollowUser = true;
+  userInteracting = false;
+  dragPauseUntil = 0;
   updateAutoFollowButtonUI();
   $('simulateWalkBtn').textContent = 'Parar Sim.';
   let idx = 0;
@@ -2831,10 +2856,9 @@ $('simulateWalkBtn').onclick = () => {
 function startLiveLocationTracking() {
   stopLiveLocationTracking();
   autoFollowUser = true;
+  userInteracting = false;
+  dragPauseUntil = 0;
   updateAutoFollowButtonUI();
-
-  lastUserCoords = null;
-  lastHeadingCoords = null;
 
   if (!('geolocation' in navigator)) {
     gpsHardwareBlocked = true;
@@ -2881,12 +2905,6 @@ function stopLiveLocationTracking() {
     window.removeEventListener('deviceorientation', handleDeviceCompass, true);
     compassListenerActive = false;
   }
-  if (userMarker) {
-    userMarker.remove();
-    userMarker = null;
-  }
-  lastUserCoords = null;
-  lastHeadingCoords = null;
 }
 
 function setMapFullscreen(expand) {
@@ -2913,7 +2931,10 @@ function setMapFullscreen(expand) {
     $('liveLegendItem').classList.add('flex');
 
     [0, 80, 250].forEach(delay => {
-      setTimeout(() => map.resize(), delay);
+      setTimeout(() => {
+        map.resize();
+        ensureRouteLayers();
+      }, delay);
     });
 
     setTimeout(() => {
@@ -2933,11 +2954,12 @@ function setMapFullscreen(expand) {
     $('liveLegendItem').classList.remove('flex');
 
     stopLiveLocationTracking();
-    map.easeTo({ bearing: 0, pitch: 0, duration: 250 });
+    map.jumpTo({ bearing: 0, pitch: 0 });
 
     [0, 100].forEach(delay => {
       setTimeout(() => {
         map.resize();
+        ensureRouteLayers();
         if (store?.lat && store?.lon) {
           map.flyTo({ center: [store.lon, store.lat], zoom: 15.5 });
         }
@@ -3031,15 +3053,21 @@ async function load() {
   }
 
   try {
-    $('storeAddress').value = '';
+    const savedAddr = localStorage.getItem('rota_store_address') || '';
+    if (savedAddr && !$('storeAddress').value) {
+      $('storeAddress').value = savedAddr;
+    }
   } catch (e) {}
 
   try {
     const savedStore = localStorage.getItem('rota_store_coords');
     if (savedStore) {
-      store = JSON.parse(savedStore);
-      if (store?.lat && store?.lon) {
-        addMarker(store.lat, store.lon, 'L', 'store');
+      const parsed = JSON.parse(savedStore);
+      const lat = Number(parsed?.lat);
+      const lon = Number(parsed?.lon ?? parsed?.lng);
+      if (Number.isFinite(lat) && Number.isFinite(lon)) {
+        store = { lat, lon, city: parsed.city || '' };
+        redrawMarkers();
         map.jumpTo({ center: [store.lon, store.lat], zoom: 15.5 });
         $('storeStatus').textContent = store.city ? `Fixada (${store.city})` : 'Fixada no mapa';
         $('storeStatus').className = 'text-[10px] font-mono text-emerald-400';
@@ -3057,12 +3085,35 @@ async function load() {
   renderDeliveries();
   updateStats();
 
+  if ('geolocation' in navigator) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      lastUserCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      applyUserMarkerState(lastUserCoords.lat, lastUserCoords.lon, Math.round(pos.coords.accuracy || 0), 0, false);
+      if (deliveries.length) focusRouteToSelectedCard(false);
+    }, () => {}, { enableHighAccuracy: true, maximumAge: 15000, timeout: 6000 });
+  }
+
   if (!store && fullStoreAddress()) {
     await geocodeTypedStoreAddress();
   }
 
-  if (deliveries.length && (store || fullStoreAddress())) {
-    await calculate(true, true);
+  if (deliveries.length) {
+    if (store || fullStoreAddress()) {
+      await calculate(true, true);
+    } else {
+      for (const d of deliveries) {
+        if (!d.lat || !d.lon) {
+          try {
+            const c = await geocodeDelivery(d);
+            d.lat = c.lat;
+            d.lon = c.lon;
+          } catch (e) {}
+        }
+      }
+      save();
+      redrawMarkers();
+      await focusRouteToSelectedCard(true);
+    }
   }
 }
 
@@ -3307,7 +3358,7 @@ async function selectRouteTargetCard(id) {
 }
 
 // ==========================================
-// ROTEAMENTO OSRM DO TRECHO ATIVO
+// ROTEAMENTO OSRM: DE ONDE VOCÊ ESTÁ (OU LOJA) ATÉ O DESTINO DO CLIENTE
 // ==========================================
 async function focusRouteToSelectedCard(zoomToLeg = true) {
   const target = getActiveStop();
@@ -3315,8 +3366,28 @@ async function focusRouteToSelectedCard(zoomToLeg = true) {
   setFocusLegData(null);
   activeLegCoords = [];
 
-  if (!target || !store || !target.lat || !target.lon) {
+  if (!target) {
     $('activeFocusBar').classList.add('hidden');
+    return;
+  }
+
+  if (!target.lat || !target.lon) {
+    try {
+      const coords = await geocodeDelivery(target);
+      target.lat = coords.lat;
+      target.lon = coords.lon;
+      save();
+      redrawMarkers();
+    } catch (e) {
+      return;
+    }
+  }
+
+  const startPoint = lastUserCoords || store;
+  if (!startPoint || !startPoint.lat || !startPoint.lon) {
+    $('activeFocusBar').classList.remove('hidden');
+    $('activeFocusName').textContent = `${target.name} (${target.street}, ${target.number || 's/n'})`;
+    $('activeFocusLeg').textContent = 'Ative sua seta GPS';
     return;
   }
 
@@ -3325,7 +3396,6 @@ async function focusRouteToSelectedCard(zoomToLeg = true) {
   $('activeFocusLeg').textContent = 'Traçando OSRM...';
 
   try {
-    const startPoint = (isMapExpanded && lastUserCoords) ? lastUserCoords : store;
     const url = `https://router.project-osrm.org/route/v1/driving/${startPoint.lon},${startPoint.lat};${target.lon},${target.lat}?overview=full&geometries=geojson`;
     const res = await fetch(url);
     if (!res.ok) throw new Error();
@@ -3405,7 +3475,15 @@ $('addDelivery').onclick = async () => {
   if (fullStoreAddress() || store) {
     await calculate(true, false);
   } else {
-    toast('Pedido adicionado! Fixe o endereço da loja para otimizar a rota.');
+    try {
+      const coords = await geocodeDelivery(newItem);
+      newItem.lat = coords.lat;
+      newItem.lon = coords.lon;
+      save();
+      redrawMarkers();
+      await focusRouteToSelectedCard(true);
+    } catch (e) {}
+    toast('Pedido adicionado!');
   }
 };
 
@@ -3429,6 +3507,9 @@ window.removeDelivery = async id => {
   renderDeliveries();
   if (fullStoreAddress() || store) {
     await calculate(true, false);
+  } else {
+    redrawMarkers();
+    await focusRouteToSelectedCard(false);
   }
 };
 
@@ -3474,8 +3555,7 @@ async function geocodeTypedStoreAddress() {
 
   try {
     store = await geocodeRawAddress(address);
-    clearMapLayers(false);
-    addMarker(store.lat, store.lon, 'L', 'store');
+    redrawMarkers();
     map.flyTo({ center: [store.lon, store.lat], zoom: 15.5 });
     $('storeStatus').textContent = store.city ? `Fixada (${store.city})` : 'Fixada no mapa';
     $('storeStatus').className = 'text-[10px] font-mono text-emerald-400';
@@ -3695,10 +3775,11 @@ function addMarker(lat, lon, label, state = 'stop', popupTitle = '', deliveryId 
 async function getCoordinates() {
   if (!store) {
     const address = fullStoreAddress();
-    if (!address) throw new Error('Informe o endereço da loja ou clique em Usar GPS.');
+    if (!address) throw new Error('Informe o endereço da loja.');
 
     $('loadingText').textContent = 'Localizando base...';
     store = await geocodeRawAddress(address);
+    redrawMarkers();
     map.flyTo({ center: [store.lon, store.lat], zoom: 15.5 });
     $('storeStatus').textContent = store.city ? `Fixada (${store.city})` : 'Fixada no mapa';
     $('storeStatus').className = 'text-[10px] font-mono text-emerald-400';
@@ -3767,8 +3848,8 @@ function redrawMarkers() {
   markers.forEach(m => m.remove());
   markers = [];
 
-  if (store) {
-    addMarker(store.lat, store.lon, 'L', 'store');
+  if (store && Number.isFinite(Number(store.lat)) && Number.isFinite(Number(store.lon))) {
+    addMarker(Number(store.lat), Number(store.lon), 'L', 'store');
   }
 
   const activeStop = getActiveStop();
@@ -3781,8 +3862,6 @@ function redrawMarkers() {
 }
 
 function drawRoute(trip, preserveStoreCenter = false) {
-  clearMapLayers(false);
-
   setFullRouteData({
     type: 'Feature',
     geometry: trip.geometry
@@ -3804,7 +3883,7 @@ async function calculate(silent = false, preserveStoreCenter = false) {
     return;
   }
   if (!store && !fullStoreAddress()) {
-    if (!silent) toast('Informe o endereço da loja ou clique em Usar GPS.');
+    if (!silent) toast('Informe o endereço da loja.');
     return;
   }
 
@@ -3857,7 +3936,7 @@ async function calculate(silent = false, preserveStoreCenter = false) {
 $('calculate').onclick = () => calculate(false, false);
 
 function fitRouteOnMap() {
-  userDragging = false;
+  userInteracting = false;
   dragPauseUntil = 0;
   clearTimeout(dragResumeTimer);
 
@@ -4157,7 +4236,13 @@ function showView(name) {
   $('viewReport').classList.toggle('hidden', name !== 'report');
   closeMenu();
   if (name === 'report') renderReport();
-  if (name === 'home') setTimeout(() => map.resize(), 60);
+  if (name === 'home') {
+    setTimeout(() => {
+      map.resize();
+      ensureRouteLayers();
+      redrawMarkers();
+    }, 60);
+  }
   window.scrollTo(0, 0);
 }
 
@@ -4295,25 +4380,35 @@ async function carregaEnderecoDoPainel() {
     const [cfg] = c.ok ? await c.json() : [];
     const v = cfg && cfg.value;
     if (!v || !v.endereco) {
-      if ($('storeAddress').value) { $('storeAddress').value = ''; store = null; save(); }
+      if ($('storeAddress').value) { $('storeAddress').value = ''; store = null; redrawMarkers(); save(); }
       return;
     }
     if (v && v.endereco) {
       const mudou = $('storeAddress').value.trim() !== String(v.endereco).trim();
       $('storeAddress').value = v.endereco;
-      if (v.coords) localStorage.setItem('rota_loja_coords', JSON.stringify(v.coords));
-      if (mudou) {
-        const c2 = v.coords && Number.isFinite(+v.coords.lat) && Number.isFinite(+(v.coords.lng ?? v.coords.lon));
-        store = c2 ? { lat: +v.coords.lat, lon: +(v.coords.lng ?? v.coords.lon), city: '' } : null;
-        if (store) {
-          $('storeStatus').textContent = 'Fixada no mapa';
-          $('storeStatus').className = 'text-[10px] font-mono text-emerald-400';
+      const c2 = v.coords && Number.isFinite(+v.coords.lat) && Number.isFinite(+(v.coords.lng ?? v.coords.lon));
+      if (c2) {
+        store = { lat: +v.coords.lat, lon: +(v.coords.lng ?? v.coords.lon), city: '' };
+        localStorage.setItem('rota_loja_coords', JSON.stringify(store));
+      } else if (mudou || !store) {
+        store = await geocodeRawAddress(v.endereco).catch(() => null);
+      }
+      if (store) {
+        $('storeStatus').textContent = 'Fixada no mapa';
+        $('storeStatus').className = 'text-[10px] font-mono text-emerald-400';
+        redrawMarkers();
+        if (!deliveries.length) {
+          map.flyTo({ center: [store.lon, store.lat], zoom: 15.5 });
         }
-        save();
+      }
+      save();
+      if (mudou && deliveries.length && store) {
+        await calculate(true, false);
       }
     }
   } catch (e) {}
 }
+
 const loc = $('locateStore'); if (loc) loc.style.display = 'none';
 loadConfig();
 carregaEnderecoDoPainel();
@@ -4323,10 +4418,15 @@ document.querySelectorAll('[data-view]').forEach(b => {
   b.onclick = () => showView(b.dataset.view);
 });
 
-map.on('load', () => {
+if (map.loaded()) {
   ensureRouteLayers();
   load();
-});
+} else {
+  map.on('load', () => {
+    ensureRouteLayers();
+    load();
+  });
+}
 </script>
 </body>
 </html>
