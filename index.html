@@ -74,6 +74,11 @@
     background: #0d0e11 !important;
     font-family: 'Inter', sans-serif !important;
   }
+  .maplibregl-marker {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 0 !important;
+  }
   .maplibregl-ctrl-attrib {
     background: rgba(9, 9, 11, 0.78) !important;
     color: #71717a !important;
@@ -108,28 +113,32 @@
     background: transparent !important;
   }
 
-  /* Custom Map Pins */
+  /* Custom Map Pins (Cravados no centro exato da coordenada) */
   .pin-wrap {
-    position: relative;
     width: 32px;
     height: 32px;
-    display: grid;
-    place-items: center;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+    user-select: none;
   }
   .pin-badge {
     width: 30px;
     height: 30px;
     border-radius: 10px;
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     font-weight: 800;
+    line-height: 1;
     color: #fff;
     border: 2px solid #09090b;
     box-shadow: 0 4px 14px rgba(0,0,0,0.65);
-    transition: transform 0.2s ease;
   }
   .pin-store {
     background: #10b981;
@@ -141,7 +150,6 @@
   .pin-active {
     background: #f59e0b;
     color: #09090b;
-    transform: scale(1.15);
     box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.38), 0 6px 18px rgba(0,0,0,0.75);
   }
   .pin-done {
@@ -155,8 +163,11 @@
     position: relative;
     width: 52px;
     height: 52px;
-    display: grid;
-    place-items: center;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     pointer-events: none;
   }
   .user-arrow-pulse {
@@ -174,14 +185,16 @@
     background: #09090b;
     border: 2.5px solid #38bdf8;
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.9), 0 0 16px rgba(56, 189, 248, 0.65);
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .user-arrow-rotator {
     width: 24px;
     height: 24px;
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transform-origin: center center;
   }
 
@@ -257,7 +270,8 @@
   #mapMenuBtn,
   #mapOfflineBtn,
   #openMaps,
-  #quickFitMapBtn {
+  #quickFitMapBtn,
+  #toggleRouteLinesBtn {
     width: 37px !important;
     height: 37px !important;
     padding: 0 !important;
@@ -268,7 +282,8 @@
   }
   #toggleFullscreenMapBtn:hover,
   #mapMenuBtn:hover,
-  #quickFitMapBtn:hover {
+  #quickFitMapBtn:hover,
+  #toggleRouteLinesBtn:hover {
     background-color: #27272a !important;
   }
   .map-fullscreen-active #mapHeaderRow {
@@ -283,6 +298,8 @@
   .map-fullscreen-active #mapThemePair #mapMenuBtn { order: 1; }
   .map-fullscreen-active #mapThemePair #openMaps { order: 2; }
   .map-fullscreen-active #mapThemePair #mapOfflineBtn { order: 3; }
+  .map-fullscreen-active #quickFitMapBtn { order: 4; }
+  .map-fullscreen-active #toggleRouteLinesBtn { order: 5; }
   .map-fullscreen-active #activeFocusBar { display: none !important; }
   .map-fullscreen-active #miniCardStrip {
     position: absolute !important;
@@ -555,6 +572,17 @@
                 class="w-[37px] h-[37px] rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline flex items-center justify-center text-zinc-200 hover:text-white shadow-lg transition active:scale-95">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V5a1 1 0 011-1h3M20 8V5a1 1 0 00-1-1h-3M4 16v3a1 1 0 001 1h3M20 16v3a1 1 0 01-1 1h-3M9 12h6M12 9v6"/>
+                </svg>
+              </button>
+
+              <!-- BOTÃO DESLIGAR / LIGAR LINHAS DA ROTA NO MAPA -->
+              <button id="toggleRouteLinesBtn" type="button" title="Ocultar ou mostrar linhas da rota" aria-label="Ocultar ou mostrar linhas da rota"
+                class="w-[37px] h-[37px] rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline flex items-center justify-center text-blue-400 hover:text-white shadow-lg transition active:scale-95">
+                <svg id="routeLineOnIcon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 000-7h-11a3.5 3.5 0 010-7H15"/><circle cx="18" cy="5" r="3"/>
+                </svg>
+                <svg id="routeLineOffIcon" class="w-4 h-4 hidden text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 2l20 20"/><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 002.47-.99"/><circle cx="18" cy="5" r="3"/>
                 </svg>
               </button>
 
@@ -1544,6 +1572,7 @@ let focusLegGeoJSON = null;
 let activeLegCoords = [];
 let markers = [];
 let routeReady = false;
+let routeLinesVisible = true;
 let activeModalNeighborhood = '';
 let selectedStopId = null;
 let holdPromptCardId = null;
@@ -2202,7 +2231,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ==========================================
-// MAPA MAPLIBRE GL JS (2D ESTÁVEL + OSRM)
+// MAPA MAPLIBRE GL JS (2D ESTÁVEL + LINHAS LADO A LADO)
 // ==========================================
 function buildRasterStyle(tiles, attribution, bgColor = '#0d0e11') {
   return {
@@ -2269,13 +2298,15 @@ map.touchZoomRotate.enable();
 map.touchZoomRotate.disableRotation();
 map.doubleClickZoom.enable();
 
-// Garante que as camadas de rota (OSRM) existam e fiquem acima do mapa sem cortes
+// Garante que as camadas de rota (OSRM) existam e fiquem lado a lado quando sobrepostas
 function ensureRouteLayers() {
   try {
     if (!map.getStyle()) return;
   } catch (e) {
     return;
   }
+
+  const vis = routeLinesVisible ? 'visible' : 'none';
 
   if (!map.getSource('route-source')) {
     map.addSource('route-source', {
@@ -2290,8 +2321,8 @@ function ensureRouteLayers() {
       id: 'route-casing',
       type: 'line',
       source: 'route-source',
-      layout: { 'line-join': 'round', 'line-cap': 'round' },
-      paint: { 'line-color': '#1d4ed8', 'line-width': 8, 'line-opacity': 0.35 }
+      layout: { 'line-join': 'round', 'line-cap': 'round', 'visibility': vis },
+      paint: { 'line-color': '#1d4ed8', 'line-width': 6, 'line-opacity': 0.35, 'line-offset': -3 }
     });
   }
   if (!map.getLayer('route-line')) {
@@ -2299,8 +2330,8 @@ function ensureRouteLayers() {
       id: 'route-line',
       type: 'line',
       source: 'route-source',
-      layout: { 'line-join': 'round', 'line-cap': 'round' },
-      paint: { 'line-color': '#3b82f6', 'line-width': 4.5, 'line-opacity': 0.9 }
+      layout: { 'line-join': 'round', 'line-cap': 'round', 'visibility': vis },
+      paint: { 'line-color': '#3b82f6', 'line-width': 4, 'line-opacity': 0.92, 'line-offset': -3 }
     });
   }
 
@@ -2317,8 +2348,8 @@ function ensureRouteLayers() {
       id: 'focus-casing',
       type: 'line',
       source: 'focus-source',
-      layout: { 'line-join': 'round', 'line-cap': 'round' },
-      paint: { 'line-color': '#78350f', 'line-width': 10, 'line-opacity': 0.55 }
+      layout: { 'line-join': 'round', 'line-cap': 'round', 'visibility': vis },
+      paint: { 'line-color': '#78350f', 'line-width': 7, 'line-opacity': 0.5, 'line-offset': 3 }
     });
   }
   if (!map.getLayer('focus-line')) {
@@ -2326,11 +2357,31 @@ function ensureRouteLayers() {
       id: 'focus-line',
       type: 'line',
       source: 'focus-source',
-      layout: { 'line-join': 'round', 'line-cap': 'round' },
-      paint: { 'line-color': '#f59e0b', 'line-width': 5.5, 'line-opacity': 1 }
+      layout: { 'line-join': 'round', 'line-cap': 'round', 'visibility': vis },
+      paint: { 'line-color': '#f59e0b', 'line-width': 4.5, 'line-opacity': 1, 'line-offset': 3 }
     });
   }
 }
+
+function applyRouteLinesVisibility() {
+  ensureRouteLayers();
+  const vis = routeLinesVisible ? 'visible' : 'none';
+  ['route-casing', 'route-line', 'focus-casing', 'focus-line'].forEach(id => {
+    if (map.getLayer(id)) {
+      map.setLayoutProperty(id, 'visibility', vis);
+    }
+  });
+  $('routeLineOnIcon').classList.toggle('hidden', !routeLinesVisible);
+  $('routeLineOffIcon').classList.toggle('hidden', routeLinesVisible);
+  $('toggleRouteLinesBtn').classList.toggle('text-blue-400', routeLinesVisible);
+  $('toggleRouteLinesBtn').classList.toggle('text-zinc-500', !routeLinesVisible);
+}
+
+$('toggleRouteLinesBtn').onclick = () => {
+  routeLinesVisible = !routeLinesVisible;
+  applyRouteLinesVisibility();
+  toast(routeLinesVisible ? 'Linhas da rota visíveis' : 'Linhas da rota ocultas');
+};
 
 map.on('style.load', () => {
   ensureRouteLayers();
@@ -2342,6 +2393,7 @@ map.on('style.load', () => {
     const fSrc = map.getSource('focus-source');
     if (fSrc) fSrc.setData(focusLegGeoJSON);
   }
+  applyRouteLinesVisibility();
 });
 
 function setFullRouteData(featureOrNull) {
@@ -2372,7 +2424,6 @@ function getGeometryBounds(geometry) {
 
 // ==========================================
 // CONTROLE ESTÁVEL DE ORIENTAÇÃO DO MAPA
-// (Norte sempre para cima por padrão; só gira suavemente quando em deslocamento real)
 // ==========================================
 const DRAG_RESUME_MS = 6000;
 let userInteracting = false;
@@ -2629,7 +2680,6 @@ function createUserArrowElement() {
 
 function applyUserMarkerState(lat, lon, acc, headingDeg, shouldPan = false) {
   currentHeading = (headingDeg + 360) % 360;
-  // Suavização angular para evitar giros bruscos ou de ponta cabeça
   const diff = shortestAngleDelta(smoothedHeading, currentHeading);
   smoothedHeading = (smoothedHeading + diff * 0.45 + 360) % 360;
 
@@ -2724,7 +2774,6 @@ function processLivePosition(pos) {
   const speed = pos.coords.speed;
   const rawHeading = pos.coords.heading;
 
-  // Só atualiza direção quando há deslocamento real (> 1.7 m/s ou > 8 metros)
   let nextHeading = currentHeading;
   if (rawHeading !== null && !Number.isNaN(rawHeading) && typeof speed === 'number' && speed > 1.7) {
     nextHeading = rawHeading;
@@ -2909,6 +2958,7 @@ function setMapFullscreen(expand) {
       setTimeout(() => {
         map.resize();
         ensureRouteLayers();
+        redrawMarkers();
       }, delay);
     });
 
@@ -2935,6 +2985,7 @@ function setMapFullscreen(expand) {
       setTimeout(() => {
         map.resize();
         ensureRouteLayers();
+        redrawMarkers();
         if (store?.lat && store?.lon) {
           map.flyTo({ center: [store.lon, store.lat], zoom: 15.5 });
         }
@@ -3333,7 +3384,7 @@ async function selectRouteTargetCard(id) {
 }
 
 // ==========================================
-// ROTEAMENTO OSRM: DE ONDE VOCÊ ESTÁ (OU LOJA) ATÉ O DESTINO DO CLIENTE
+// ROTEAMENTO OSRM: TRECHO ATIVO (LINHA LARANJA)
 // ==========================================
 async function focusRouteToSelectedCard(zoomToLeg = true) {
   const target = getActiveStop();
@@ -3371,7 +3422,7 @@ async function focusRouteToSelectedCard(zoomToLeg = true) {
   $('activeFocusLeg').textContent = 'Traçando OSRM...';
 
   try {
-    const url = `https://router.project-osrm.org/route/v1/driving/${startPoint.lon},${startPoint.lat};${target.lon},${target.lat}?overview=full&geometries=geojson`;
+    const url = `https://router.project-osrm.org/route/v1/driving/${startPoint.lon},${startPoint.lat};${target.lon},${target.lat}?overview=full&geometries=geojson&alternatives=false`;
     const res = await fetch(url);
     if (!res.ok) throw new Error();
     const data = await res.json();
@@ -3733,12 +3784,12 @@ function addMarker(lat, lon, label, state = 'stop', popupTitle = '', deliveryId 
 
   const popup = new maplibregl.Popup({ offset: 18, closeButton: false }).setHTML(
     state === 'store'
-      ? '<strong style="color:#10b981">BASE // LOJA</strong><br><span style="color:#a1a1aa">Ponto de partida e retorno</span>'
+      ? '<strong style="color:#10b981">BASE // LOJA</strong><br><span style="color:#a1a1aa">Ponto de partida</span>'
       : `<strong>Parada #${label}</strong>${popupTitle ? '<br><span style="color:#a1a1aa">' + escapeHTML(popupTitle) + '</span>' : ''}`
   );
 
   const marker = new maplibregl.Marker({ element: el, anchor: 'center' })
-    .setLngLat([lon, lat])
+    .setLngLat([Number(lon), Number(lat)])
     .setPopup(popup)
     .addTo(map);
 
@@ -3777,38 +3828,48 @@ async function getCoordinates() {
   return locations;
 }
 
-// OTIMIZAÇÃO DE SEQUÊNCIA VIA OSRM TRIP API
+// OTIMIZAÇÃO DE ROTA SEM VOLTA DESNECESSÁRIA (SOMENTE IDA DA LOJA PASSANDO PELAS PARADAS)
 async function optimizeRoute(points) {
-  const coords = [store, ...points, store].map(p => `${p.lon},${p.lat}`).join(';');
-  const url = `https://router.project-osrm.org/trip/v1/driving/${coords}?roundtrip=false&source=first&destination=last&overview=full&geometries=geojson&steps=true`;
+  let orderedDeliveries = [...deliveries];
 
-  const response = await fetch(url);
+  // Se houver mais de 1 entrega, ordena pela sequência mais curta sem retornar à loja
+  if (points.length > 1) {
+    const tripCoords = [store, ...points].map(p => `${p.lon},${p.lat}`).join(';');
+    const tripUrl = `https://router.project-osrm.org/trip/v1/driving/${tripCoords}?roundtrip=false&source=first&overview=false`;
+    try {
+      const tripRes = await fetch(tripUrl);
+      if (tripRes.ok) {
+        const tripData = await tripRes.json();
+        if (tripData.code === 'Ok' && Array.isArray(tripData.waypoints)) {
+          const orderedIds = tripData.waypoints
+            .map((w, index) => ({ w, index }))
+            .filter(x => x.index !== 0)
+            .sort((a, b) => a.w.waypoint_index - b.w.waypoint_index)
+            .map(x => deliveries[x.index - 1]?.id)
+            .filter(Boolean);
+
+          if (orderedIds.length === deliveries.length) {
+            orderedDeliveries = orderedIds
+              .map(id => deliveries.find(d => d.id === id))
+              .filter(Boolean);
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  // Traça a rota direta ponto a ponto (Loja -> Parada 1 -> Parada 2...), sem ida-e-volta duplicada
+  const routeCoords = [store, ...orderedDeliveries].map(p => `${p.lon},${p.lat}`).join(';');
+  const routeUrl = `https://router.project-osrm.org/route/v1/driving/${routeCoords}?overview=full&geometries=geojson&alternatives=false`;
+  const response = await fetch(routeUrl);
   if (!response.ok) throw new Error('Erro de conexão com o OSRM.');
 
   const data = await response.json();
-  if (data.code !== 'Ok' || !data.trips?.length) {
+  if (data.code !== 'Ok' || !data.routes?.length) {
     throw new Error('Trajeto não encontrado nas vias. Revise os endereços.');
   }
 
-  const trip = data.trips[0];
-  const waypoints = data.waypoints;
-
-  const orderedIds = waypoints
-    .map((w, index) => ({ w, index }))
-    .filter(x => x.index !== 0 && x.index !== waypoints.length - 1)
-    .sort((a, b) => a.w.waypoint_index - b.w.waypoint_index)
-    .map(x => deliveries[x.index - 1]?.id)
-    .filter(Boolean);
-
-  const orderedDeliveries = orderedIds
-    .map(id => deliveries.find(d => d.id === id))
-    .filter(Boolean);
-
-  if (orderedDeliveries.length !== deliveries.length) {
-    throw new Error('Falha ao ordenar todos os pontos. Tente novamente.');
-  }
-
-  return { trip, ordered: orderedDeliveries };
+  return { trip: data.routes[0], ordered: orderedDeliveries };
 }
 
 function formatDuration(seconds) {
