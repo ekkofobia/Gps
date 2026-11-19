@@ -266,24 +266,7 @@
   /* Rotação do mapa (modo seguir) */
   #mapWrapper { overflow: hidden; }
   #fullscreenBtnText { display: none; }
-  #toggleFullscreenMapBtn,
-  #mapMenuBtn,
-  #mapOfflineBtn,
-  #openMaps,
-  #quickFitMapBtn {
-    width: 37px !important;
-    height: 37px !important;
-    padding: 0 !important;
-    justify-content: center !important;
-    background-color: #18181d !important;
-    border: 1px solid #23232a !important;
-    opacity: 1 !important;
-  }
-  #toggleFullscreenMapBtn:hover,
-  #mapMenuBtn:hover,
-  #quickFitMapBtn:hover {
-    background-color: #27272a !important;
-  }
+  #toggleFullscreenMapBtn { width: 36px; height: 36px; padding: 0 !important; justify-content: center; }
   .map-fullscreen-active #mapHeaderRow {
     position: absolute !important; right: 12px; top: 50% !important; bottom: auto !important; left: auto !important; transform: translateY(-50%);
     z-index: 1000 !important; background: transparent !important; border: 0 !important; padding: 0 !important;
@@ -292,20 +275,8 @@
   .map-fullscreen-active #mapHeaderRow > div:first-child { display: none !important; }
   .map-fullscreen-active #mapHeaderActions { flex-direction: column !important; align-items: flex-end !important; gap: 10px !important; flex-wrap: nowrap !important; }
   .map-fullscreen-active #toggleFullscreenMapBtn { order: -1; }
-  .map-fullscreen-active #mapThemePair { flex-direction: column !important; }
-  .map-fullscreen-active #mapThemePair #mapMenuBtn { order: 1; }
-  .map-fullscreen-active #mapThemePair #openMaps { order: 2; }
-  .map-fullscreen-active #mapThemePair #mapOfflineBtn { order: 3; }
+  .map-fullscreen-active #mapMenuPanel { top: auto !important; bottom: 44px; }
   .map-fullscreen-active #activeFocusBar { display: none !important; }
-  .map-fullscreen-active #miniCardStrip {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    z-index: 1000 !important;
-    background: rgba(9, 9, 11, 0.48) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
-  }
   #simulateWalkBtn, #recenterUserBtn, #floatingMinimizeBtn { display: none !important; }
   #mapRotor { position: absolute; left: -50%; top: -50%; width: 200%; height: 200%; transform-origin: 50% 50%; transition: transform .35s linear; --unrot: 0deg; }
   #mapRotor > .leaflet-map-pane { left: 25%; top: 25%; }
@@ -314,7 +285,6 @@
   #mapRotor.no-anim, #mapRotor.no-anim .user-arrow-rotator { transition: none !important; }
   .map-fullscreen-active #map { position: absolute !important; inset: 0 !important; height: auto !important; width: auto !important; }
 </style>
-<style>.cfg-sem-barra::-webkit-scrollbar{display:none}</style>
 </head>
 
 <body class="min-h-screen antialiased selection:bg-blue-500/30 selection:text-blue-200">
@@ -328,24 +298,12 @@
         </svg>
       </div>
       <div class="flex items-baseline gap-2">
-        <span id="brandTitle" role="button" tabindex="0" title="Abrir mapa expandido" class="cursor-pointer select-none font-extrabold tracking-tight text-base text-white hover:text-blue-400 transition"><span class="relative">ROTA<span title="Online" aria-label="Online" class="absolute -top-1 -right-2 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-obsidian animate-pulse-slow"></span></span><span class="text-blue-500">.</span></span>
+        <span class="font-extrabold tracking-tight text-base text-white"><span class="relative">ROTA<span title="Online" aria-label="Online" class="absolute -top-1 -right-2 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-obsidian animate-pulse-slow"></span></span><span class="text-blue-500">.</span></span>
         <span class="hidden sm:inline-block text-[11px] font-mono text-zinc-500 uppercase tracking-widest">Dispatch OS</span>
       </div>
     </div>
 
     <div class="flex items-center gap-2.5">
-      <button id="headerStageToggleBtn" type="button" aria-label="Alternar estágio" title="Alternar estágio" class="w-9 h-9 rounded-lg bg-surface border border-borderline flex items-center justify-center transition active:scale-95">
-        <!-- Estágio 1: Círculo verde com check -->
-        <svg id="stageIconCheck" class="w-5 h-5" viewBox="0 0 24 24" fill="none">
-          <path d="M16.2 4.3A9 9 0 1 0 20.6 14.5" stroke="#6cc400" stroke-width="2.8" stroke-linecap="round"/>
-          <path d="M7.8 12.3L11.2 15.8L20.2 5.6" stroke="#6cc400" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <!-- Estágio 2: Círculo vermelho com X -->
-        <svg id="stageIconCross" class="w-5 h-5 hidden" viewBox="0 0 24 24" fill="none">
-          <path d="M16.2 4.3A9 9 0 1 0 20.6 10.2" stroke="#f00000" stroke-width="2.8" stroke-linecap="round"/>
-          <path d="M8.5 8.8L16.2 16.5M8.5 16.5L19.8 5.8" stroke="#f00000" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
       <button id="menuBtn" type="button" aria-label="Abrir menu" class="w-9 h-9 rounded-lg bg-surface border border-borderline flex items-center justify-center text-zinc-300 hover:text-white transition active:scale-95">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
@@ -353,7 +311,7 @@
     </div>
   </header>
 
-  <div id="menuOverlay" class="hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"></div>
+  <div id="menuOverlay" class="hidden fixed inset-0 z-40"></div>
   <nav id="menuPanel" class="hidden fixed top-16 right-3 z-50 w-56 bg-surface border border-borderline rounded-xl shadow-2xl p-2 space-y-1">
     <button type="button" data-view="home" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold text-zinc-200 hover:bg-elevated transition">Mapa de rotas</button>
     <button type="button" data-view="panel" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold text-zinc-200 hover:bg-elevated transition">Painel de operação</button>
@@ -387,7 +345,7 @@
               <span id="storeStatus" class="text-[10px] font-mono text-zinc-600">Não fixada</span>
             </div>
             <div class="flex gap-2">
-              <input id="storeAddress" type="text" readonly placeholder="Vem do painel (menu do site)"
+              <input id="storeAddress" type="text" placeholder="Rua, nº, bairro, Juazeiro - BA"
                 class="flex-1 min-w-0 bg-elevated border border-borderline rounded-xl px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 transition">
               <button id="locateStore" type="button" title="Usar GPS atual para loja e calcular rota"
                 class="px-3 py-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/35 text-xs font-bold flex items-center gap-1.5 shrink-0 transition active:scale-95">
@@ -553,39 +511,49 @@
               </div>
             </div>
 
-            <div id="mapHeaderActions" class="flex items-center flex-wrap" style="gap:7px">
-              <div id="mapThemePair" class="flex flex-row items-center" style="gap:7px">
-                <button id="openMaps" type="button" aria-label="Abrir no GPS (Google Maps)" title="Abrir no GPS"
-                  class="w-[37px] h-[37px] rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline text-emerald-400 flex items-center justify-center transition active:scale-95">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+            <div id="mapHeaderActions" class="flex items-center gap-1.5 flex-wrap">
+              <div class="relative">
+                <button id="mapMenuBtn" type="button" aria-label="Opções do mapa" aria-expanded="false"
+                  class="w-8 h-8 rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline flex items-center justify-center text-zinc-300 hover:text-white transition active:scale-95">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
                 </button>
-                <button id="mapMenuBtn" type="button" aria-label="Trocar tema do mapa" title="Trocar tema do mapa"
-                  class="w-[37px] h-[37px] rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline flex items-center justify-center text-zinc-300 hover:text-white transition active:scale-95">
-                  <svg id="mapThemeIcon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></svg>
-                </button>
-                <button id="mapOfflineBtn" type="button" aria-label="Mapa offline (OpenStreetMap, Juazeiro)" title="Mapa offline (OpenStreetMap)"
-                  class="w-[37px] h-[37px] rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline flex items-center justify-center text-zinc-300 hover:text-white transition active:scale-95">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2l20 20"/><path d="M5.782 5.782A7 7 0 009 19h8.5a4.5 4.5 0 001.307-.193"/><path d="M21.532 16.5A4.5 4.5 0 0017.5 10h-1.26A8 8 0 007 4.2"/></svg>
-                </button>
+                <div id="mapMenuPanel" class="hidden absolute right-0 top-10 z-50 w-64 bg-surface border border-borderline rounded-xl shadow-2xl p-2.5 space-y-2">
+                  <div class="text-[10px] font-mono uppercase tracking-wider text-zinc-500 px-0.5">Mapa e ações</div>
+                  <div class="flex flex-wrap gap-1.5">
+                    <div class="inline-flex bg-elevated p-0.5 rounded-lg border border-borderline" id="mapModeGroup">
+                      <button type="button" data-mode="dark" class="map-mode-btn px-2 py-1 rounded-md text-[11px] font-semibold bg-zinc-700 text-white transition">Escuro</button>
+                      <button type="button" data-mode="light" class="map-mode-btn px-2 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition">Claro</button>
+                      <button type="button" data-mode="satellite" class="map-mode-btn px-2 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition">Satélite</button>
+                    </div>
+
+                    <button id="centerStoreBtn" type="button" title="Centralizar na loja"
+                      class="px-2.5 py-1.5 rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline text-[11px] font-medium text-emerald-400 transition">
+                      Loja
+                    </button>
+
+                    <button id="fitMap" type="button"
+                      class="px-2.5 py-1.5 rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline text-[11px] font-medium text-zinc-300 transition">
+                      Enquadrar
+                    </button>
+
+                    <button id="openMaps" type="button"
+                      class="px-2.5 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-[11px] font-bold text-emerald-400 flex items-center gap-1 transition">
+                      <span>GPS</span>
+                      <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
               </div>
-              <button id="centerStoreBtn" type="button" class="hidden" aria-hidden="true" tabindex="-1"></button>
-              <button id="fitMap" type="button" class="hidden" aria-hidden="true" tabindex="-1"></button>
 
-              <!-- BOTÃO ENQUADRAR ROTA NO MAPA (ABAIXO DO MENU HAMBÚRGUER DO MAPA) -->
-              <button id="quickFitMapBtn" type="button" title="Enquadrar rota no mapa" aria-label="Enquadrar rota no mapa"
-                class="w-[37px] h-[37px] rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline flex items-center justify-center text-zinc-200 hover:text-white shadow-lg transition active:scale-95">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V5a1 1 0 011-1h3M20 8V5a1 1 0 00-1-1h-3M4 16v3a1 1 0 001 1h3M20 16v3a1 1 0 01-1 1h-3M9 12h6M12 9v6"/>
-                </svg>
-              </button>
-
-              <!-- BOTÃO EXPANDIR / MINIMIZAR (COR SÓLIDA, MESMO TAMANHO 32x32 DO MENU DO MAPA) -->
-              <button id="toggleFullscreenMapBtn" type="button" title="Expandir mapa em tela cheia" aria-label="Expandir ou minimizar mapa"
-                class="w-[37px] h-[37px] rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline text-zinc-200 hover:text-white flex items-center justify-center shadow-lg transition active:scale-95">
-                <svg id="expandIcon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <!-- BOTÃO EXPANDIR / MINIMIZAR -->
+              <button id="toggleFullscreenMapBtn" type="button" title="Expandir mapa em tela cheia"
+                class="px-2.5 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-[11px] font-bold text-blue-300 flex items-center gap-1.5 transition active:scale-95">
+                <svg id="expandIcon" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
                 </svg>
-                <svg id="minimizeIcon" class="w-4 h-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                <svg id="minimizeIcon" class="w-3.5 h-3.5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25"/>
                 </svg>
                 <span id="fullscreenBtnText">Expandir</span>
@@ -603,22 +571,26 @@
           </div>
 
           <!-- MINI CARDS DA MELHOR ROTA (TELA CHEIA) -->
-          <div id="miniCardStrip" class="hidden border-b border-white/15 bg-obsidian/50">
+          <div id="miniCardStrip" class="hidden border-b border-borderline bg-elevated/[.42]">
             <div id="miniCardList" class="flex gap-2 overflow-x-auto px-3 py-2.5" style="scrollbar-width:none"></div>
+            <div id="miniNewAwayDropdown" class="hidden mx-3 mb-2.5 rounded-xl border border-amber-500/40 bg-obsidian/95 overflow-hidden">
+              <div class="flex items-center justify-between px-3 py-2 border-b border-amber-500/20">
+                <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-300">Chegaram enquanto você estava fora</span>
+                <button id="miniNewAwayClose" type="button" class="text-zinc-400 hover:text-white p-1 -m-1">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+              </div>
+              <div id="miniNewAwayList" class="max-h-48 overflow-y-auto divide-y divide-borderline"></div>
+            </div>
             <div id="miniActions" class="hidden flex items-center gap-2 px-3 pb-2.5">
-              <button id="miniDelivered" type="button" style="background-color:#059669;opacity:1;" class="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md transition active:scale-95">Entregue</button>
-              <button id="miniBack" type="button" style="background-color:#18181d;opacity:1;" class="flex-1 py-2 rounded-xl bg-elevated hover:bg-zinc-800 border border-zinc-700 text-white text-xs font-bold shadow-md transition active:scale-95">Voltar</button>
+              <button id="miniDelivered" type="button" class="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition active:scale-95">Entregue</button>
+              <button id="miniBack" type="button" class="flex-1 py-2 rounded-xl bg-elevated border border-borderline text-zinc-200 text-xs font-bold transition active:scale-95">Voltar</button>
             </div>
           </div>
 
           <!-- CONTAINER RELATIVO DO MAPA + HUD FLUTUANTE EM FULLSCREEN -->
           <div id="mapWrapper" class="relative w-full h-[480px] sm:h-[600px] lg:h-[680px]">
             <div id="map" class="map-dark-filter w-full h-full z-10"></div>
-            <!-- BOTÃO SETA: mostra na hora a posição do motoboy no mapa -->
-            <button id="mostraMinhaSeta" type="button" aria-label="Mostrar minha localização" title="Mostrar minha localização"
-              class="absolute right-3 bottom-3 z-[1000] w-[37px] h-[37px] rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline text-sky-400 flex items-center justify-center shadow-lg transition active:scale-95">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L19.5 20.5L12 16.5L4.5 20.5L12 2Z"/></svg>
-            </button>
 
             <!-- CONTROLES FLUTUANTES VISÍVEIS SOMENTE EM TELA CHEIA -->
             <div id="fullscreenHud" class="hidden pointer-events-none absolute inset-x-3 bottom-4 z-[1000] flex flex-col gap-2">
@@ -674,37 +646,25 @@
           </div>
         </section>
 
-      <section id="configCard" class="hidden fixed top-16 inset-x-3 z-50 max-h-[calc(100vh-5rem)] overflow-y-auto bg-surface border border-borderline rounded-2xl shadow-2xl">
-        <div class="p-4 space-y-4">
-          <div class="flex gap-2 items-center">
-            <input id="cfgLoja" type="text" placeholder="Ex.: Marmita da Silvana" class="flex-1 min-w-0 bg-elevated border border-borderline rounded-xl px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition">
-            <button id="cfgAddLoja" type="button" class="shrink-0 px-3 py-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-bold transition active:scale-95">+ Loja</button>
-          </div>
-          <div id="cfgLojasCards" class="flex flex-nowrap gap-4 overflow-x-auto px-1 pt-2 pb-1 cfg-sem-barra" style="scrollbar-width:none;-ms-overflow-style:none" style="-webkit-user-select:none;user-select:none;-webkit-touch-callout:none"></div>
-          <div class="flex gap-2">
-            <input id="cfgName" type="text" placeholder="Ex.: Igor" class="flex-1 min-w-0 bg-elevated border border-borderline rounded-xl px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition">
-            <input id="cfgWhats" type="tel" placeholder="Ex.: (74) 99999-9999" class="flex-[1.4] min-w-0 bg-elevated border border-borderline rounded-xl px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition">
-          </div>
+      <section id="configCard" class="hidden fixed top-16 left-3 z-50 w-72 max-w-[calc(100vw-24px)] bg-surface border border-borderline rounded-2xl overflow-hidden shadow-2xl">
+        <div class="px-4 py-3.5 border-b border-borderline bg-elevated/40">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-200">Configurações</h3>
+        </div>
+        <div class="p-4 space-y-3">
+          <label class="block space-y-1.5">
+            <span class="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Nome</span>
+            <input id="cfgName" type="text" class="w-full bg-elevated border border-borderline rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 transition">
+          </label>
+          <label class="block space-y-1.5">
+            <span class="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Número do WhatsApp</span>
+            <input id="cfgWhats" type="tel" placeholder="(74) 99999-9999" class="w-full bg-elevated border border-borderline rounded-xl px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition">
+          </label>
           <button id="cfgSave" type="button" class="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition active:scale-[0.99]">Salvar</button>
         </div>
       </section>
 
       </div>
     </div>
-    </div>
-
-    <!-- MODAL DE EXCLUIR LOJA (vermelho) -->
-    <div id="modalExcluirLoja" class="hidden fixed inset-0 z-[9600] items-center justify-center p-5 bg-black/60 backdrop-blur-sm">
-      <div class="w-full max-w-xs bg-surface border border-red-500/40 rounded-2xl shadow-2xl p-5 space-y-4">
-        <div>
-          <h3 class="text-sm font-bold text-red-400 uppercase tracking-wider">Excluir loja</h3>
-          <p class="text-xs text-zinc-400 mt-1.5">Excluir <strong id="excluirLojaNome" class="text-zinc-200"></strong>? Essa ação não pode ser desfeita.</p>
-        </div>
-        <div class="grid grid-cols-2 gap-2.5">
-          <button id="excluirLojaNao" type="button" class="py-2.5 rounded-xl bg-elevated border border-borderline text-xs font-semibold text-zinc-200">Cancelar</button>
-          <button id="excluirLojaSim" type="button" class="py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold">Excluir</button>
-        </div>
-      </div>
     </div>
 
     <!-- REPORT VIEW -->
@@ -2323,35 +2283,10 @@ function applyMapRotation() {
   if (arrow) arrow.style.transform = `rotate(${-mapRotAngle}deg)`;
 }
 
-// pré-carrega os blocos do mapa de Juazeiro (cidade toda em zoom 14 e centro em zoom 15),
-// em segundo plano, para o mapa abrir sem ficar carregando peça por peça
-function preCarregaJuazeiro() {
-  const lat = -9.4167, lon = -40.5033;
-  const urls = [];
-  [[14, 0.09], [15, 0.03]].forEach(([z, d]) => {
-    const n = Math.pow(2, z);
-    const toX = lo => Math.floor((lo + 180) / 360 * n);
-    const toY = la => Math.floor((1 - Math.log(Math.tan(la * Math.PI / 180) + 1 / Math.cos(la * Math.PI / 180)) / Math.PI) / 2 * n);
-    for (let x = toX(lon - d); x <= toX(lon + d); x++) {
-      for (let y = toY(lat + d); y <= toY(lat - d); y++) {
-        urls.push(`https://mt${Math.abs(x + y) % 4}.google.com/vt/lyrs=m&hl=pt-BR&x=${x}&y=${y}&z=${z}`);
-      }
-    }
-  });
-  let i = 0;
-  const lote = () => {
-    for (let k = 0; k < 6 && i < urls.length; k++, i++) { const im = new Image(); im.src = urls[i]; }
-    if (i < urls.length) setTimeout(lote, 200);
-  };
-  lote();
-}
-setTimeout(preCarregaJuazeiro, 3000);
-
 function createGoogleStreetsLayer() {
   const layer = L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&hl=pt-BR&x={x}&y={y}&z={z}', {
     subdomains: ['0', '1', '2', '3'],
     maxZoom: 20,
-    keepBuffer: 4,
     attribution: '© Google Maps'
   });
 
@@ -2373,22 +2308,11 @@ function createGoogleHybridLayer() {
   return L.tileLayer('https://mt{s}.google.com/vt/lyrs=y&hl=pt-BR&x={x}&y={y}&z={z}', {
     subdomains: ['0', '1', '2', '3'],
     maxZoom: 20,
-    keepBuffer: 4,
     attribution: '© Google Satellite'
   });
 }
 
-// botão de tema: cada toque troca Escuro → Claro → Satélite
-const TEMAS_MAPA = ['dark', 'light', 'satellite'];
-const ICONES_TEMA = {
-  dark: '<path stroke-linecap="round" stroke-linejoin="round" d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/>',
-  light: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
-  satellite: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>'
-};
-let temaMapa = 'dark';
 function setMapMode(mode) {
-  temaMapa = mode;
-  $('mapThemeIcon').innerHTML = ICONES_TEMA[mode] || ICONES_TEMA.dark;
   const mapEl = $('map');
   if (currentTileLayer) {
     map.removeLayer(currentTileLayer);
@@ -2413,33 +2337,10 @@ function setMapMode(mode) {
   });
 }
 
-// mapa offline: OpenStreetMap só na região de Juazeiro. Só muda quando o botão é tocado.
-const OSM_JUAZEIRO = L.latLngBounds([-9.52, -40.66], [-9.31, -40.39]);
-let offlineAtivo = false;
-function setOffline(on) {
-  offlineAtivo = on;
-  if (currentTileLayer) map.removeLayer(currentTileLayer);
-  if (on) {
-    $('map').classList.remove('map-dark-filter');
-    currentTileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, minZoom: 11, keepBuffer: 4, attribution: '© OpenStreetMap' }).addTo(map);
-    map.setMaxBounds(OSM_JUAZEIRO.pad(0.1));
-  } else {
-    map.setMaxBounds(null);
-    setMapMode(temaMapa);
-  }
-  $('mapOfflineBtn').className = 'w-[37px] h-[37px] rounded-lg border flex items-center justify-center transition active:scale-95 ' +
-    (on ? 'bg-elevated border-borderline text-emerald-400' : 'bg-elevated hover:bg-zinc-800 border-borderline text-zinc-300 hover:text-white');
-}
-$('mapOfflineBtn').onclick = () => setOffline(!offlineAtivo);
-$('mostraMinhaSeta').onclick = () => {
-  if (!('geolocation' in navigator)) { toast('Este celular não tem GPS'); return; }
-  navigator.geolocation.getCurrentPosition(pos => {
-    const { latitude: lat, longitude: lon, accuracy: acc } = pos.coords;
-    lastUserCoords = { lat, lon };
-    applyUserMarkerState(lat, lon, Math.round(acc || 0), currentHeading || 0, true);
-    map.setView([lat, lon], Math.max(map.getZoom(), 16));
-  }, () => toast('Não consegui sua localização. Verifique a permissão do GPS.'), { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 });
-};
+document.querySelectorAll('.map-mode-btn').forEach(btn => {
+  btn.onclick = () => setMapMode(btn.dataset.mode);
+});
+
 setMapMode('dark');
 
 // ==========================================
@@ -2930,7 +2831,13 @@ function stopLiveLocationTracking() {
 }
 
 function setMapFullscreen(expand) {
+  const wasExpanded = isMapExpanded;
   isMapExpanded = Boolean(expand);
+  if (isMapExpanded && !wasExpanded) {
+    departureKnownIds = new Set(deliveries.map(d => d.id));
+    saveDepartureKnownIds();
+    miniNewAwayOpen = false;
+  }
   applyMapRotation();
   renderMiniCards();
   const section = $('mapSection');
@@ -3063,6 +2970,7 @@ function save() {
 
 async function load() {
   loadCatalog();
+  loadDepartureKnownIds();
 
   try {
     deliveries = JSON.parse(localStorage.getItem('rota_deliveries') || '[]');
@@ -3071,7 +2979,7 @@ async function load() {
   }
 
   try {
-    $('storeAddress').value = ''; // o endereço vem sempre do painel, nunca do cache antigo
+    $('storeAddress').value = localStorage.getItem('rota_store_address') || '';
   } catch (e) {}
 
   try {
@@ -3327,7 +3235,6 @@ window.confirmToggleDelivered = function(id) {
 
   save();
   renderDeliveries();
-  if (delivery.ref) motoMarcaEntregue(delivery.ref, delivery.done).catch(() => {});
   redrawMarkers();
   focusRouteToSelectedCard(false);
   toast(delivery.done ? `Entrega de ${delivery.name} concluída!` : `Entrega de ${delivery.name} reaberta.`);
@@ -3679,12 +3586,7 @@ async function geocodeRawAddress(address) {
   const clean = address.trim();
   const withCountry = /brasil|brazil/i.test(clean) ? clean : `${clean}, Brasil`;
   const withoutNumber = withCountry.replace(/,\s*\d+[a-zA-Z0-9\-\/]*\s*,/, ', ');
-  // rua pode não existir no mapa: tenta também só o bairro (formato "Rua, n - Bairro, Juazeiro - BA")
-  const partes = clean.split(' - ');
-  const bairro = (partes[1] || '').replace(/,?\s*Juazeiro.*$/i, '').trim();
-  const rua = (partes[0] || '').replace(/,\s*\d+.*$/, '').trim();
-  const extras = bairro ? [`${rua}, ${bairro}, Juazeiro, Bahia, Brasil`, `${bairro}, Juazeiro, Bahia, Brasil`] : [];
-  return geocodeCandidates([withCountry, withoutNumber, ...extras], clean, null);
+  return geocodeCandidates([withCountry, withoutNumber], clean, null);
 }
 
 async function geocodeDelivery(d) {
@@ -3699,18 +3601,7 @@ async function geocodeDelivery(d) {
     [cleanStreet, cityHint, 'Brasil'].filter(Boolean).join(', '),
     [d.neighborhood, cityHint, 'Brasil'].filter(Boolean).join(', ')
   ];
-  try {
-    return await geocodeCandidates(candidates, `${d.street}, ${d.neighborhood}`, maxKm);
-  } catch (e) {
-    // último recurso: sem o limite de distância e só com o bairro/rua em Juazeiro (o nome do site nem sempre bate com o do mapa)
-    const bairro = String(d.neighborhood || '').trim();
-    const extra = [
-      [cleanStreet, 'Juazeiro, Bahia, Brasil'].filter(Boolean).join(', '),
-      [bairro, 'Juazeiro, Bahia, Brasil'].filter(Boolean).join(', '),
-      [bairro, 'Juazeiro, BA'].filter(Boolean).join(', ')
-    ];
-    return geocodeCandidates(extra, `${d.street}, ${d.neighborhood}`, null);
-  }
+  return geocodeCandidates(candidates, `${d.street}, ${d.neighborhood}`, maxKm);
 }
 
 function fullStoreAddress() {
@@ -3917,39 +3808,20 @@ async function calculate(silent = false, preserveStoreCenter = false) {
 
 $('calculate').onclick = () => calculate(false, false);
 
-function fitRouteOnMap() {
-  userDragging = false;
-  dragPauseUntil = 0;
-  clearTimeout(dragResumeTimer);
-
+$('fitMap').onclick = () => {
   const groupItems = [...markers];
   if (userMarker) groupItems.push(userMarker);
 
-  if (focusLegLayer && isMapExpanded) {
-    autoFollowUser = false;
-    updateAutoFollowButtonUI();
-    map.fitBounds(focusLegLayer.getBounds(), { padding: [55, 55] });
-  } else if (routeLayer) {
-    if (isMapExpanded) {
-      autoFollowUser = false;
-      updateAutoFollowButtonUI();
-    }
-    map.fitBounds(routeLayer.getBounds(), { padding: [48, 48] });
+  if (routeLayer && !isMapExpanded) {
+    map.fitBounds(routeLayer.getBounds(), { padding: [40, 40] });
   } else if (groupItems.length) {
     autoFollowUser = false;
     updateAutoFollowButtonUI();
-    map.fitBounds(L.featureGroup(groupItems).getBounds(), { padding: [48, 48] });
-  } else if (store?.lat && store?.lon) {
-    map.setView([store.lat, store.lon], 16, { animate: true });
-  } else if (lastUserCoords) {
-    map.setView([lastUserCoords.lat, lastUserCoords.lon], 17, { animate: true });
+    map.fitBounds(L.featureGroup(groupItems).getBounds(), { padding: [45, 45] });
   } else {
     toast('Nenhum ponto marcado no mapa.');
   }
-}
-
-$('fitMap').onclick = fitRouteOnMap;
-$('quickFitMapBtn').onclick = fitRouteOnMap;
+};
 
 function openExternalUrlSafe(url) {
   const a = document.createElement('a');
@@ -4015,101 +3887,37 @@ $('printQueueBtn').onclick = () => {
 };
 
 const CONFIG_KEY = 'rota_config';
-/* várias lojas: cada uma guarda nome do motoboy, WhatsApp e nome da loja */
-const LOJAS_KEY = 'rota_lojas', ATIVA_KEY = 'rota_loja_ativa';
-function lojasLista() {
-  let l = [];
-  try { l = JSON.parse(localStorage.getItem(LOJAS_KEY) || '[]'); } catch (e) { l = []; }
-  if (!Array.isArray(l) || !l.length) {
-    let c = {}; try { c = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}'); } catch (e) {}
-    l = [{ id: 'l1', name: c.name || '', whats: c.whats || '', loja: c.loja || '' }];
-    localStorage.setItem(LOJAS_KEY, JSON.stringify(l));
-    localStorage.setItem(ATIVA_KEY, 'l1');
-  }
-  return l;
-}
-function salvaLojas(l) { localStorage.setItem(LOJAS_KEY, JSON.stringify(l)); }
-function lojaAtivaId() {
-  const l = lojasLista(), id = localStorage.getItem(ATIVA_KEY);
-  return l.some(x => x.id === id) ? id : l[0].id;
-}
-function ativaCfg() { const l = lojasLista(); return l.find(x => x.id === lojaAtivaId()) || l[0]; }
-function lerForm() {
-  return { name: $('cfgName').value.trim(), whats: $('cfgWhats').value.trim(), loja: $('cfgLoja').value.trim() };
-}
-function preencheForm(c) {
-  $('cfgName').value = c.name || '';
-  $('cfgWhats').value = c.whats || '';
-  $('cfgLoja').value = c.loja || '';
-}
-function gravaFormNaAtiva() {
-  const l = lojasLista(), id = lojaAtivaId(), f = lerForm();
-  const i = l.findIndex(x => x.id === id);
-  if (i >= 0) { l[i] = { ...l[i], ...f }; salvaLojas(l); }
-}
-function escCard(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
-function renderLojaCards() {
-  const ativa = lojaAtivaId();
-  $('cfgLojasCards').innerHTML = lojasLista().map(x => `<div class="relative shrink-0">
-      <button type="button" data-loja-card="${x.id}" class="px-3.5 py-2 rounded-xl border text-xs font-semibold whitespace-nowrap ${x.id === ativa ? 'bg-blue-600 border-blue-500 text-white' : 'bg-elevated border-borderline text-zinc-300'}">${escCard(x.loja || 'Sem nome')}</button>
-      <button type="button" data-loja-x="${x.id}" aria-label="Excluir loja" title="Excluir loja" class="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-zinc-900 border border-zinc-600 text-zinc-300 hover:text-red-300 text-[11px] leading-none flex items-center justify-center">×</button>
-    </div>`).join('');
-}
 function loadConfig() {
-  try { preencheForm(ativaCfg()); renderLojaCards(); } catch (e) {}
+  try {
+    const c = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}');
+    $('cfgName').value = c.name || '';
+    $('cfgWhats').value = c.whats || '';
+  } catch (e) {}
 }
-function selecionaLoja(id) {
-  gravaFormNaAtiva();
-  localStorage.setItem(ATIVA_KEY, id);
-  preencheForm(ativaCfg());
-  renderLojaCards();
-}
-let lojaParaExcluir = null;
-$('cfgLojasCards').addEventListener('click', e => {
-  const x = e.target.closest('[data-loja-x]');
-  if (x) {
-    lojaParaExcluir = x.dataset.lojaX;
-    const lj = lojasLista().find(v => v.id === lojaParaExcluir);
-    $('excluirLojaNome').textContent = lj && lj.loja ? lj.loja : 'esta loja';
-    $('modalExcluirLoja').classList.remove('hidden');
-    $('modalExcluirLoja').classList.add('flex');
-    return;
-  }
-  const b = e.target.closest('[data-loja-card]');
-  if (b) selecionaLoja(b.dataset.lojaCard);
-});
-function fechaExcluirLoja() {
-  $('modalExcluirLoja').classList.add('hidden');
-  $('modalExcluirLoja').classList.remove('flex');
-  lojaParaExcluir = null;
-}
-$('excluirLojaNao').onclick = fechaExcluirLoja;
-$('excluirLojaSim').onclick = () => {
-  if (!lojaParaExcluir) return;
-  const id = lojaParaExcluir;
-  let l = lojasLista().filter(v => v.id !== id);
-  if (!l.length) l = [{ id: 'l' + Date.now().toString(36), name: '', whats: '', loja: '' }];
-  salvaLojas(l);
-  if (!l.some(v => v.id === localStorage.getItem(ATIVA_KEY))) localStorage.setItem(ATIVA_KEY, l[0].id);
-  preencheForm(ativaCfg()); renderLojaCards();
-  fechaExcluirLoja();
-  toast('Loja excluída');
-};
-$('cfgAddLoja').onclick = () => {
-  gravaFormNaAtiva();
-  const atual = ativaCfg();
-  const nova = { id: 'l' + Date.now().toString(36), name: atual.name || '', whats: atual.whats || '', loja: '' };
-  const l = lojasLista(); l.push(nova); salvaLojas(l);
-  localStorage.setItem(ATIVA_KEY, nova.id);
-  preencheForm(nova); renderLojaCards();
-  $('cfgLoja').focus();
-};
 function showConfig(show) {
   $('configCard').classList.toggle('hidden', !show);
   $('menuOverlay').classList.toggle('hidden', !show);
 }
 
 let miniSelectedId = null;
+let departureKnownIds = new Set();
+let miniNewAwayOpen = false;
+
+function loadDepartureKnownIds() {
+  try {
+    const raw = JSON.parse(localStorage.getItem('rota_departure_known') || '[]');
+    departureKnownIds = new Set(Array.isArray(raw) ? raw : []);
+  } catch (e) {
+    departureKnownIds = new Set();
+  }
+}
+
+function saveDepartureKnownIds() {
+  try {
+    localStorage.setItem('rota_departure_known', JSON.stringify([...departureKnownIds]));
+  } catch (e) {}
+}
+
 function renderMiniCards() {
   const strip = $('miniCardStrip');
   if (!strip) return;
@@ -4122,20 +3930,72 @@ function renderMiniCards() {
     return;
   }
   const active = getActiveStop();
-  $('miniCardList').innerHTML = pendentes.map(d => {
+  const novosFora = pendentes.filter(d => !departureKnownIds.has(d.id));
+
+  const newCardHtml = novosFora.length
+    ? `<button type="button" data-mini-new="1" class="shrink-0 px-3.5 py-2 rounded-xl border border-amber-500/50 bg-amber-500/15 text-amber-300 text-xs font-bold whitespace-nowrap transition active:scale-95 flex items-center gap-1.5">
+         <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>+${novosFora.length} novo${novosFora.length > 1 ? 's' : ''}
+       </button>`
+    : '';
+
+  $('miniCardList').innerHTML = newCardHtml + pendentes.map(d => {
     const isActive = active && active.id === d.id;
-    return `<button type="button" data-mini="${d.id}" style="background-color:${isActive ? '#f59e0b' : '#18181d'};opacity:1;" class="shrink-0 px-3.5 py-2 rounded-xl border text-xs font-extrabold whitespace-nowrap shadow-md transition active:scale-95 ${isActive ? 'bg-amber-500 border-amber-400 text-obsidian' : 'bg-elevated border-zinc-700 text-white'}">${escapeHTML(d.name)}</button>`;
+    return `<button type="button" data-mini="${d.id}" class="shrink-0 px-3.5 py-2 rounded-xl border text-xs font-bold whitespace-nowrap transition active:scale-95 ${isActive ? 'bg-amber-500/15 border-amber-500/50 text-amber-300' : 'bg-surface border-borderline text-zinc-200'}">${escapeHTML(d.name)}</button>`;
   }).join('');
+
   const selecionadoPendente = miniSelectedId && pendentes.some(d => d.id === miniSelectedId);
   if (!selecionadoPendente) miniSelectedId = null;
   $('miniActions').classList.toggle('hidden', !miniSelectedId);
+
+  if (!novosFora.length) miniNewAwayOpen = false;
+  $('miniNewAwayDropdown').classList.toggle('hidden', !miniNewAwayOpen || !novosFora.length);
+  if (miniNewAwayOpen && novosFora.length) {
+    $('miniNewAwayList').innerHTML = novosFora.map(d => `
+      <button type="button" data-mini-new-item="${d.id}" class="w-full text-left px-3 py-2.5 flex items-center justify-between gap-2 hover:bg-elevated transition">
+        <span class="min-w-0">
+          <span class="block text-xs font-bold text-zinc-100 truncate">${escapeHTML(d.name)}</span>
+          <span class="block text-[10px] text-zinc-400 truncate">${escapeHTML(d.street)}, ${escapeHTML(d.number || 's/n')} · ${escapeHTML(d.neighborhood)}</span>
+        </span>
+        <svg class="w-3.5 h-3.5 text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+      </button>`).join('');
+  }
+}
+
+function acknowledgeNewAway() {
+  const pendentes = deliveries.filter(d => !d.done);
+  pendentes.forEach(d => departureKnownIds.add(d.id));
+  saveDepartureKnownIds();
 }
 
 $('miniCardList').onclick = e => {
+  const newBtn = e.target.closest('[data-mini-new]');
+  if (newBtn) {
+    miniNewAwayOpen = !miniNewAwayOpen;
+    renderMiniCards();
+    return;
+  }
   const btn = e.target.closest('[data-mini]');
   if (!btn) return;
   miniSelectedId = btn.dataset.mini;
   selectRouteTargetCard(miniSelectedId);
+  renderMiniCards();
+};
+
+$('miniNewAwayList').onclick = e => {
+  const item = e.target.closest('[data-mini-new-item]');
+  if (!item) return;
+  const id = item.dataset.miniNewItem;
+  departureKnownIds.add(id);
+  saveDepartureKnownIds();
+  miniSelectedId = id;
+  selectRouteTargetCard(id);
+  miniNewAwayOpen = false;
+  renderMiniCards();
+};
+
+$('miniNewAwayClose').onclick = () => {
+  acknowledgeNewAway();
+  miniNewAwayOpen = false;
   renderMiniCards();
 };
 $('miniDelivered').onclick = () => {
@@ -4209,118 +4069,21 @@ function showView(name) {
   window.scrollTo(0, 0);
 }
 
-$('mapMenuBtn').onclick = () => {
-  temaMapa = TEMAS_MAPA[(TEMAS_MAPA.indexOf(temaMapa) + 1) % TEMAS_MAPA.length];
-  setMapMode(temaMapa);
+const mapMenuBtn = $('mapMenuBtn');
+const mapMenuPanel = $('mapMenuPanel');
+function setMapMenu(open) {
+  mapMenuPanel.classList.toggle('hidden', !open);
+  mapMenuBtn.setAttribute('aria-expanded', String(open));
+}
+mapMenuBtn.onclick = e => {
+  e.stopPropagation();
+  setMapMenu(mapMenuPanel.classList.contains('hidden'));
 };
-
-$('menuBtn').onclick = toggleMenu;
-
-/* ===== Integração com o painel (disponibilidade e rotas via Supabase) =====
-   O número do WhatsApp em Configurações (logo) é a chave que liga este site ao painel. */
-const SUPA_URL = 'https://brcbqmjqvpemjleerrvb.supabase.co';
-const SUPA_KEY = 'sb_publishable_WBQAGB3skSRbEfbwxympYg_X__XUuUA';
-const supaH = { apikey: SUPA_KEY, Authorization: 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json' };
-const motoCfg = () => { try { return ativaCfg() || {}; } catch (e) { return {}; } };
-const chaveLoja = t => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
-const motoWhats = () => String(motoCfg().whats || '').replace(/\D/g, '');
-let motoHeartbeat = null;
-async function motoGrava(pronto) {
-  const w = motoWhats(); if (!w) return false;
-  const r = await fetch(`${SUPA_URL}/rest/v1/entregadores?on_conflict=whats`, {
-    method: 'POST', headers: { ...supaH, Prefer: 'resolution=merge-duplicates,return=minimal' },
-    body: JSON.stringify({ whats: w, nome: (motoCfg().name || '').trim(), loja: chaveLoja(motoCfg().loja), pronto, atualizado: new Date().toISOString() })
-  });
-  return r.ok;
-}
-async function motoSetPronto(on, silencio) {
-  if (on && !chaveLoja(motoCfg().loja)) { if (!silencio) toast('Informe o nome da loja nas configurações (logo)'); return false; }
-  if (on && !motoWhats()) { if (!silencio) toast('Informe seu WhatsApp nas configurações (logo)'); return false; }
-  try {
-    if (!(await motoGrava(on))) throw new Error('falhou');
-  } catch (e) { if (!silencio) toast('Sem conexão para mudar sua disponibilidade'); return false; }
-  clearInterval(motoHeartbeat);
-  if (!silencio) toast(on ? 'Você está disponível para entregas' : 'Você está indisponível');
-  return true;
-}
-// avisa o painel que a entrega foi marcada como entregue (ou desmarcada)
-async function motoMarcaEntregue(ref, feito) {
-  const w = motoWhats(); if (!w) return;
-  const r = await fetch(`${SUPA_URL}/rest/v1/entregadores?whats=eq.${w}&select=rota`, { headers: supaH });
-  if (!r.ok) return;
-  const [row] = await r.json();
-  if (!row || !Array.isArray(row.rota)) return;
-  const rota = row.rota.map(x => x.ref === ref ? { ...x, entregue: !!feito } : x);
-  await fetch(`${SUPA_URL}/rest/v1/entregadores?whats=eq.${w}`, { method: 'PATCH', headers: { ...supaH, Prefer: 'return=minimal' }, body: JSON.stringify({ rota }) });
-}
-// recebe as entregas que o painel enviar (cada rota tem um "ref" único; já vistas não entram de novo)
-async function motoBuscaRotas() {
-  const w = motoWhats(); if (!w) return;
-  try {
-    const r = await fetch(`${SUPA_URL}/rest/v1/entregadores?whats=eq.${w}&select=rota`, { headers: supaH });
-    if (!r.ok) return;
-    const [row] = await r.json();
-    if (!row || !Array.isArray(row.rota)) return;
-    const vistas = new Set(JSON.parse(localStorage.getItem('rota_refs_vistas') || '[]'));
-    const novos = row.rota.filter(x => x.ref && !vistas.has(x.ref));
-    if (!novos.length) return;
-    novos.forEach(x => {
-      vistas.add(x.ref);
-      // mesmo formato do site: bairro e rua no nome oficial da lista (sem erro de grafia/acento)
-      const bairroOk = resolveCanonicalNeighborhoodName(String(x.neighborhood || '').trim());
-      const oficiais = OFFICIAL_STREETS_BY_NORM_KEY[normalizeStr(bairroOk)] || [];
-      const ruaTxt = String(x.street || '').trim();
-      const ruaOk = oficiais.find(r => normalizeStr(r) === normalizeStr(ruaTxt)) || ruaTxt;
-      deliveries.push({ id: crypto.randomUUID(), ref: x.ref, name: x.name || 'Cliente', neighborhood: bairroOk, street: ruaOk, city: x.city || '', number: x.number || '', complement: x.complement || '', done: false, lat: null, lon: null });
-    });
-    localStorage.setItem('rota_refs_vistas', JSON.stringify([...vistas].slice(-300)));
-    renderDeliveries(); save();
-    toast(`${novos.length} nova(s) entrega(s) recebida(s) do painel`);
-    if (fullStoreAddress() || store) await calculate(true, false);
-  } catch (e) {}
-}
-setInterval(motoBuscaRotas, 8000);
-// se o site fechar ou o celular apagar a tela estando disponível, avisa o Supabase que saiu (sem depender de timer)
-addEventListener('pagehide', () => {
-  if (headerStageCross || !motoWhats()) return;
-  fetch(`${SUPA_URL}/rest/v1/entregadores?on_conflict=whats`, { method: 'POST', keepalive: true,
-    headers: { ...supaH, Prefer: 'resolution=merge-duplicates,return=minimal' },
-    body: JSON.stringify({ whats: motoWhats(), nome: (motoCfg().name || '').trim(), loja: chaveLoja(motoCfg().loja), pronto: false, atualizado: new Date().toISOString() }) }).catch(() => {});
+document.addEventListener('click', e => {
+  if (!mapMenuPanel.contains(e.target) && e.target !== mapMenuBtn) setMapMenu(false);
 });
 
-// começa indisponível (ícone de X); o botão alterna entre disponível e indisponível
-// o estado (disponível/indisponível) fica guardado no celular e volta ao abrir o site
-let headerStageCross = true;
-function mostraEstagio() {
-  $('stageIconCheck').classList.toggle('hidden', headerStageCross);
-  $('stageIconCross').classList.toggle('hidden', !headerStageCross);
-}
-mostraEstagio();
-if (localStorage.getItem('rota_pronto') === '1') {
-  headerStageCross = false;
-  mostraEstagio();
-  motoSetPronto(true, true).then(ok => { if (!ok) { headerStageCross = true; mostraEstagio(); localStorage.setItem('rota_pronto', '0'); } });
-}
-$('headerStageToggleBtn').onclick = async () => {
-  const ficaPronto = headerStageCross;
-  if (!(await motoSetPronto(ficaPronto))) return;
-  headerStageCross = !ficaPronto;
-  mostraEstagio();
-  localStorage.setItem('rota_pronto', ficaPronto ? '1' : '0');
-};
-
-$('brandTitle').onclick = () => {
-  showView('home');
-  setMapFullscreen(true);
-};
-$('brandTitle').onkeydown = e => {
-  if (e.key === 'Enter' || e.key === ' ') {
-    e.preventDefault();
-    showView('home');
-    setMapFullscreen(true);
-  }
-};
-
+$('menuBtn').onclick = toggleMenu;
 $('gpsPill').onclick = () => {
   if (!isMapExpanded) return;
   toast('Buscando sua localização...');
@@ -4332,49 +4095,12 @@ $('brandLogo').onclick = () => {
   showConfig(abrir);
 };
 $('cfgSave').onclick = () => {
-  try { gravaFormNaAtiva(); renderLojaCards(); } catch (e) {}
-  toast('Configuração salva');
-  showConfig(false);
-  // se o motoboy já está disponível, regrava na hora com o nome/loja novos (sem precisar recarregar a página)
-  if (!headerStageCross) motoGrava(true).catch(() => {});
-  carregaEnderecoDoPainel();
-};
-/* endereço da loja vem do painel (menu do site): só leitura, o site GPS não digita */
-async function carregaEnderecoDoPainel() {
-  const nome = String((motoCfg().loja) || '').trim();
-  if (!nome) return;
   try {
-    const l = await fetch(`${SUPA_URL}/rest/v1/lojas?nome=eq.${encodeURIComponent(nome)}&select=id`, { headers: supaH });
-    const [loja] = l.ok ? await l.json() : [];
-    if (!loja) return;
-    const c = await fetch(`${SUPA_URL}/rest/v1/site_config?loja_id=eq.${loja.id}&key=eq.site&select=value`, { headers: supaH });
-    const [cfg] = c.ok ? await c.json() : [];
-    const v = cfg && cfg.value;
-    if (!v || !v.endereco) {
-      if ($('storeAddress').value) { $('storeAddress').value = ''; store = null; save(); }
-      return;
-    }
-    if (v && v.endereco) {
-      const mudou = $('storeAddress').value.trim() !== String(v.endereco).trim();
-      $('storeAddress').value = v.endereco;
-      if (v.coords) localStorage.setItem('rota_loja_coords', JSON.stringify(v.coords));
-      if (mudou) {
-        // endereço mudou no painel: usa as coordenadas do painel (ou zera para geocodificar de novo)
-        const c2 = v.coords && Number.isFinite(+v.coords.lat) && Number.isFinite(+(v.coords.lng ?? v.coords.lon));
-        store = c2 ? { lat: +v.coords.lat, lon: +(v.coords.lng ?? v.coords.lon), city: '' } : null;
-        if (store) {
-          $('storeStatus').textContent = 'Fixada no mapa';
-          $('storeStatus').className = 'text-[10px] font-mono text-emerald-400';
-        }
-        save();
-      }
-    }
+    localStorage.setItem(CONFIG_KEY, JSON.stringify({ name: $('cfgName').value.trim(), whats: $('cfgWhats').value.trim() }));
   } catch (e) {}
-}
-const loc = $('locateStore'); if (loc) loc.style.display = 'none';
+  toast('Configuração salva');
+};
 loadConfig();
-carregaEnderecoDoPainel();
-setInterval(carregaEnderecoDoPainel, 60000);
 $('menuOverlay').onclick = closeMenu;
 document.querySelectorAll('[data-view]').forEach(b => {
   b.onclick = () => showView(b.dataset.view);
