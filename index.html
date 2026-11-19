@@ -314,6 +314,7 @@
   #mapRotor.no-anim, #mapRotor.no-anim .user-arrow-rotator { transition: none !important; }
   .map-fullscreen-active #map { position: absolute !important; inset: 0 !important; height: auto !important; width: auto !important; }
 </style>
+<style>.cfg-sem-barra::-webkit-scrollbar{display:none}</style>
 </head>
 
 <body class="min-h-screen antialiased selection:bg-blue-500/30 selection:text-blue-200">
@@ -352,7 +353,7 @@
     </div>
   </header>
 
-  <div id="menuOverlay" class="hidden fixed inset-0 z-40"></div>
+  <div id="menuOverlay" class="hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"></div>
   <nav id="menuPanel" class="hidden fixed top-16 right-3 z-50 w-56 bg-surface border border-borderline rounded-xl shadow-2xl p-2 space-y-1">
     <button type="button" data-view="home" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold text-zinc-200 hover:bg-elevated transition">Mapa de rotas</button>
     <button type="button" data-view="panel" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold text-zinc-200 hover:bg-elevated transition">Painel de operação</button>
@@ -673,29 +674,37 @@
           </div>
         </section>
 
-      <section id="configCard" class="hidden fixed top-16 left-3 z-50 w-72 max-w-[calc(100vw-24px)] bg-surface border border-borderline rounded-2xl overflow-hidden shadow-2xl">
-        <div class="px-4 py-3.5 border-b border-borderline bg-elevated/40">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-200">Configurações</h3>
-        </div>
-        <div class="p-4 space-y-3">
-          <label class="block space-y-1.5">
-            <span class="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Nome</span>
-            <input id="cfgName" type="text" class="w-full bg-elevated border border-borderline rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 transition">
-          </label>
-          <label class="block space-y-1.5">
-            <span class="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Nome da loja (igual ao cabeçalho do site)</span>
-            <input id="cfgLoja" type="text" class="w-full bg-elevated border border-borderline rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 transition">
-          </label>
-          <label class="block space-y-1.5">
-            <span class="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Número do WhatsApp</span>
-            <input id="cfgWhats" type="tel" placeholder="(74) 99999-9999" class="w-full bg-elevated border border-borderline rounded-xl px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition">
-          </label>
+      <section id="configCard" class="hidden fixed top-16 inset-x-3 z-50 max-h-[calc(100vh-5rem)] overflow-y-auto bg-surface border border-borderline rounded-2xl shadow-2xl">
+        <div class="p-4 space-y-4">
+          <div class="flex gap-2 items-center">
+            <input id="cfgLoja" type="text" placeholder="Ex.: Marmita da Silvana" class="flex-1 min-w-0 bg-elevated border border-borderline rounded-xl px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition">
+            <button id="cfgAddLoja" type="button" class="shrink-0 px-3 py-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-bold transition active:scale-95">+ Loja</button>
+          </div>
+          <div id="cfgLojasCards" class="flex flex-nowrap gap-4 overflow-x-auto px-1 pt-2 pb-1 cfg-sem-barra" style="scrollbar-width:none;-ms-overflow-style:none" style="-webkit-user-select:none;user-select:none;-webkit-touch-callout:none"></div>
+          <div class="flex gap-2">
+            <input id="cfgName" type="text" placeholder="Ex.: Igor" class="flex-1 min-w-0 bg-elevated border border-borderline rounded-xl px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition">
+            <input id="cfgWhats" type="tel" placeholder="Ex.: (74) 99999-9999" class="flex-[1.4] min-w-0 bg-elevated border border-borderline rounded-xl px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition">
+          </div>
           <button id="cfgSave" type="button" class="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition active:scale-[0.99]">Salvar</button>
         </div>
       </section>
 
       </div>
     </div>
+    </div>
+
+    <!-- MODAL DE EXCLUIR LOJA (vermelho) -->
+    <div id="modalExcluirLoja" class="hidden fixed inset-0 z-[9600] items-center justify-center p-5 bg-black/60 backdrop-blur-sm">
+      <div class="w-full max-w-xs bg-surface border border-red-500/40 rounded-2xl shadow-2xl p-5 space-y-4">
+        <div>
+          <h3 class="text-sm font-bold text-red-400 uppercase tracking-wider">Excluir loja</h3>
+          <p class="text-xs text-zinc-400 mt-1.5">Excluir <strong id="excluirLojaNome" class="text-zinc-200"></strong>? Essa ação não pode ser desfeita.</p>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <button id="excluirLojaNao" type="button" class="py-2.5 rounded-xl bg-elevated border border-borderline text-xs font-semibold text-zinc-200">Cancelar</button>
+          <button id="excluirLojaSim" type="button" class="py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold">Excluir</button>
+        </div>
+      </div>
     </div>
 
     <!-- REPORT VIEW -->
@@ -3990,14 +3999,95 @@ $('printQueueBtn').onclick = () => {
 };
 
 const CONFIG_KEY = 'rota_config';
-function loadConfig() {
-  try {
-    const c = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}');
-    $('cfgName').value = c.name || '';
-    $('cfgWhats').value = c.whats || '';
-    $('cfgLoja').value = c.loja || '';
-  } catch (e) {}
+/* várias lojas: cada uma guarda nome do motoboy, WhatsApp e nome da loja */
+const LOJAS_KEY = 'rota_lojas', ATIVA_KEY = 'rota_loja_ativa';
+function lojasLista() {
+  let l = [];
+  try { l = JSON.parse(localStorage.getItem(LOJAS_KEY) || '[]'); } catch (e) { l = []; }
+  if (!Array.isArray(l) || !l.length) {
+    let c = {}; try { c = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}'); } catch (e) {}
+    l = [{ id: 'l1', name: c.name || '', whats: c.whats || '', loja: c.loja || '' }];
+    localStorage.setItem(LOJAS_KEY, JSON.stringify(l));
+    localStorage.setItem(ATIVA_KEY, 'l1');
+  }
+  return l;
 }
+function salvaLojas(l) { localStorage.setItem(LOJAS_KEY, JSON.stringify(l)); }
+function lojaAtivaId() {
+  const l = lojasLista(), id = localStorage.getItem(ATIVA_KEY);
+  return l.some(x => x.id === id) ? id : l[0].id;
+}
+function ativaCfg() { const l = lojasLista(); return l.find(x => x.id === lojaAtivaId()) || l[0]; }
+function lerForm() {
+  return { name: $('cfgName').value.trim(), whats: $('cfgWhats').value.trim(), loja: $('cfgLoja').value.trim() };
+}
+function preencheForm(c) {
+  $('cfgName').value = c.name || '';
+  $('cfgWhats').value = c.whats || '';
+  $('cfgLoja').value = c.loja || '';
+}
+function gravaFormNaAtiva() {
+  const l = lojasLista(), id = lojaAtivaId(), f = lerForm();
+  const i = l.findIndex(x => x.id === id);
+  if (i >= 0) { l[i] = { ...l[i], ...f }; salvaLojas(l); }
+}
+function escCard(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+function renderLojaCards() {
+  const ativa = lojaAtivaId();
+  $('cfgLojasCards').innerHTML = lojasLista().map(x => `<div class="relative shrink-0">
+      <button type="button" data-loja-card="${x.id}" class="px-3.5 py-2 rounded-xl border text-xs font-semibold whitespace-nowrap ${x.id === ativa ? 'bg-blue-600 border-blue-500 text-white' : 'bg-elevated border-borderline text-zinc-300'}">${escCard(x.loja || 'Sem nome')}</button>
+      <button type="button" data-loja-x="${x.id}" aria-label="Excluir loja" title="Excluir loja" class="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-zinc-900 border border-zinc-600 text-zinc-300 hover:text-red-300 text-[11px] leading-none flex items-center justify-center">×</button>
+    </div>`).join('');
+}
+function loadConfig() {
+  try { preencheForm(ativaCfg()); renderLojaCards(); } catch (e) {}
+}
+function selecionaLoja(id) {
+  gravaFormNaAtiva();
+  localStorage.setItem(ATIVA_KEY, id);
+  preencheForm(ativaCfg());
+  renderLojaCards();
+}
+let lojaParaExcluir = null;
+$('cfgLojasCards').addEventListener('click', e => {
+  const x = e.target.closest('[data-loja-x]');
+  if (x) {
+    lojaParaExcluir = x.dataset.lojaX;
+    const lj = lojasLista().find(v => v.id === lojaParaExcluir);
+    $('excluirLojaNome').textContent = lj && lj.loja ? lj.loja : 'esta loja';
+    $('modalExcluirLoja').classList.remove('hidden');
+    $('modalExcluirLoja').classList.add('flex');
+    return;
+  }
+  const b = e.target.closest('[data-loja-card]');
+  if (b) selecionaLoja(b.dataset.lojaCard);
+});
+function fechaExcluirLoja() {
+  $('modalExcluirLoja').classList.add('hidden');
+  $('modalExcluirLoja').classList.remove('flex');
+  lojaParaExcluir = null;
+}
+$('excluirLojaNao').onclick = fechaExcluirLoja;
+$('excluirLojaSim').onclick = () => {
+  if (!lojaParaExcluir) return;
+  const id = lojaParaExcluir;
+  let l = lojasLista().filter(v => v.id !== id);
+  if (!l.length) l = [{ id: 'l' + Date.now().toString(36), name: '', whats: '', loja: '' }];
+  salvaLojas(l);
+  if (!l.some(v => v.id === localStorage.getItem(ATIVA_KEY))) localStorage.setItem(ATIVA_KEY, l[0].id);
+  preencheForm(ativaCfg()); renderLojaCards();
+  fechaExcluirLoja();
+  toast('Loja excluída');
+};
+$('cfgAddLoja').onclick = () => {
+  gravaFormNaAtiva();
+  const atual = ativaCfg();
+  const nova = { id: 'l' + Date.now().toString(36), name: atual.name || '', whats: atual.whats || '', loja: '' };
+  const l = lojasLista(); l.push(nova); salvaLojas(l);
+  localStorage.setItem(ATIVA_KEY, nova.id);
+  preencheForm(nova); renderLojaCards();
+  $('cfgLoja').focus();
+};
 function showConfig(show) {
   $('configCard').classList.toggle('hidden', !show);
   $('menuOverlay').classList.toggle('hidden', !show);
@@ -4115,7 +4205,7 @@ $('menuBtn').onclick = toggleMenu;
 const SUPA_URL = 'https://brcbqmjqvpemjleerrvb.supabase.co';
 const SUPA_KEY = 'sb_publishable_WBQAGB3skSRbEfbwxympYg_X__XUuUA';
 const supaH = { apikey: SUPA_KEY, Authorization: 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json' };
-const motoCfg = () => { try { return JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}'); } catch (e) { return {}; } };
+const motoCfg = () => { try { return ativaCfg() || {}; } catch (e) { return {}; } };
 const chaveLoja = t => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
 const motoWhats = () => String(motoCfg().whats || '').replace(/\D/g, '');
 let motoHeartbeat = null;
@@ -4226,9 +4316,7 @@ $('brandLogo').onclick = () => {
   showConfig(abrir);
 };
 $('cfgSave').onclick = () => {
-  try {
-    localStorage.setItem(CONFIG_KEY, JSON.stringify({ name: $('cfgName').value.trim(), whats: $('cfgWhats').value.trim(), loja: $('cfgLoja').value.trim() }));
-  } catch (e) {}
+  try { gravaFormNaAtiva(); renderLojaCards(); } catch (e) {}
   toast('Configuração salva');
   showConfig(false);
   // se o motoboy já está disponível, regrava na hora com o nome/loja novos (sem precisar recarregar a página)
