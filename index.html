@@ -113,7 +113,7 @@
     background: transparent !important;
   }
 
-  /* Custom Map Pins (Cravados no centro exato da coordenada) */
+  /* Custom Map Pins */
   .pin-wrap {
     width: 32px;
     height: 32px;
@@ -271,7 +271,7 @@
   #mapOfflineBtn,
   #openMaps,
   #quickFitMapBtn,
-  #toggleRouteLinesBtn {
+  #toggleStoreRouteBtn {
     width: 37px !important;
     height: 37px !important;
     padding: 0 !important;
@@ -283,7 +283,7 @@
   #toggleFullscreenMapBtn:hover,
   #mapMenuBtn:hover,
   #quickFitMapBtn:hover,
-  #toggleRouteLinesBtn:hover {
+  #toggleStoreRouteBtn:hover {
     background-color: #27272a !important;
   }
   .map-fullscreen-active #mapHeaderRow {
@@ -299,7 +299,7 @@
   .map-fullscreen-active #mapThemePair #openMaps { order: 2; }
   .map-fullscreen-active #mapThemePair #mapOfflineBtn { order: 3; }
   .map-fullscreen-active #quickFitMapBtn { order: 4; }
-  .map-fullscreen-active #toggleRouteLinesBtn { order: 5; }
+  .map-fullscreen-active #toggleStoreRouteBtn { order: 5; }
   .map-fullscreen-active #activeFocusBar { display: none !important; }
   .map-fullscreen-active #miniCardStrip {
     position: absolute !important;
@@ -575,13 +575,13 @@
                 </svg>
               </button>
 
-              <!-- BOTÃO DESLIGAR / LIGAR LINHAS DA ROTA NO MAPA -->
-              <button id="toggleRouteLinesBtn" type="button" title="Ocultar ou mostrar linhas da rota" aria-label="Ocultar ou mostrar linhas da rota"
+              <!-- BOTÃO DESLIGAR / LIGAR SOMENTE A ROTA DA LOJA (LINHA AZUL) -->
+              <button id="toggleStoreRouteBtn" type="button" title="Ocultar ou mostrar rota da loja" aria-label="Ocultar ou mostrar rota da loja"
                 class="w-[37px] h-[37px] rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline flex items-center justify-center text-blue-400 hover:text-white shadow-lg transition active:scale-95">
-                <svg id="routeLineOnIcon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <svg id="storeRouteOnIcon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 000-7h-11a3.5 3.5 0 010-7H15"/><circle cx="18" cy="5" r="3"/>
                 </svg>
-                <svg id="routeLineOffIcon" class="w-4 h-4 hidden text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <svg id="storeRouteOffIcon" class="w-4 h-4 hidden text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M2 2l20 20"/><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 002.47-.99"/><circle cx="18" cy="5" r="3"/>
                 </svg>
               </button>
@@ -1572,7 +1572,7 @@ let focusLegGeoJSON = null;
 let activeLegCoords = [];
 let markers = [];
 let routeReady = false;
-let routeLinesVisible = true;
+let storeRouteVisible = true;
 let activeModalNeighborhood = '';
 let selectedStopId = null;
 let holdPromptCardId = null;
@@ -2231,7 +2231,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ==========================================
-// MAPA MAPLIBRE GL JS (2D ESTÁVEL + LINHAS LADO A LADO)
+// MAPA MAPLIBRE GL JS (ROTAÇÃO LIVRE COM 2 DEDOS + OSRM CAMINHO MAIS CURTO)
 // ==========================================
 function buildRasterStyle(tiles, attribution, bgColor = '#0d0e11') {
   return {
@@ -2292,13 +2292,13 @@ const map = new maplibregl.Map({
   attributionControl: true
 });
 
+// Habilita arraste, pinça de zoom E rotação livre com dois dedos
 map.dragPan.enable();
 map.scrollZoom.enable();
 map.touchZoomRotate.enable();
-map.touchZoomRotate.disableRotation();
+map.dragRotate.enable();
 map.doubleClickZoom.enable();
 
-// Garante que as camadas de rota (OSRM) existam e fiquem lado a lado quando sobrepostas
 function ensureRouteLayers() {
   try {
     if (!map.getStyle()) return;
@@ -2306,7 +2306,7 @@ function ensureRouteLayers() {
     return;
   }
 
-  const vis = routeLinesVisible ? 'visible' : 'none';
+  const storeVis = storeRouteVisible ? 'visible' : 'none';
 
   if (!map.getSource('route-source')) {
     map.addSource('route-source', {
@@ -2321,7 +2321,7 @@ function ensureRouteLayers() {
       id: 'route-casing',
       type: 'line',
       source: 'route-source',
-      layout: { 'line-join': 'round', 'line-cap': 'round', 'visibility': vis },
+      layout: { 'line-join': 'round', 'line-cap': 'round', 'visibility': storeVis },
       paint: { 'line-color': '#1d4ed8', 'line-width': 6, 'line-opacity': 0.35, 'line-offset': -3 }
     });
   }
@@ -2330,7 +2330,7 @@ function ensureRouteLayers() {
       id: 'route-line',
       type: 'line',
       source: 'route-source',
-      layout: { 'line-join': 'round', 'line-cap': 'round', 'visibility': vis },
+      layout: { 'line-join': 'round', 'line-cap': 'round', 'visibility': storeVis },
       paint: { 'line-color': '#3b82f6', 'line-width': 4, 'line-opacity': 0.92, 'line-offset': -3 }
     });
   }
@@ -2348,7 +2348,7 @@ function ensureRouteLayers() {
       id: 'focus-casing',
       type: 'line',
       source: 'focus-source',
-      layout: { 'line-join': 'round', 'line-cap': 'round', 'visibility': vis },
+      layout: { 'line-join': 'round', 'line-cap': 'round', 'visibility': 'visible' },
       paint: { 'line-color': '#78350f', 'line-width': 7, 'line-opacity': 0.5, 'line-offset': 3 }
     });
   }
@@ -2357,30 +2357,31 @@ function ensureRouteLayers() {
       id: 'focus-line',
       type: 'line',
       source: 'focus-source',
-      layout: { 'line-join': 'round', 'line-cap': 'round', 'visibility': vis },
+      layout: { 'line-join': 'round', 'line-cap': 'round', 'visibility': 'visible' },
       paint: { 'line-color': '#f59e0b', 'line-width': 4.5, 'line-opacity': 1, 'line-offset': 3 }
     });
   }
 }
 
-function applyRouteLinesVisibility() {
+// Botão desliga/liga SOMENTE a rota da loja (linha azul), mantendo a rota laranja do cliente ativa
+function applyStoreRouteVisibility() {
   ensureRouteLayers();
-  const vis = routeLinesVisible ? 'visible' : 'none';
-  ['route-casing', 'route-line', 'focus-casing', 'focus-line'].forEach(id => {
+  const vis = storeRouteVisible ? 'visible' : 'none';
+  ['route-casing', 'route-line'].forEach(id => {
     if (map.getLayer(id)) {
       map.setLayoutProperty(id, 'visibility', vis);
     }
   });
-  $('routeLineOnIcon').classList.toggle('hidden', !routeLinesVisible);
-  $('routeLineOffIcon').classList.toggle('hidden', routeLinesVisible);
-  $('toggleRouteLinesBtn').classList.toggle('text-blue-400', routeLinesVisible);
-  $('toggleRouteLinesBtn').classList.toggle('text-zinc-500', !routeLinesVisible);
+  $('storeRouteOnIcon').classList.toggle('hidden', !storeRouteVisible);
+  $('storeRouteOffIcon').classList.toggle('hidden', storeRouteVisible);
+  $('toggleStoreRouteBtn').classList.toggle('text-blue-400', storeRouteVisible);
+  $('toggleStoreRouteBtn').classList.toggle('text-zinc-500', !storeRouteVisible);
 }
 
-$('toggleRouteLinesBtn').onclick = () => {
-  routeLinesVisible = !routeLinesVisible;
-  applyRouteLinesVisibility();
-  toast(routeLinesVisible ? 'Linhas da rota visíveis' : 'Linhas da rota ocultas');
+$('toggleStoreRouteBtn').onclick = () => {
+  storeRouteVisible = !storeRouteVisible;
+  applyStoreRouteVisibility();
+  toast(storeRouteVisible ? 'Rota da loja visível' : 'Rota da loja oculta');
 };
 
 map.on('style.load', () => {
@@ -2393,7 +2394,7 @@ map.on('style.load', () => {
     const fSrc = map.getSource('focus-source');
     if (fSrc) fSrc.setData(focusLegGeoJSON);
   }
-  applyRouteLinesVisibility();
+  applyStoreRouteVisibility();
 });
 
 function setFullRouteData(featureOrNull) {
@@ -2440,10 +2441,7 @@ function isFollowingNow() {
 
 function applyMapRotation() {
   if (userInteracting || Date.now() < dragPauseUntil) return;
-  if (!isMapExpanded) {
-    if (map.getBearing() !== 0) map.setBearing(0);
-    return;
-  }
+  if (!isMapExpanded) return;
   if (isFollowingNow()) {
     map.setBearing(smoothedHeading);
   }
@@ -2722,6 +2720,7 @@ function updateAutoFollowButtonUI() {
   }
 }
 
+// Quando você arrasta ou gira o mapa manualmente, pausa a câmera automática para não atrapalhar
 map.on('movestart', e => {
   if (e && e.originalEvent) {
     userInteracting = true;
@@ -3384,6 +3383,37 @@ async function selectRouteTargetCard(id) {
 }
 
 // ==========================================
+// BUSCA DA ROTA MAIS CURTA (MENOR DISTÂNCIA REAL ENTRE ALTERNATIVAS)
+// ==========================================
+async function fetchShortestOsrmRoute(coordsString) {
+  const isMoto = $('vehicle').value === 'motorcycle';
+  const endpoints = isMoto
+    ? [
+        `https://routing.openstreetmap.de/routed-bike/route/v1/driving/${coordsString}?overview=full&geometries=geojson&alternatives=true`,
+        `https://router.project-osrm.org/route/v1/driving/${coordsString}?overview=full&geometries=geojson&alternatives=true`
+      ]
+    : [
+        `https://routing.openstreetmap.de/routed-car/route/v1/driving/${coordsString}?overview=full&geometries=geojson&alternatives=true`,
+        `https://router.project-osrm.org/route/v1/driving/${coordsString}?overview=full&geometries=geojson&alternatives=true`
+      ];
+
+  for (const url of endpoints) {
+    try {
+      const res = await fetchWithTimeout(url, {}, 7000);
+      if (!res.ok) continue;
+      const data = await res.json();
+      if (data.code === 'Ok' && Array.isArray(data.routes) && data.routes.length) {
+        // Escolhe sempre a rota de MENOR DISTÂNCIA em metros entre as alternativas
+        return data.routes.reduce((shortest, current) =>
+          current.distance < shortest.distance ? current : shortest
+        , data.routes[0]);
+      }
+    } catch (e) {}
+  }
+  return null;
+}
+
+// ==========================================
 // ROTEAMENTO OSRM: TRECHO ATIVO (LINHA LARANJA)
 // ==========================================
 async function focusRouteToSelectedCard(zoomToLeg = true) {
@@ -3419,14 +3449,10 @@ async function focusRouteToSelectedCard(zoomToLeg = true) {
 
   $('activeFocusBar').classList.remove('hidden');
   $('activeFocusName').textContent = `${target.name} (${target.street}, ${target.number || 's/n'})`;
-  $('activeFocusLeg').textContent = 'Traçando OSRM...';
+  $('activeFocusLeg').textContent = 'Traçando caminho curto...';
 
   try {
-    const url = `https://router.project-osrm.org/route/v1/driving/${startPoint.lon},${startPoint.lat};${target.lon},${target.lat}?overview=full&geometries=geojson&alternatives=false`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-    const leg = data.routes?.[0];
+    const leg = await fetchShortestOsrmRoute(`${startPoint.lon},${startPoint.lat};${target.lon},${target.lat}`);
     if (!leg) throw new Error();
 
     activeLegCoords = (leg.geometry?.coordinates || []).map(c => [c[1], c[0]]);
@@ -3828,48 +3854,39 @@ async function getCoordinates() {
   return locations;
 }
 
-// OTIMIZAÇÃO DE ROTA SEM VOLTA DESNECESSÁRIA (SOMENTE IDA DA LOJA PASSANDO PELAS PARADAS)
+// OTIMIZAÇÃO DE ROTA PELO CAMINHO MAIS CURTO (SEM VOLTA DESNECESSÁRIA À LOJA)
 async function optimizeRoute(points) {
   let orderedDeliveries = [...deliveries];
 
-  // Se houver mais de 1 entrega, ordena pela sequência mais curta sem retornar à loja
+  // Ordena paradas pela vizinhança mais próxima (menor distância real)
   if (points.length > 1) {
-    const tripCoords = [store, ...points].map(p => `${p.lon},${p.lat}`).join(';');
-    const tripUrl = `https://router.project-osrm.org/trip/v1/driving/${tripCoords}?roundtrip=false&source=first&overview=false`;
-    try {
-      const tripRes = await fetch(tripUrl);
-      if (tripRes.ok) {
-        const tripData = await tripRes.json();
-        if (tripData.code === 'Ok' && Array.isArray(tripData.waypoints)) {
-          const orderedIds = tripData.waypoints
-            .map((w, index) => ({ w, index }))
-            .filter(x => x.index !== 0)
-            .sort((a, b) => a.w.waypoint_index - b.w.waypoint_index)
-            .map(x => deliveries[x.index - 1]?.id)
-            .filter(Boolean);
-
-          if (orderedIds.length === deliveries.length) {
-            orderedDeliveries = orderedIds
-              .map(id => deliveries.find(d => d.id === id))
-              .filter(Boolean);
-          }
+    const remaining = [...deliveries];
+    const sorted = [];
+    let cur = { lat: store.lat, lon: store.lon };
+    while (remaining.length) {
+      let bestIdx = 0;
+      let bestDist = Infinity;
+      for (let i = 0; i < remaining.length; i++) {
+        const d = haversineKm(cur.lat, cur.lon, remaining[i].lat, remaining[i].lon);
+        if (d < bestDist) {
+          bestDist = d;
+          bestIdx = i;
         }
       }
-    } catch (e) {}
+      const next = remaining.splice(bestIdx, 1)[0];
+      sorted.push(next);
+      cur = { lat: next.lat, lon: next.lon };
+    }
+    orderedDeliveries = sorted;
   }
 
-  // Traça a rota direta ponto a ponto (Loja -> Parada 1 -> Parada 2...), sem ida-e-volta duplicada
   const routeCoords = [store, ...orderedDeliveries].map(p => `${p.lon},${p.lat}`).join(';');
-  const routeUrl = `https://router.project-osrm.org/route/v1/driving/${routeCoords}?overview=full&geometries=geojson&alternatives=false`;
-  const response = await fetch(routeUrl);
-  if (!response.ok) throw new Error('Erro de conexão com o OSRM.');
-
-  const data = await response.json();
-  if (data.code !== 'Ok' || !data.routes?.length) {
+  const shortestTrip = await fetchShortestOsrmRoute(routeCoords);
+  if (!shortestTrip) {
     throw new Error('Trajeto não encontrado nas vias. Revise os endereços.');
   }
 
-  return { trip: data.routes[0], ordered: orderedDeliveries };
+  return { trip: shortestTrip, ordered: orderedDeliveries };
 }
 
 function formatDuration(seconds) {
@@ -3932,7 +3949,7 @@ async function calculate(silent = false, preserveStoreCenter = false) {
   $('calculate').disabled = true;
   $('loading').classList.remove('hidden');
   $('loading').classList.add('flex');
-  $('loadingText').textContent = 'Calculando melhor sequência...';
+  $('loadingText').textContent = 'Calculando caminho mais curto...';
 
   try {
     const points = await getCoordinates();
@@ -3986,7 +4003,7 @@ function fitRouteOnMap() {
     }
   }
 
-  if (fullRouteGeoJSON) {
+  if (fullRouteGeoJSON && storeRouteVisible) {
     if (isMapExpanded) {
       autoFollowUser = false;
       updateAutoFollowButtonUI();
