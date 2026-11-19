@@ -4335,8 +4335,19 @@ async function carregaEnderecoDoPainel() {
     const [cfg] = c.ok ? await c.json() : [];
     const v = cfg && cfg.value;
     if (v && v.endereco) {
+      const mudou = $('storeAddress').value.trim() !== String(v.endereco).trim();
       $('storeAddress').value = v.endereco;
       if (v.coords) localStorage.setItem('rota_loja_coords', JSON.stringify(v.coords));
+      if (mudou) {
+        // endereço mudou no painel: usa as coordenadas do painel (ou zera para geocodificar de novo)
+        const c2 = v.coords && Number.isFinite(+v.coords.lat) && Number.isFinite(+(v.coords.lng ?? v.coords.lon));
+        store = c2 ? { lat: +v.coords.lat, lon: +(v.coords.lng ?? v.coords.lon), city: '' } : null;
+        if (store) {
+          $('storeStatus').textContent = 'Fixada no mapa';
+          $('storeStatus').className = 'text-[10px] font-mono text-emerald-400';
+        }
+        save();
+      }
     }
   } catch (e) {}
 }
