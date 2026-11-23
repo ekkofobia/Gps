@@ -6,7 +6,7 @@
 <title>ROTA // Despacho & Logística</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
@@ -255,7 +255,7 @@
   #mapSection {
     position: relative;
     width: 100%;
-    height: calc(100dvh - 49px);
+    height: 100dvh;
     display: flex;
     flex-direction: column;
     border-radius: 0;
@@ -321,6 +321,7 @@
   #mapOfflineBtn,
   #openMaps,
   #toggleStoreRouteBtn,
+  #voiceToggleBtn,
   #mostraMinhaSeta {
     width: 39px !important;
     height: 39px !important;
@@ -334,6 +335,7 @@
   #mapOfflineBtn svg,
   #openMaps svg,
   #toggleStoreRouteBtn svg,
+  #voiceToggleBtn svg,
   #mostraMinhaSeta svg {
     width: 18.5px !important;
     height: 18.5px !important;
@@ -363,10 +365,10 @@
     backdrop-filter: none !important;
   }
   #mapHeaderRow > div:first-child { display: none !important; }
-  #mapHeaderActions { flex-direction: column !important; align-items: flex-end !important; gap: 8px !important; flex-wrap: nowrap !important; }
+  #mapHeaderActions { flex-direction: column !important; align-items: flex-end !important; gap: 8.8px !important; flex-wrap: nowrap !important; }
 
   #cycleAltRouteBtn { order: 1; }
-  #mapThemePair { flex-direction: column !important; gap: 8px !important; order: 2; }
+  #mapThemePair { flex-direction: column !important; gap: 8.8px !important; order: 2; }
   #mapThemePair #mapMenuBtn { order: 1; }
   #mapThemePair #openMaps { order: 2; }
   #mapThemePair #mapOfflineBtn { order: 3; }
@@ -391,6 +393,38 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
   }
   #simulateWalkBtn, #recenterUserBtn, #floatingMinimizeBtn { display: none !important; }
+
+  /* Abas sem barra de rolagem e com cantos iguais aos botões */
+  #miniCardList::-webkit-scrollbar { display: none !important; height: 0 !important; }
+  #miniCardList { scrollbar-width: none !important; -ms-overflow-style: none; }
+  #miniCardList .rounded-full { border-radius: 8px !important; }
+  #miniCardStrip { transition: max-height .35s ease; }
+  #miniCardStrip.ui-collapsed #miniActions { display: none !important; }
+  #miniCardStrip.ui-collapsed #miniCardList { padding-top: 4px !important; padding-bottom: 4px !important; }
+  #miniCardStrip.ui-collapsed #miniCardList button { height: 20px !important; padding-left: 7px !important; padding-right: 7px !important; gap: 4px !important; border-radius: 6px !important; }
+  #miniCardStrip.ui-collapsed #miniCardList span { font-size: 9px !important; line-height: 1 !important; }
+
+  /* Cabeçalho recolhido após 10 s sem interação */
+  #appTopHeader { transition: height .35s ease, padding .35s ease; overflow: hidden; }
+  #appTopHeader.ui-collapsed { height: 0 !important; min-height: 0 !important; padding: 0 !important; border-bottom-width: 0 !important; overflow: hidden !important; }
+  #appTopHeader.ui-collapsed #brandLogo,
+  #appTopHeader.ui-collapsed #today,
+  #appTopHeader.ui-collapsed #headerStageToggleBtn,
+  #appTopHeader.ui-collapsed #menuBtn { opacity: 0; pointer-events: none; }
+  #appTopHeader.ui-collapsed #brandTitle { font-size: 9px !important; line-height: 1; }
+  #appTopHeader.ui-collapsed span[title="Online"] { width: 4px !important; height: 4px !important; top: -2px !important; right: -4px !important; ring-width: 1px; }
+
+  /* Card de status: encolhe para a esquerda até virar o ponto azul */
+  #gpsPill { transition: width .4s ease, height .4s ease, padding .4s ease, gap .4s ease; }
+  #gpsTextWrap { transition: max-width .4s ease, opacity .3s ease; max-width: 240px; overflow: hidden; white-space: nowrap; }
+  #gpsPill.pill-min { width: 40px !important; height: 40px !important; padding: 0 !important; gap: 0 !important; justify-content: center !important; border-radius: 999px !important; }
+  #gpsPill.pill-min #gpsTextWrap { max-width: 0; opacity: 0; }
+  #gpsPill.pill-min #hudEtaWrap { display: none !important; }
+
+  /* Tela do mapa: cabeçalho flutua por cima do mapa e sobe ao recolher, sem empurrar o mapa */
+  body.tela-mapa #appTopHeader { position: fixed !important; top: 0; left: 0; right: 0; z-index: 1100; transition: height .35s ease, padding .35s ease, border-width .35s ease; }
+  body.tela-mapa #miniCardStrip { top: 49px !important; transition: top .35s ease; }
+  body.tela-mapa.cab-recolhido #miniCardStrip { top: 0 !important; }
 </style>
 <style>.cfg-sem-barra::-webkit-scrollbar{display:none}</style>
 </head>
@@ -406,7 +440,7 @@
         </svg>
       </div>
       <div class="flex items-baseline gap-2">
-        <span id="brandTitle" role="button" tabindex="0" title="Mapa de rotas" class="cursor-pointer select-none font-extrabold tracking-tight text-sm text-white hover:text-blue-400 transition"><span class="relative">ROTA<span title="Online" aria-label="Online" class="absolute -top-1 -right-2 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-obsidian animate-pulse-slow"></span></span><span class="text-blue-500">.</span></span>
+        <span id="brandTitle" role="button" tabindex="0" title="Mapa de rotas" class="cursor-pointer select-none font-extrabold tracking-tight text-sm text-white hover:text-blue-400 transition"><span class="relative">ROTA<span title="Online" aria-label="Online" class="absolute -top-1 -right-2 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-obsidian animate-pulse-slow"></span></span></span>
         <span class="hidden sm:inline-block text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Dispatch OS</span>
       </div>
     </div>
@@ -441,6 +475,10 @@
     <button type="button" data-view="panel" class="w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-200 hover:text-white hover:bg-zinc-900 flex items-center gap-2.5 transition">
       <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
       <span>Painel de operação</span>
+    </button>
+    <button type="button" data-view="rota" class="w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-200 hover:text-white hover:bg-zinc-900 flex items-center gap-2.5 transition">
+      <svg class="w-4 h-4 text-blue-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h11M4 12h11M4 18h7M18 9l3 3-3 3"/></svg>
+      <span>Rota</span>
     </button>
     <button type="button" data-view="config" class="w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-200 hover:text-white hover:bg-zinc-900 flex items-center gap-2.5 transition">
       <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -695,6 +733,17 @@
               </svg>
             </button>
 
+            <!-- 3B. BOTÃO DE NAVEGAÇÃO POR VOZ -->
+            <button id="voiceToggleBtn" type="button" title="Navegação por voz" aria-label="Navegação por voz"
+              class="w-[39px] h-[39px] rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline flex items-center justify-center shadow-lg transition active:scale-95">
+              <svg id="voiceOnIcon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7M19 5a10 10 0 010 14"/>
+              </svg>
+              <svg id="voiceOffIcon" class="hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M3 3l18 18"/>
+              </svg>
+            </button>
+
             <!-- 4. BOTÃO SETA + ENQUADRAR TELA (ISOLADO ABAIXO MANTENDO DISTANCIAMENTO) -->
             <button id="mostraMinhaSeta" type="button" aria-label="Mostrar minha localização ou enquadrar rota" title="1º toque: Minha localização · 2º toque: Enquadrar rota"
               class="w-[39px] h-[39px] rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline text-sky-400 flex items-center justify-center shadow-lg transition active:scale-95">
@@ -729,7 +778,7 @@
             <div class="flex flex-wrap items-center justify-between gap-2">
               <div id="gpsPill" class="pointer-events-auto cursor-pointer flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-obsidian/90 backdrop-blur-md border border-zinc-800 shadow-2xl">
                 <span id="gpsSignalDot" class="w-2 h-2 rounded-full bg-sky-400 animate-pulse shrink-0"></span>
-                <div class="leading-tight">
+                <div id="gpsTextWrap" class="leading-tight">
                   <div id="gpsStatusLabel" class="text-[11px] font-bold text-white">Seta pronta</div>
                   <div id="gpsAccuracyLabel" class="text-[9px] font-mono text-zinc-400">Aguardando GPS...</div>
                 </div>
@@ -781,70 +830,58 @@
     </div>
 
     <!-- REPORT VIEW -->
-    <div id="viewReport" class="hidden max-w-[1540px] mx-auto p-3.5 sm:p-5 lg:p-6 space-y-4">
-      <div class="flex items-center justify-between gap-3">
+    <div id="viewReport" class="hidden max-w-[1200px] mx-auto p-3.5 sm:p-5 lg:p-6 space-y-4">
+      <div class="flex items-end justify-between gap-3 flex-wrap">
         <div>
-          <h2 class="text-sm font-bold uppercase tracking-wider text-zinc-200">Relatório do dia</h2>
-          <p class="text-[11px] text-zinc-500 mt-0.5">Resumo das entregas da fila atual</p>
+          <p class="font-mono text-[10px] uppercase tracking-widest text-zinc-500">BI · Entregas</p>
+          <h2 class="text-xl font-extrabold text-white tracking-tight">Relatório</h2>
         </div>
-        <span id="reportDate" class="font-mono text-[11px] text-zinc-500 shrink-0"></span>
+        <div class="flex items-center gap-1.5">
+          <button id="relCopyBtn" type="button" class="px-3 py-2 rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline text-zinc-300 text-[11px] font-semibold transition active:scale-95">Copiar resumo</button>
+          <button id="relExportBtn" type="button" class="px-3 py-2 rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline text-emerald-300 text-[11px] font-semibold transition active:scale-95">Exportar CSV</button>
+        </div>
       </div>
 
-      <!-- KPI TELEMETRY BAR -->
-      <section class="grid grid-cols-3 gap-2.5 sm:gap-3.5">
-        <div class="bg-surface border border-borderline rounded-xl p-3.5 sm:p-4 flex flex-col justify-between">
-          <div class="flex items-center justify-between text-zinc-500 text-[11px] font-medium uppercase tracking-wider">
-            <span>Pedidos</span>
-            <svg class="w-3.5 h-3.5 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-            </svg>
-          </div>
-          <div class="mt-2 flex items-baseline justify-between">
-            <span id="totalStat" class="font-mono text-2xl sm:text-3xl font-extrabold text-white tabular-nums">0</span>
-            <span class="text-[10px] text-zinc-500 hidden sm:inline">na rota</span>
-          </div>
+      <div class="flex items-center justify-between gap-2 flex-wrap">
+        <div id="relPeriodos" class="inline-flex p-1 rounded-xl bg-elevated border border-borderline">
+          <button type="button" data-rel="hoje" class="px-3 py-1.5 rounded-lg text-[11px] font-bold transition">Hoje</button>
+          <button type="button" data-rel="7" class="px-3 py-1.5 rounded-lg text-[11px] font-bold transition">7 dias</button>
+          <button type="button" data-rel="30" class="px-3 py-1.5 rounded-lg text-[11px] font-bold transition">30 dias</button>
+          <button type="button" data-rel="tudo" class="px-3 py-1.5 rounded-lg text-[11px] font-bold transition">Tudo</button>
         </div>
+        <input id="relBusca" type="search" placeholder="Buscar cliente, rua ou bairro"
+          class="w-full sm:w-72 px-3 py-2 rounded-lg bg-obsidian border border-borderline text-xs text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-zinc-600">
+      </div>
 
-        <div class="bg-surface border border-borderline rounded-xl p-3.5 sm:p-4 flex flex-col justify-between">
-          <div class="flex items-center justify-between text-zinc-500 text-[11px] font-medium uppercase tracking-wider">
-            <span>Entregues</span>
-            <svg class="w-3.5 h-3.5 text-emerald-500/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-            </svg>
-          </div>
-          <div class="mt-2 flex items-baseline justify-between">
-            <span id="doneStat" class="font-mono text-2xl sm:text-3xl font-extrabold text-emerald-400 tabular-nums">0</span>
-            <span id="progressPct" class="font-mono text-[10px] text-emerald-500/80">0%</span>
-          </div>
-        </div>
+      <div id="relKpis" class="grid grid-cols-2 lg:grid-cols-5 gap-2.5"></div>
 
-        <div class="bg-surface border border-borderline rounded-xl p-3.5 sm:p-4 flex flex-col justify-between">
-          <div class="flex items-center justify-between text-zinc-500 text-[11px] font-medium uppercase tracking-wider">
-            <span>Restantes</span>
-            <svg class="w-3.5 h-3.5 text-amber-500/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
+      <div class="grid lg:grid-cols-3 gap-2.5">
+        <div class="lg:col-span-2 rounded-xl bg-elevated/60 border border-borderline p-4">
+          <div class="flex items-center justify-between mb-4">
+            <p class="text-[11px] font-bold text-zinc-200">Entregas por dia</p>
+            <span id="relDiasLabel" class="font-mono text-[10px] text-zinc-500"></span>
           </div>
-          <div class="mt-2 flex items-baseline justify-between">
-            <span id="pendingStat" class="font-mono text-2xl sm:text-3xl font-extrabold text-amber-400 tabular-nums">0</span>
-            <span class="text-[10px] text-zinc-500 hidden sm:inline">pendentes</span>
-          </div>
+          <div id="relChartDias"></div>
         </div>
-      </section>
+        <div class="rounded-xl bg-elevated/60 border border-borderline p-4">
+          <p class="text-[11px] font-bold text-zinc-200 mb-4">Horários de entrega</p>
+          <div id="relChartHoras"></div>
+        </div>
+      </div>
 
-      <section class="bg-surface border border-borderline rounded-2xl overflow-hidden">
-        <div class="px-4 py-3.5 border-b border-borderline bg-elevated/40">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-200">Entregas por bairro</h3>
-        </div>
-        <div id="reportByNeighborhood" class="p-4 space-y-2.5"></div>
-      </section>
+      <div class="rounded-xl bg-elevated/60 border border-borderline p-4">
+        <p class="text-[11px] font-bold text-zinc-200 mb-3">Por bairro</p>
+        <div id="relChartBairros" class="space-y-2.5"></div>
+      </div>
 
-      <section class="bg-surface border border-borderline rounded-2xl overflow-hidden">
-        <div class="px-4 py-3.5 border-b border-borderline bg-elevated/40">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-200">Pedidos</h3>
+      <div class="flex items-center justify-between gap-2">
+        <p class="text-[11px] font-bold text-zinc-200">Detalhamento por dia</p>
+        <div class="flex items-center gap-1.5">
+          <button id="relExpandAll" type="button" class="px-2.5 py-1 rounded-lg bg-elevated border border-borderline text-zinc-300 text-[10px] font-semibold transition active:scale-95">Expandir</button>
+          <button id="relCollapseAll" type="button" class="px-2.5 py-1 rounded-lg bg-elevated border border-borderline text-zinc-300 text-[10px] font-semibold transition active:scale-95">Minimizar</button>
         </div>
-        <div id="reportList" class="divide-y divide-borderline"></div>
-      </section>
+      </div>
+      <div id="relDias" class="space-y-2.5"></div>
     </div>
   </main>
 
@@ -946,9 +983,57 @@
   </div>
 
   <!-- ÁREA OCULTA PARA IMPRESSÃO DIRETA -->
+  <!-- PÁGINA ROTA (MENU HAMBÚRGUER) -->
+  <section id="viewRota" class="hidden max-w-[900px] mx-auto p-3.5 sm:p-5 lg:p-6 space-y-4">
+    <div class="flex items-end justify-between gap-3">
+      <div>
+        <p class="font-mono text-[10px] uppercase tracking-widest text-zinc-500">Despacho</p>
+        <h1 class="text-xl font-extrabold text-white tracking-tight">Rota</h1>
+      </div>
+      <button id="rotaStartBtn" type="button" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg shadow-blue-500/20 transition active:scale-95">
+        Iniciar pela próxima
+      </button>
+    </div>
+
+    <div id="rotaStats" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5"></div>
+
+    <div class="flex items-center justify-between gap-2 flex-wrap">
+      <div id="rotaFilters" class="inline-flex p-1 rounded-xl bg-elevated border border-borderline">
+        <button type="button" data-filter="todas" class="px-3 py-1.5 rounded-lg text-[11px] font-bold transition">Todas</button>
+        <button type="button" data-filter="pendentes" class="px-3 py-1.5 rounded-lg text-[11px] font-bold transition">Pendentes</button>
+        <button type="button" data-filter="entregues" class="px-3 py-1.5 rounded-lg text-[11px] font-bold transition">Entregues</button>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <button id="rotaCopyBtn" type="button" class="px-3 py-2 rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline text-zinc-300 text-[11px] font-semibold transition active:scale-95">Copiar</button>
+        <button id="rotaPrintBtn" type="button" class="px-3 py-2 rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline text-zinc-300 text-[11px] font-semibold transition active:scale-95">Imprimir</button>
+        <button id="rotaRecalcBtn" type="button" class="px-3 py-2 rounded-lg bg-elevated hover:bg-zinc-800 border border-borderline text-blue-300 text-[11px] font-semibold transition active:scale-95">Recalcular</button>
+      </div>
+    </div>
+
+    <div id="rotaList" class="space-y-2.5"></div>
+  </section>
+
+  <!-- OPÇÕES DE UMA PARADA (ABRE AO TOCAR NO CARD DA PÁGINA ROTA) -->
+  <div id="rotaSheet" class="hidden fixed inset-0 z-[9300]">
+    <div id="rotaSheetBackdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div class="absolute inset-x-0 bottom-0 max-w-[560px] mx-auto bg-zinc-950 border-t border-zinc-800 rounded-t-3xl p-4 pb-6 shadow-2xl modal-animate">
+      <div class="w-10 h-1 rounded-full bg-zinc-700 mx-auto mb-3"></div>
+      <p id="rotaSheetTitle" class="text-sm font-extrabold text-white truncate"></p>
+      <p id="rotaSheetSub" class="text-[11px] text-zinc-400 mb-3 truncate"></p>
+      <div class="grid gap-2">
+        <button id="rotaActFocus" type="button" class="w-full text-left px-3.5 py-3 rounded-xl bg-elevated hover:bg-zinc-800 border border-borderline text-zinc-100 text-xs font-semibold transition active:scale-[0.99]">Focar no mapa</button>
+        <button id="rotaActMaps" type="button" class="w-full text-left px-3.5 py-3 rounded-xl bg-elevated hover:bg-zinc-800 border border-borderline text-emerald-300 text-xs font-semibold transition active:scale-[0.99]">Abrir no Google Maps</button>
+        <button id="rotaActCopy" type="button" class="w-full text-left px-3.5 py-3 rounded-xl bg-elevated hover:bg-zinc-800 border border-borderline text-zinc-100 text-xs font-semibold transition active:scale-[0.99]">Copiar endereço</button>
+        <button id="rotaActDone" type="button" class="w-full text-left px-3.5 py-3 rounded-xl bg-emerald-600/15 hover:bg-emerald-600/25 border border-emerald-500/30 text-emerald-300 text-xs font-bold transition active:scale-[0.99]"><span>Marcar como entregue</span></button>
+        <button id="rotaActRemove" type="button" class="w-full text-left px-3.5 py-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-300 text-xs font-semibold transition active:scale-[0.99]">Remover da rota</button>
+        <button id="rotaSheetClose" type="button" class="w-full py-3 rounded-xl text-zinc-400 hover:text-white text-xs font-semibold transition">Fechar</button>
+      </div>
+    </div>
+  </div>
+
   <div id="printFallbackArea" class="hidden"></div>
 
-<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script>
 const $ = id => document.getElementById(id);
 
@@ -1181,7 +1266,13 @@ async function syncExactAddressesFromSupa() {
   }
 }
 
+// MODO TESTE: enquanto estiver testando, a posição GPS salva ao marcar "entregue"
+// NÃO vai para o cache local nem para o Supabase (evita gravar localização errada).
+// Para voltar ao normal, troque para false.
+const MODO_TESTE = true;
+
 function storeExactAddress(bairro, street, number, lat, lon, source = 'motoboy_gps') {
+  if (MODO_TESTE && source === 'motoboy_gps') return false;
   const key = buildAddressExactKey(bairro, street, number);
   if (!key || !Number.isFinite(Number(lat)) || !Number.isFinite(Number(lon))) return false;
   exactAddressCache[key] = {
@@ -1420,7 +1511,7 @@ let focusLegAltIndex = 0;
 let activeLegCoords = [];
 let markers = [];
 let routeReady = false;
-let storeRouteVisible = true;
+let storeRouteVisible = false;
 let activeModalNeighborhood = '';
 let selectedStopId = null;
 let holdPromptCardId = null;
@@ -2085,6 +2176,8 @@ document.addEventListener('keydown', e => {
 function buildRasterStyle(tiles, attribution, bgColor = '#0d0e11') {
   return {
     version: 8,
+    // Fontes para os números/nomes dos alfinetes (camada de texto) também nos estilos raster
+    glyphs: 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf',
     sources: {
       basemap: {
         type: 'raster',
@@ -2127,7 +2220,7 @@ const MAP_STYLES = {
 
 const map = new maplibregl.Map({
   container: 'map',
-  style: MAP_STYLES.dark,
+  style: MAP_STYLES.light,
   center: [-40.5033, -9.4167],
   zoom: 14.5,
   pitch: 0,
@@ -2144,6 +2237,182 @@ map.dragRotate.enable();
 map.touchPitch.enable();
 map.doubleClickZoom.enable();
 
+// ===== Paradas desenhadas DENTRO do mapa (camada GeoJSON) =====
+// Ficam no canvas do MapLibre, junto com a rota: não dependem de marcadores HTML
+// e nunca ficam deslocadas em relação à linha.
+const STOP_SRC = 'stops-src';
+let stopFeatures = [];
+
+function bindStopEvents() {
+  if (map._stopEventsBound) return;
+  map._stopEventsBound = true;
+  map.on('click', 'stops-pin', e => {
+    const f = e.features && e.features[0];
+    if (!f) return;
+    new maplibregl.Popup({ offset: 16, closeButton: false })
+      .setLngLat(f.geometry.coordinates)
+      .setHTML(f.properties.popup)
+      .addTo(map);
+  });
+  map.on('mouseenter', 'stops-pin', () => { map.getCanvas().style.cursor = 'pointer'; });
+  map.on('mouseleave', 'stops-pin', () => { map.getCanvas().style.cursor = ''; });
+}
+
+function ensureStopLayers() {
+  try {
+    if (!map.getStyle()) return;
+  } catch (e) {
+    return;
+  }
+  try {
+    if (!map.getSource(STOP_SRC)) {
+      map.addSource(STOP_SRC, {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: stopFeatures }
+      });
+    }
+    if (!map.getLayer('stops-pin')) {
+      map.addLayer({
+        id: 'stops-pin',
+        type: 'symbol',
+        source: STOP_SRC,
+        layout: {
+          'icon-image': ['get', 'icon'],
+          'icon-anchor': 'bottom',
+          'icon-allow-overlap': true,
+          'icon-ignore-placement': true
+        }
+      });
+    }
+    if (!map.getLayer('stops-near')) {
+      map.addLayer({
+        id: 'stops-near',
+        type: 'symbol',
+        source: STOP_SRC,
+        layout: {
+          'text-field': ['get', 'near'],
+          'text-font': ['Noto Sans Bold'],
+          'text-size': 10,
+          'text-offset': [0, -4.6],
+          'text-allow-overlap': true,
+          'text-ignore-placement': true
+        },
+        paint: {
+          'text-color': '#e4e4e7',
+          'text-halo-color': '#09090b',
+          'text-halo-width': 2
+        }
+      });
+    }
+    bindStopEvents();
+  } catch (e) {}
+}
+
+const PIN_COLORS = { store: '#10b981', active: '#f59e0b', done: '#3f3f46', stop: '#2563eb' };
+
+function pinIconId(state, label) {
+  return 'pin-' + state + '-' + label;
+}
+
+// Alfinete: cabeça redonda com o número + haste fina cuja ponta fica exatamente no ponto da rota
+function ensurePinImage(state, label) {
+  const id = pinIconId(state, label);
+  if (map.hasImage(id)) return id;
+
+  const W = 32, H = 44, R = 10, ratio = 2;
+  const cx = W / 2, cy = 13;
+  const color = PIN_COLORS[state] || PIN_COLORS.stop;
+  const isActive = state === 'active';
+  const radius = isActive ? R + 1.5 : R;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = W * ratio;
+  canvas.height = H * ratio;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(ratio, ratio);
+
+  // Haste fina até a ponta (ponta = base da imagem = ponto da rota)
+  ctx.beginPath();
+  ctx.moveTo(cx, cy + radius - 1);
+  ctx.lineTo(cx, H - 2);
+  ctx.strokeStyle = '#09090b';
+  ctx.lineWidth = 3.2;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.6;
+  ctx.stroke();
+
+  // Ponta
+  ctx.beginPath();
+  ctx.arc(cx, H - 2, 1.6, 0, Math.PI * 2);
+  ctx.fillStyle = color;
+  ctx.fill();
+
+  // Cabeça
+  if (isActive) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius + 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(245, 158, 11, 0.35)';
+    ctx.fill();
+  }
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = '#09090b';
+  ctx.stroke();
+
+  // Número (desenhado no canvas: não depende de fontes do estilo)
+  ctx.fillStyle = isActive ? '#09090b' : (state === 'done' ? '#a1a1aa' : '#ffffff');
+  ctx.font = '800 11px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(String(label), cx, cy + 0.5);
+
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  map.addImage(id, data, { pixelRatio: ratio });
+  return id;
+}
+
+function flushStops() {
+  ensureStopLayers();
+  try {
+    // Gera (se faltar) a imagem de cada alfinete e grava o ícone em cada feature
+    stopFeatures.forEach(f => {
+      f.properties.icon = ensurePinImage(f.properties.state, f.properties.label);
+    });
+    const src = map.getSource(STOP_SRC);
+    if (src) src.setData({ type: 'FeatureCollection', features: stopFeatures });
+    // Mantém as paradas por cima da rota
+    ['stops-pin', 'stops-near'].forEach(id => {
+      if (map.getLayer(id)) map.moveLayer(id);
+    });
+  } catch (e) {}
+}
+
+// Mesma assinatura de antes: os chamadores continuam funcionando sem mudança.
+function addMarker(lat, lon, label, state = 'stop', popupTitle = '', deliveryId = null, nearLabel = '') {
+  const popupHtml = state === 'store'
+    ? '<strong style="color:#10b981">BASE // LOJA</strong><br><span style="color:#a1a1aa">Ponto de partida</span>'
+    : `<strong>Parada #${label}</strong>${popupTitle ? '<br><span style="color:#a1a1aa">' + escapeHTML(popupTitle) + '</span>' : ''}`;
+
+  stopFeatures.push({
+    type: 'Feature',
+    geometry: { type: 'Point', coordinates: [Number(lon), Number(lat)] },
+    properties: {
+      label: state === 'store' ? 'L' : String(label),
+      state: state,
+      near: nearLabel || '',
+      popup: popupHtml,
+      deliveryId: deliveryId || ''
+    }
+  });
+  flushStops();
+  return { _deliveryId: deliveryId };
+}
+
 function ensureRouteLayers() {
   try {
     if (!map.getStyle()) return;
@@ -2152,6 +2421,7 @@ function ensureRouteLayers() {
   }
 
   const storeVis = storeRouteVisible ? 'visible' : 'none';
+  ensureStopLayers();
 
   if (!map.getSource('route-source')) {
     map.addSource('route-source', {
@@ -2282,7 +2552,7 @@ const ICONES_TEMA = {
   light: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
   satellite: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>'
 };
-let temaMapa = 'dark';
+let temaMapa = 'light';
 function setMapMode(mode) {
   temaMapa = mode;
   $('mapThemeIcon').innerHTML = ICONES_TEMA[mode] || ICONES_TEMA.dark;
@@ -2336,7 +2606,7 @@ $('mostraMinhaSeta').onclick = () => {
     }
   }, () => toast('Não consegui sua localização. Verifique a permissão do GPS.'), { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 });
 };
-setMapMode('dark');
+setMapMode('light');
 
 // ==========================================
 // GPS DA LOJA + GEOCODIFICAÇÃO REVERSA
@@ -2478,7 +2748,98 @@ function createUserArrowElement() {
   return el;
 }
 
+// ===== Navegação por voz (pt-BR): avisa a 200, 100 e 30 metros de cada manobra =====
+let voiceEnabled = false;
+try { voiceEnabled = localStorage.getItem('rota_voz') === '1'; } catch (e) {}
+let voiceSteps = [], voiceIdx = 0, voiceSaid = new Set();
+
+function voiceRefreshBtn() {
+  const b = $('voiceToggleBtn');
+  if (!b) return;
+  b.classList.toggle('text-emerald-400', voiceEnabled);
+  b.classList.toggle('text-zinc-500', !voiceEnabled);
+  $('voiceOnIcon').classList.toggle('hidden', !voiceEnabled);
+  $('voiceOffIcon').classList.toggle('hidden', voiceEnabled);
+}
+
+function speakPt(text) {
+  try {
+    if (!('speechSynthesis' in window) || !text) return;
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'pt-BR';
+    u.rate = 1;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+
+function voiceSetSteps(leg) {
+  voiceSteps = (leg?.legs || []).flatMap(l => l.steps || []);
+  voiceIdx = 0;
+  voiceSaid.clear();
+}
+
+function voiceInstruction(step, t) {
+  const m = step.maneuver || {};
+  const mod = m.modifier || '';
+  const type = m.type || '';
+  if (type === 'arrive') return t === 30 ? 'Você chegou ao destino' : `Destino em ${t} metros`;
+  const pre = t === 30 ? 'Agora, ' : `Em ${t} metros, `;
+  let acao;
+  if (type === 'roundabout' || type === 'rotary' || type === 'exit roundabout' || type === 'exit rotary') acao = 'entre na rotatória';
+  else if (mod === 'uturn') acao = 'faça o retorno';
+  else if (mod === 'straight' || type === 'continue' || type === 'new name' || type === 'merge') acao = 'siga em frente';
+  else if (mod.includes('left') || mod.includes('right')) {
+    const lado = mod.includes('left') ? 'esquerda' : 'direita';
+    const grau = mod.includes('sharp') ? 'bruscamente ' : (mod.includes('slight') ? 'levemente ' : '');
+    acao = `vire ${grau}à ${lado}`;
+  } else acao = 'siga em frente';
+  return pre + acao;
+}
+
+function voiceOnPosition(lat, lon) {
+  if (!voiceEnabled || !voiceSteps.length || !Number.isFinite(lat) || !Number.isFinite(lon)) return;
+  while (voiceIdx < voiceSteps.length) {
+    const st = voiceSteps[voiceIdx];
+    const loc = st.maneuver?.location;
+    const type = st.maneuver?.type;
+    if (!loc || type === 'depart') { voiceIdx++; continue; }
+    const d = haversineKm(lat, lon, loc[1], loc[0]) * 1000;
+    if (type === 'arrive') {
+      if (d < 30 && !voiceSaid.has(voiceIdx + ':30')) {
+        voiceSaid.add(voiceIdx + ':30');
+        speakPt(voiceInstruction(st, 30));
+      }
+      if (d < 30) { voiceIdx++; continue; }
+    } else if (d < 25) {
+      voiceIdx++;
+      continue;
+    }
+    const alcance = [30, 100, 200].find(t => d <= t && !voiceSaid.has(voiceIdx + ':' + t));
+    if (alcance) {
+      [30, 100, 200].forEach(t => { if (t >= alcance) voiceSaid.add(voiceIdx + ':' + t); });
+      speakPt(voiceInstruction(st, alcance));
+    }
+    break;
+  }
+}
+
+$('voiceToggleBtn').onclick = () => {
+  voiceEnabled = !voiceEnabled;
+  try { localStorage.setItem('rota_voz', voiceEnabled ? '1' : '0'); } catch (e) {}
+  voiceRefreshBtn();
+  if (voiceEnabled) {
+    speakPt('Navegação por voz ativada');
+    toast('Voz ativada');
+  } else {
+    try { speechSynthesis.cancel(); } catch (e) {}
+    toast('Voz desativada');
+  }
+};
+voiceRefreshBtn();
+
 function applyUserMarkerState(lat, lon, acc, headingDeg, shouldPan = false) {
+  voiceOnPosition(lat, lon);
   currentHeading = (headingDeg + 360) % 360;
   const diff = shortestAngleDelta(smoothedHeading, currentHeading);
   smoothedHeading = (smoothedHeading + diff * 0.45 + 360) % 360;
@@ -2774,13 +3135,14 @@ function updateStats() {
   const pending = total - done;
   const pct = total ? Math.round((done / total) * 100) : 0;
 
-  $('totalStat').textContent = total;
-  $('doneStat').textContent = done;
-  $('pendingStat').textContent = pending;
-  $('progressPct').textContent = pct + '%';
-  $('countBadge').textContent = total + (total === 1 ? ' pedido' : ' pedidos');
-  renderReport();
+  const setT = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  setT('totalStat', total);
+  setT('doneStat', done);
+  setT('pendingStat', pending);
+  setT('progressPct', pct + '%');
+  setT('countBadge', total + (total === 1 ? ' pedido' : ' pedidos'));
   renderMiniCards();
+  try { if (!$('viewReport').classList.contains('hidden')) renderReport(); } catch (e) { console.error('Relatório:', e); }
 }
 
 function save() {
@@ -2801,6 +3163,17 @@ async function load() {
   } catch (e) {
     deliveries = [];
   }
+
+  // Coordenadas calculadas por versões antigas (possivelmente erradas) são descartadas e refeitas.
+  deliveries.forEach(d => {
+    if (d.geoV !== GEO_VERSION && !d.manualCoords) {
+      d.lat = null;
+      d.lon = null;
+      d.snappedLat = null;
+      d.snappedLon = null;
+      d.exactMatch = false;
+    }
+  });
 
   try {
     const savedSelected = localStorage.getItem('rota_selected_stop');
@@ -2876,6 +3249,8 @@ function clearMapLayers(keepStore = false) {
   activeLegCoords = [];
   markers.forEach(m => m.remove());
   markers = [];
+  stopFeatures = [];
+  flushStops();
   if (keepStore && store) {
     addMarker(store.snappedLat || store.lat, store.snappedLon || store.lon, 'L', 'store');
   }
@@ -3073,6 +3448,7 @@ window.confirmToggleDelivered = function(id) {
   if (!delivery) return;
 
   delivery.done = !delivery.done;
+  if (delivery.done) histRegistrar(delivery); else histRemover(delivery.id);
   holdPromptCardId = null;
 
   // Se o motoboy marcou como entregue e o número da casa não existia no mapa, salva a coordenada GPS exata localmente e no Supabase
@@ -3130,21 +3506,38 @@ async function selectRouteTargetCard(id) {
   renderDeliveries();
   redrawMarkers();
 
-  const markerObj = markers.find(m => m._deliveryId === id);
-  if (markerObj && !markerObj.getPopup().isOpen()) {
-    markerObj.togglePopup();
-  }
-
   await focusRouteToSelectedCard(true);
 }
 
 // ==========================================
 // BUSCA ATÉ AS 3 MELHORES ROTAS NA MÃO CERTA (COM SNAP NA LINHA)
 // ==========================================
-async function fetchTop3LegalOsrmRoutes(coordsString) {
+// Duas rotas são "iguais" se a distância for parecida E o traçado estiver a menos de ~60 m
+function sameRouteGeom(a, b) {
+  const da = a.distance || 0, db = b.distance || 0;
+  if (Math.abs(da - db) / Math.max(da, db, 1) > 0.02) return false;
+  const ca = a.geometry?.coordinates || [], cb = b.geometry?.coordinates || [];
+  if (!ca.length || !cb.length) return true;
+  const N = 10;
+  let total = 0;
+  for (let i = 1; i <= N; i++) {
+    const p = ca[Math.floor(i * (ca.length - 1) / (N + 1))];
+    let best = Infinity;
+    for (let j = 0; j < cb.length; j += 3) {
+      const q = cb[j];
+      const d = haversineKm(p[1], p[0], q[1], q[0]) * 1000;
+      if (d < best) best = d;
+    }
+    total += best;
+  }
+  return total / N < 60;
+}
+
+// minAlts: quantas rotas distintas tentar garantir (2 para a tela de troca de rota)
+async function fetchTop3LegalOsrmRoutes(coordsString, minAlts = 2) {
   const endpoints = [
-    `https://routing.openstreetmap.de/routed-car/route/v1/driving/${coordsString}?overview=full&geometries=geojson&alternatives=3&continue_straight=false`,
-    `https://router.project-osrm.org/route/v1/driving/${coordsString}?overview=full&geometries=geojson&alternatives=3&continue_straight=false`
+    `https://routing.openstreetmap.de/routed-car/route/v1/driving/${coordsString}?overview=full&geometries=geojson&alternatives=3&steps=true&continue_straight=false`,
+    `https://router.project-osrm.org/route/v1/driving/${coordsString}?overview=full&geometries=geojson&alternatives=3&steps=true&continue_straight=false`
   ];
 
   let collected = [];
@@ -3154,31 +3547,68 @@ async function fetchTop3LegalOsrmRoutes(coordsString) {
       if (!res.ok) continue;
       const data = await res.json();
       if (data.code === 'Ok' && Array.isArray(data.routes) && data.routes.length) {
-        const wps = Array.isArray(data.waypoints) ? data.waypoints : [];
-        data.routes.forEach(r => {
-          r._waypoints = wps;
-          collected.push(r);
-        });
+        data.routes.forEach(r => collected.push(r));
         if (collected.length >= 3) break;
       }
     } catch (e) {}
   }
 
-  if (!collected.length) return [];
-
-  collected.sort((a, b) => a.distance - b.distance);
-  const uniqueTop3 = [];
-  for (const r of collected) {
-    if (!uniqueTop3.some(u => Math.abs(u.distance - r.distance) < 35)) {
-      uniqueTop3.push(r);
+  const uniq = [];
+  const addUnique = r => {
+    if (!uniq.some(u => sameRouteGeom(u, r))) {
+      uniq.push(r);
+      return true;
     }
-    if (uniqueTop3.length === 3) break;
+    return false;
+  };
+  [...collected].sort((a, b) => a.distance - b.distance).forEach(addUnique);
+
+  // O OSRM público costuma devolver só 1 rota. Nesse caso forçamos rotas alternativas
+  // passando por um ponto de desvio de cada lado da linha reta entre base e destino.
+  if (minAlts > 1 && uniq.length < minAlts) {
+    const pts = coordsString.split(';').map(p => p.split(',').map(Number));
+    if (pts.length === 2 && pts.every(p => p.length === 2 && p.every(Number.isFinite))) {
+      const [[lon1, lat1], [lon2, lat2]] = pts;
+      const straightM = haversineKm(lat1, lon1, lat2, lon2) * 1000;
+      if (straightM > 150) {
+        const midLat = (lat1 + lat2) / 2;
+        const midLon = (lon1 + lon2) / 2;
+        const dLon = lon2 - lon1, dLat = lat2 - lat1;
+        const pLon = -dLat, pLat = dLon;
+        const norm = Math.hypot(pLon, pLat) || 1;
+        const off = Math.max(0.004, Math.min(0.02, straightM / 111000 * 0.4));
+        const vias = [
+          [midLon + pLon / norm * off, midLat + pLat / norm * off],
+          [midLon - pLon / norm * off, midLat - pLat / norm * off]
+        ];
+        const bases = [
+          'https://router.project-osrm.org/route/v1/driving/',
+          'https://routing.openstreetmap.de/routed-car/route/v1/driving/'
+        ];
+        for (const [vLon, vLat] of vias) {
+          if (uniq.length >= minAlts) break;
+          for (const base of bases) {
+            try {
+              const url = `${base}${lon1},${lat1};${vLon},${vLat};${lon2},${lat2}?overview=full&geometries=geojson&steps=true&continue_straight=false`;
+              const res = await fetchWithTimeout(url, {}, 7500);
+              if (!res.ok) continue;
+              const data = await res.json();
+              const r = data.code === 'Ok' ? data.routes?.[0] : null;
+              // descarta desvios absurdos (mais de ~2,2x a reta)
+              if (r && r.distance <= straightM * 2.2 + 300 && addUnique(r)) break;
+            } catch (e) {}
+          }
+        }
+      }
+    }
   }
-  return uniqueTop3;
+
+  uniq.sort((a, b) => a.distance - b.distance);
+  return uniq.slice(0, 3);
 }
 
 async function fetchShortestLegalOsrmRoute(coordsString) {
-  const top = await fetchTop3LegalOsrmRoutes(coordsString);
+  const top = await fetchTop3LegalOsrmRoutes(coordsString, 1);
   return top[0] || null;
 }
 
@@ -3192,6 +3622,7 @@ function applyFocusAlternativeRoute(zoomToLeg = false) {
   }
   const idx = focusLegAltIndex % focusLegAlternatives.length;
   const leg = focusLegAlternatives[idx];
+  voiceSetSteps(leg);
   const rawCoords = leg.geometry?.coordinates || [];
   activeLegCoords = rawCoords.map(c => [c[1], c[0]]);
   setFocusLegData({
@@ -3588,9 +4019,29 @@ async function geocodeRawAddress(address) {
   return geocodeCandidates([withCountry, withoutNumber, ...extras], clean, null);
 }
 
+// Versão da lógica de geocodificação. Entregas com versão antiga têm as coords recalculadas.
+const GEO_VERSION = 3;
+// Distância máxima (km) entre o resultado e o centro do bairro para aceitar o ponto.
+const GEO_MAX_KM_FROM_BAIRRO = 2.5;
+
+async function getNeighborhoodCenterSafe(d) {
+  try {
+    const bairro = String(d.neighborhood || '').trim();
+    if (!bairro) return null;
+    if (d.city && !/juazeiro/i.test(d.city)) return null;
+    return await resolveNeighborhoodLocation(bairro, 'Juazeiro');
+  } catch (e) {
+    return null;
+  }
+}
+
 async function geocodeDelivery(d) {
+  d.geoV = GEO_VERSION;
+  const center = await getNeighborhoodCenterSafe(d);
+  const nearCenter = p => !center || haversineKm(center.lat, center.lon, p.lat, p.lon) <= GEO_MAX_KM_FROM_BAIRRO;
+
   const savedExact = getSavedExactAddress(d.neighborhood, d.street, d.number);
-  if (savedExact) {
+  if (savedExact && nearCenter(savedExact)) {
     d.exactMatch = true;
     return savedExact;
   }
@@ -3617,10 +4068,26 @@ async function geocodeDelivery(d) {
       [bairro, 'Juazeiro, Bahia, Brasil'].filter(Boolean).join(', '),
       [bairro, 'Juazeiro, BA'].filter(Boolean).join(', ')
     ];
-    baseRes = await geocodeCandidates(extra, `${d.street}, ${d.neighborhood}`, null);
+    try {
+      baseRes = await geocodeCandidates(extra, `${d.street}, ${d.neighborhood}`, null);
+    } catch (e2) {
+      baseRes = null;
+    }
   }
 
-  if (baseRes && baseRes.exact) {
+  // Resultado fora do bairro = homônimo em outra região. Descarta.
+  if (baseRes && !nearCenter(baseRes)) baseRes = null;
+
+  // Sem resultado confiável: usa o centro do bairro em vez de um ponto aleatório da cidade.
+  if (!baseRes) {
+    if (center) {
+      d.exactMatch = false;
+      return { lat: center.lat, lon: center.lon, exact: false };
+    }
+    throw new Error('Endereço não encontrado: ' + `${d.street}, ${d.neighborhood}`);
+  }
+
+  if (baseRes.exact) {
     d.exactMatch = true;
     storeExactAddress(d.neighborhood, d.street, d.number, baseRes.lat, baseRes.lon, 'osm_exact');
     return baseRes;
@@ -3628,7 +4095,7 @@ async function geocodeDelivery(d) {
 
   if (baseRes && d.number) {
     const interp = await interpolateHouseNumberOnStreet(cleanStreet, d.number, baseRes.lat, baseRes.lon);
-    if (interp) {
+    if (interp && nearCenter(interp) && haversineKm(baseRes.lat, baseRes.lon, interp.lat, interp.lon) <= 1.2) {
       d.exactMatch = Boolean(interp.exact);
       if (interp.exact) {
         storeExactAddress(d.neighborhood, d.street, d.number, interp.lat, interp.lon, 'osm_exact');
@@ -3646,7 +4113,7 @@ function fullStoreAddress() {
 }
 
 // Alfinete com a ponta cravada exatamente em cima da linha da rota (anchor: 'bottom')
-function addMarker(lat, lon, label, state = 'stop', popupTitle = '', deliveryId = null, nearLabel = '') {
+function addMarkerLegacy(lat, lon, label, state = 'stop', popupTitle = '', deliveryId = null, nearLabel = '') {
   const cls = state === 'store' ? 'pin-store'
             : state === 'active' ? 'pin-active'
             : state === 'done' ? 'pin-done'
@@ -3804,6 +4271,8 @@ function formatDuration(seconds) {
 function redrawMarkers() {
   markers.forEach(m => m.remove());
   markers = [];
+  stopFeatures = [];
+  flushStops();
 
   if (store && Number.isFinite(Number(store.lat)) && Number.isFinite(Number(store.lon))) {
     const sLat = Number.isFinite(Number(store.snappedLat)) ? Number(store.snappedLat) : Number(store.lat);
@@ -3867,6 +4336,32 @@ function redrawMarkers() {
   });
 }
 
+// O MapLibre só reposiciona os markers em eventos de "move". Quando a área do mapa
+// muda de tamanho (barra do navegador no celular, rotação, layout), os alfinetes
+// ficam no lugar antigo até dar zoom. Aqui forçamos o resize e o reposicionamento.
+function syncMarkers() {
+  if (!map) return;
+  try { map.resize(); } catch (e) {}
+  markers.forEach(m => {
+    try { m.setLngLat(m.getLngLat()); } catch (e) {}
+  });
+}
+
+window.addEventListener('load', () => {
+  if (window.ResizeObserver && map && map.getContainer) {
+    const ro = new ResizeObserver(() => requestAnimationFrame(syncMarkers));
+    ro.observe(map.getContainer());
+  }
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => requestAnimationFrame(syncMarkers));
+    window.visualViewport.addEventListener('scroll', () => requestAnimationFrame(syncMarkers));
+  }
+  window.addEventListener('orientationchange', () => setTimeout(syncMarkers, 300));
+  window.addEventListener('resize', () => requestAnimationFrame(syncMarkers));
+  map.on('style.load', () => requestAnimationFrame(syncMarkers));
+  setTimeout(syncMarkers, 500);
+});
+
 function drawRoute(trip, preserveStoreCenter = false) {
   setFullRouteData({
     type: 'Feature',
@@ -3874,6 +4369,7 @@ function drawRoute(trip, preserveStoreCenter = false) {
   });
 
   redrawMarkers();
+  requestAnimationFrame(syncMarkers);
 
   if (preserveStoreCenter && store?.lat && store?.lon) {
     map.flyTo({ center: [store.lon, store.lat], zoom: 15.5 });
@@ -3962,7 +4458,7 @@ function fitRouteOnMap() {
     }
   }
 
-  const coordsList = markers.map(m => m.getLngLat());
+  const coordsList = stopFeatures.map(f => new maplibregl.LngLat(f.geometry.coordinates[0], f.geometry.coordinates[1]));
   if (userMarker) coordsList.push(userMarker.getLngLat());
 
   if (coordsList.length > 1) {
@@ -4043,6 +4539,7 @@ $('printQueueBtn').onclick = () => {
   area.innerHTML = htmlContent;
   area.classList.remove('hidden');
   window.addEventListener('afterprint', () => area.classList.add('hidden'), { once: true });
+  setTimeout(() => area.classList.add('hidden'), 15000);
   window.print();
 };
 
@@ -4200,36 +4697,406 @@ $('miniDelivered').onclick = () => {
   confirmToggleDelivered(id);
 };
 
-function renderReport() {
-  $('reportDate').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' });
+// ===== Página ROTA =====
+let rotaFilter = 'todas';
+let rotaSheetId = null;
 
-  const groups = {};
-  deliveries.forEach(d => {
-    const k = d.neighborhood || 'Sem bairro';
-    if (!groups[k]) groups[k] = { total: 0, done: 0 };
-    groups[k].total++;
-    if (d.done) groups[k].done++;
-  });
-  const byBairro = Object.entries(groups).sort((a, b) => b[1].total - a[1].total);
-  $('reportByNeighborhood').innerHTML = byBairro.length
-    ? byBairro.map(([n, g]) => `
-        <div class="flex items-center justify-between gap-3 text-xs">
-          <span class="text-zinc-200 truncate">${escapeHTML(n)}</span>
-          <span class="font-mono text-zinc-400 shrink-0 tabular-nums">${g.done}/${g.total}</span>
-        </div>`).join('')
-    : '<p class="text-xs text-zinc-500">Nenhum pedido cadastrado.</p>';
-
-  $('reportList').innerHTML = deliveries.length
-    ? deliveries.map((d, i) => `
-        <div class="px-4 py-3 flex items-start justify-between gap-3">
-          <div class="min-w-0">
-            <div class="text-xs font-bold text-zinc-100 truncate ${d.done ? 'line-through text-zinc-500' : ''}">${i + 1}. ${escapeHTML(d.name)}</div>
-            <div class="text-[11px] text-zinc-400">${escapeHTML(d.street)}, ${escapeHTML(d.number || 's/n')} · ${escapeHTML(d.neighborhood)}</div>${d.complement ? `<div class="text-[10px] text-zinc-500">Obs: ${escapeHTML(d.complement)}</div>` : ''}
-          </div>
-          <span class="text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded shrink-0 ${d.done ? 'bg-emerald-500/15 text-emerald-400' : 'bg-amber-500/15 text-amber-300'}">${d.done ? 'Entregue' : 'Pendente'}</span>
-        </div>`).join('')
-    : '<p class="p-4 text-xs text-zinc-500">Nenhum pedido cadastrado.</p>';
+function rotaAddress(d) {
+  return `${d.street}, ${d.number || 's/n'} — ${d.neighborhood}`;
 }
+
+function renderRotaPage() {
+  const total = deliveries.length;
+  const feitas = deliveries.filter(d => d.done).length;
+  const pendentes = total - feitas;
+  $('rotaStats').innerHTML = [
+    ['Paradas', total, 'text-white'],
+    ['Pendentes', pendentes, 'text-blue-300'],
+    ['Entregues', feitas, 'text-emerald-300'],
+    ['Distância / tempo', `${$('distance').textContent} · ${$('duration').textContent}`, 'text-amber-300']
+  ].map(([label, val, cls]) => `
+    <div class="rounded-xl bg-elevated/70 border border-borderline p-3">
+      <p class="font-mono text-[9px] uppercase tracking-widest text-zinc-500">${label}</p>
+      <p class="mt-1 text-sm font-extrabold ${cls} truncate">${val}</p>
+    </div>`).join('');
+
+  document.querySelectorAll('#rotaFilters [data-filter]').forEach(b => {
+    const ativo = b.dataset.filter === rotaFilter;
+    b.className = 'px-3 py-1.5 rounded-lg text-[11px] font-bold transition ' +
+      (ativo ? 'bg-blue-600 text-white' : 'text-zinc-400 hover:text-white');
+  });
+
+  const lista = deliveries
+    .map((d, i) => ({ d, n: i + 1 }))
+    .filter(({ d }) => rotaFilter === 'todas' || (rotaFilter === 'entregues' ? d.done : !d.done));
+
+  $('rotaList').innerHTML = !deliveries.length
+    ? '<div class="py-10 px-3 border border-dashed border-borderline rounded-xl text-center text-[11px] text-zinc-500">Nenhum pedido na rota.</div>'
+    : !lista.length
+      ? '<div class="py-8 px-3 text-center text-[11px] text-zinc-500">Nada neste filtro.</div>'
+      : lista.map(({ d, n }) => `
+        <button type="button" data-rota-id="${d.id}"
+          class="w-full text-left flex items-center gap-3 p-3 rounded-xl border transition active:scale-[0.99] ${
+            d.done ? 'bg-obsidian/60 border-borderline opacity-60' : 'bg-elevated/70 hover:bg-zinc-800/80 border-borderline hover:border-zinc-700'
+          }">
+          <span class="w-9 h-9 rounded-lg grid place-items-center font-mono text-xs font-extrabold shrink-0 ${
+            d.done ? 'bg-zinc-800 text-zinc-500' : 'bg-blue-500/15 text-blue-300 border border-blue-500/30'
+          }">${d.done ? '✓' : n}</span>
+          <span class="min-w-0 flex-1">
+            <span class="block text-xs font-bold text-zinc-100 truncate ${d.done ? 'line-through text-zinc-500' : ''}">${escapeHTML(d.name)}</span>
+            <span class="block text-[11px] text-zinc-400 truncate">${escapeHTML(rotaAddress(d))}</span>
+          </span>
+          ${d.exactMatch === false ? '<span class="text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 shrink-0">aprox.</span>' : ''}
+          <svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </button>`).join('');
+}
+
+function openRotaSheet(id) {
+  const d = deliveries.find(x => x.id === id);
+  if (!d) return;
+  rotaSheetId = id;
+  $('rotaSheetTitle').textContent = `#${deliveries.indexOf(d) + 1} · ${d.name}`;
+  $('rotaSheetSub').textContent = rotaAddress(d);
+  $('rotaActDone').querySelector('span').textContent = d.done ? 'Desmarcar entregue' : 'Marcar como entregue';
+  $('rotaSheet').classList.remove('hidden');
+}
+
+function closeRotaSheet() {
+  $('rotaSheet').classList.add('hidden');
+  rotaSheetId = null;
+}
+
+function rotaCurrent() {
+  return deliveries.find(x => x.id === rotaSheetId);
+}
+
+$('rotaList').onclick = e => {
+  const card = e.target.closest('[data-rota-id]');
+  if (card) openRotaSheet(card.dataset.rotaId);
+};
+document.querySelectorAll('#rotaFilters [data-filter]').forEach(b => {
+  b.onclick = () => { rotaFilter = b.dataset.filter; renderRotaPage(); };
+});
+$('rotaSheetBackdrop').onclick = closeRotaSheet;
+$('rotaSheetClose').onclick = closeRotaSheet;
+
+$('rotaActFocus').onclick = async () => {
+  const id = rotaSheetId;
+  closeRotaSheet();
+  showView('home');
+  if (id) await selectRouteTargetCard(id);
+};
+
+$('rotaActMaps').onclick = () => {
+  const d = rotaCurrent();
+  if (!d) return;
+  const url = d.lat && d.lon
+    ? `https://www.google.com/maps/dir/?api=1&destination=${d.lat},${d.lon}&travelmode=driving`
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(rotaAddress(d) + ', Juazeiro, BA')}`;
+  window.open(url, '_blank');
+};
+
+$('rotaActCopy').onclick = async () => {
+  const d = rotaCurrent();
+  if (!d) return;
+  try {
+    await navigator.clipboard.writeText(rotaAddress(d) + ', Juazeiro, BA');
+    toast('Endereço copiado');
+  } catch (e) {
+    toast('Não consegui copiar');
+  }
+};
+
+$('rotaActDone').onclick = () => {
+  const id = rotaSheetId;
+  closeRotaSheet();
+  if (id) window.confirmToggleDelivered(id);
+  setTimeout(renderRotaPage, 50);
+};
+
+$('rotaActRemove').onclick = async () => {
+  const id = rotaSheetId;
+  closeRotaSheet();
+  if (!id) return;
+  if (!window.confirm('Remover este pedido da rota?')) return;
+  await window.removeDelivery(id);
+  renderRotaPage();
+};
+
+$('rotaStartBtn').onclick = async () => {
+  const proxima = deliveries.find(d => !d.done);
+  if (!proxima) { toast('Nenhum pedido pendente.'); return; }
+  showView('home');
+  await selectRouteTargetCard(proxima.id);
+};
+
+$('rotaCopyBtn').onclick = async () => {
+  if (!deliveries.length) { toast('Nenhum pedido na rota.'); return; }
+  const texto = deliveries.map((d, i) => `${i + 1}. ${d.name} — ${rotaAddress(d)}${d.done ? ' (entregue)' : ''}`).join('\n');
+  try {
+    await navigator.clipboard.writeText(texto);
+    toast('Sequência copiada');
+  } catch (e) {
+    toast('Não consegui copiar');
+  }
+};
+
+$('rotaPrintBtn').onclick = () => $('printQueueBtn').onclick();
+
+$('rotaRecalcBtn').onclick = () => {
+  if (!deliveries.length) { toast('Nenhum pedido na rota.'); return; }
+  $('calculate').click();
+};
+
+// ===== HISTÓRICO DE ENTREGAS (no aparelho) =====
+const HIST_KEY = 'rota_historico';
+let rotaHistorico = [];
+try { rotaHistorico = JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); } catch (e) { rotaHistorico = []; }
+
+function histSalvar() {
+  try { localStorage.setItem(HIST_KEY, JSON.stringify(rotaHistorico)); } catch (e) {}
+}
+
+function histLojaAtual() {
+  try { return typeof motoCfg === 'function' ? (motoCfg().loja || '') : ''; } catch (e) { return ''; }
+}
+
+function histRegistrar(d) {
+  const base = {
+    id: d.id,
+    name: d.name || '',
+    street: d.street || '',
+    number: d.number || '',
+    neighborhood: d.neighborhood || 'Sem bairro',
+    complement: d.complement || '',
+    loja: histLojaAtual()
+  };
+  const existente = rotaHistorico.find(h => h.id === d.id);
+  if (existente) Object.assign(existente, base);
+  else rotaHistorico.push({ ...base, doneAt: new Date().toISOString() });
+  histSalvar();
+}
+
+function histRemover(id) {
+  rotaHistorico = rotaHistorico.filter(h => h.id !== id);
+  histSalvar();
+}
+
+function histSincronizar() {
+  deliveries.forEach(d => {
+    const noHist = rotaHistorico.some(h => h.id === d.id);
+    if (d.done && !noHist) histRegistrar(d);
+    else if (!d.done && noHist) histRemover(d.id);
+  });
+}
+
+function diaKey(iso) {
+  const x = new Date(iso);
+  return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`;
+}
+
+let relPeriodo = 'hoje';
+let relBuscaTxt = '';
+
+function relPeriodoInicio() {
+  if (relPeriodo === 'tudo') return null;
+  const n = relPeriodo === '7' ? 7 : relPeriodo === '30' ? 30 : 1;
+  const x = new Date();
+  x.setHours(0, 0, 0, 0);
+  x.setDate(x.getDate() - (n - 1));
+  return diaKey(x.toISOString());
+}
+
+function relItens() {
+  const hojeK = diaKey(new Date().toISOString());
+  const inicio = relPeriodoInicio();
+  const entregues = rotaHistorico
+    .map(h => ({ ...h, dia: diaKey(h.doneAt), hora: new Date(h.doneAt).getHours(), status: 'entregue' }))
+    .filter(e => !inicio || e.dia >= inicio);
+  // Pendentes são da fila atual (sempre do dia de hoje)
+  const pendentes = deliveries.filter(d => !d.done).map(d => ({
+    id: d.id, name: d.name || '', street: d.street || '', number: d.number || '',
+    neighborhood: d.neighborhood || 'Sem bairro', complement: d.complement || '',
+    dia: hojeK, hora: null, status: 'pendente'
+  }));
+  const busca = relBuscaTxt.toLowerCase().trim();
+  return [...entregues, ...pendentes].filter(e =>
+    !busca || [e.name, e.street, e.neighborhood].join(' ').toLowerCase().includes(busca)
+  );
+}
+
+function relRotuloDia(k) {
+  const [y, m, d] = k.split('-').map(Number);
+  return new Date(y, m - 1, d, 12).toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
+}
+
+function relDiasDoPeriodo(itens) {
+  const hojeK = diaKey(new Date().toISOString());
+  const inicio = relPeriodoInicio();
+  if (inicio) {
+    const dias = [];
+    const x = new Date(inicio + 'T12:00:00');
+    while (diaKey(x.toISOString()) <= hojeK) {
+      dias.push(diaKey(x.toISOString()));
+      x.setDate(x.getDate() + 1);
+    }
+    return dias;
+  }
+  return [...new Set(itens.map(i => i.dia))].sort().slice(-30);
+}
+
+function renderReport() {
+  histSincronizar();
+  const itens = relItens();
+  const entregues = itens.filter(i => i.status === 'entregue');
+  const pendentes = itens.filter(i => i.status === 'pendente');
+  const dias = relDiasDoPeriodo(itens);
+  const diasComEntrega = new Set(entregues.map(e => e.dia)).size;
+  const media = diasComEntrega ? (entregues.length / diasComEntrega).toFixed(1).replace('.', ',') : '0';
+
+  const porBairro = {};
+  entregues.forEach(e => { porBairro[e.neighborhood] = (porBairro[e.neighborhood] || 0) + 1; });
+  const bairrosOrdenados = Object.entries(porBairro).sort((a, b) => b[1] - a[1]);
+  const topBairro = bairrosOrdenados[0] ? bairrosOrdenados[0][0] : '—';
+  const conclusao = (entregues.length + pendentes.length) ? Math.round(entregues.length / (entregues.length + pendentes.length) * 100) : 0;
+  const periodoNome = { hoje: 'Hoje', '7': 'Últimos 7 dias', '30': 'Últimos 30 dias', tudo: 'Todo o período' }[relPeriodo];
+
+  // Período e busca
+  document.querySelectorAll('#relPeriodos [data-rel]').forEach(b => {
+    const ativo = b.dataset.rel === relPeriodo;
+    b.className = 'px-3 py-1.5 rounded-lg text-[11px] font-bold transition ' + (ativo ? 'bg-blue-600 text-white' : 'text-zinc-400 hover:text-white');
+  });
+  $('relDiasLabel').textContent = periodoNome;
+
+  // KPIs
+  const kpi = (label, val, cls) => `
+    <div class="rounded-xl bg-elevated/70 border border-borderline p-3">
+      <p class="font-mono text-[9px] uppercase tracking-widest text-zinc-500">${label}</p>
+      <p class="mt-1 text-base font-extrabold ${cls} tabular-nums truncate">${val}</p>
+    </div>`;
+  $('relKpis').innerHTML = [
+    kpi('Entregues', entregues.length, 'text-emerald-300'),
+    kpi('Pendentes', pendentes.length, 'text-amber-300'),
+    kpi('Média por dia', media, 'text-white'),
+    kpi('Bairro principal', escapeHTML(topBairro), 'text-blue-300'),
+    kpi('Conclusão', conclusao + '%', 'text-white')
+  ].join('');
+
+  // Gráfico: entregas por dia (barras minimalistas)
+  const contagemDia = {};
+  entregues.forEach(e => { contagemDia[e.dia] = (contagemDia[e.dia] || 0) + 1; });
+  const maxDia = Math.max(1, ...dias.map(d => contagemDia[d] || 0));
+  $('relChartDias').innerHTML = dias.length ? `
+    <div class="flex items-end gap-1.5 h-36">
+      ${dias.map(d => {
+        const v = contagemDia[d] || 0;
+        const pct = Math.max(v ? 6 : 2, Math.round(v / maxDia * 100));
+        const [, , dd] = d.split('-');
+        return `
+          <div class="flex-1 min-w-0 h-full flex flex-col items-center justify-end" title="${dd}: ${v} entrega(s)">
+            <span class="text-[9px] font-mono text-zinc-400 tabular-nums mb-1">${v || ''}</span>
+            <div class="w-full max-w-[22px] rounded-t-md ${v ? 'bg-blue-500/80' : 'bg-zinc-800'}" style="height:${pct}%"></div>
+            <span class="text-[9px] font-mono text-zinc-500 mt-1">${dias.length <= 7 ? dd : ''}</span>
+          </div>`;
+      }).join('')}
+    </div>` : '<p class="text-xs text-zinc-500">Sem dados no período.</p>';
+
+  // Gráfico: horários
+  const porHora = Array(24).fill(0);
+  entregues.forEach(e => { if (e.hora != null) porHora[e.hora]++; });
+  const maxHora = Math.max(1, ...porHora);
+  $('relChartHoras').innerHTML = `
+    <div class="flex items-end gap-[3px] h-28">
+      ${porHora.map((v, h) => `
+        <div class="flex-1 h-full flex flex-col justify-end" title="${String(h).padStart(2, '0')}h: ${v}">
+          <div class="w-full rounded-sm ${v ? 'bg-emerald-500/70' : 'bg-zinc-800'}" style="height:${Math.max(v ? 8 : 3, Math.round(v / maxHora * 100))}%"></div>
+        </div>`).join('')}
+    </div>
+    <div class="flex justify-between text-[9px] font-mono text-zinc-500 mt-1.5"><span>00h</span><span>06h</span><span>12h</span><span>18h</span><span>23h</span></div>`;
+
+  // Por bairro (barras finas)
+  const maxBairro = Math.max(1, ...bairrosOrdenados.map(b => b[1]));
+  $('relChartBairros').innerHTML = bairrosOrdenados.length
+    ? bairrosOrdenados.slice(0, 8).map(([n, v]) => `
+        <div class="space-y-1">
+          <div class="flex items-center justify-between text-[11px]">
+            <span class="text-zinc-200 truncate">${escapeHTML(n)}</span>
+            <span class="font-mono text-zinc-400 tabular-nums">${v}</span>
+          </div>
+          <div class="h-1 rounded-full bg-zinc-800 overflow-hidden">
+            <div class="h-full rounded-full bg-blue-500/80" style="width:${Math.round(v / maxBairro * 100)}%"></div>
+          </div>
+        </div>`).join('')
+    : '<p class="text-xs text-zinc-500">Nenhuma entrega no período.</p>';
+
+  // Agrupado por dia (cada dia minimiza/expande)
+  const grupos = {};
+  itens.forEach(i => { (grupos[i.dia] = grupos[i.dia] || []).push(i); });
+  const diasOrdenados = Object.keys(grupos).sort().reverse();
+  $('relDias').innerHTML = diasOrdenados.length
+    ? diasOrdenados.map((k, idx) => {
+        const lista = grupos[k].sort((a, b) => (a.status === 'pendente') - (b.status === 'pendente') || (a.hora ?? 99) - (b.hora ?? 99));
+        const ent = lista.filter(i => i.status === 'entregue').length;
+        const pen = lista.length - ent;
+        const hh = i => i.hora == null ? '—' : String(i.hora).padStart(2, '0') + 'h';
+        return `
+          <details ${idx === 0 ? 'open' : ''} class="group rounded-xl bg-elevated/60 border border-borderline overflow-hidden">
+            <summary class="cursor-pointer list-none flex items-center justify-between gap-3 p-3.5 hover:bg-zinc-800/40 transition">
+              <div class="min-w-0">
+                <p class="text-xs font-bold text-zinc-100 capitalize">${relRotuloDia(k)}${k === diaKey(new Date().toISOString()) ? ' <span class="text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-300 ml-1">hoje</span>' : ''}</p>
+                <p class="text-[10px] font-mono text-zinc-500 mt-0.5">${ent} entregue(s) · ${pen} pendente(s)</p>
+              </div>
+              <svg class="w-4 h-4 text-zinc-500 shrink-0 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></svg>
+            </summary>
+            <div class="border-t border-borderline divide-y divide-borderline/60">
+              ${lista.map(i => `
+                <div class="px-3.5 py-2.5 flex items-center gap-3">
+                  <span class="font-mono text-[10px] text-zinc-500 w-9 shrink-0 tabular-nums">${hh(i)}</span>
+                  <div class="min-w-0 flex-1">
+                    <p class="text-xs font-semibold text-zinc-100 truncate">${escapeHTML(i.name)}</p>
+                    <p class="text-[11px] text-zinc-400 truncate">${escapeHTML(i.street)}, ${escapeHTML(i.number || 's/n')} · ${escapeHTML(i.neighborhood)}</p>
+                  </div>
+                  <span class="text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded shrink-0 ${i.status === 'entregue' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-amber-500/15 text-amber-300'}">${i.status === 'entregue' ? 'Entregue' : 'Pendente'}</span>
+                </div>`).join('')}
+            </div>
+          </details>`;
+      }).join('')
+    : '<p class="p-4 text-xs text-zinc-500 rounded-xl border border-dashed border-borderline text-center">Nenhuma entrega no período.</p>';
+
+  window.__relResumo = { periodoNome, entregues: entregues.length, pendentes: pendentes.length, media, topBairro, itens };
+}
+
+function relCsv() {
+  const { itens } = window.__relResumo || { itens: [] };
+  const linhas = [['dia', 'hora', 'cliente', 'rua', 'numero', 'bairro', 'complemento', 'status', 'loja']];
+  itens.forEach(i => linhas.push([i.dia, i.hora == null ? '' : String(i.hora).padStart(2, '0') + ':00', i.name, i.street, i.number, i.neighborhood, i.complement, i.status, i.loja || '']));
+  return '﻿' + linhas.map(l => l.map(c => `"${String(c ?? '').replace(/"/g, '""')}"`).join(';')).join('\r\n');
+}
+
+$('relExportBtn').onclick = () => {
+  const blob = new Blob([relCsv()], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `rota-relatorio-${diaKey(new Date().toISOString())}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+};
+
+$('relCopyBtn').onclick = async () => {
+  const r = window.__relResumo;
+  if (!r) return;
+  const texto = `Relatório (${r.periodoNome}): ${r.entregues} entregues, ${r.pendentes} pendentes, média ${r.media}/dia. Bairro principal: ${r.topBairro}.`;
+  try { await navigator.clipboard.writeText(texto); toast('Resumo copiado'); }
+  catch (e) { toast('Não consegui copiar'); }
+};
+
+document.querySelectorAll('#relPeriodos [data-rel]').forEach(b => {
+  b.onclick = () => { relPeriodo = b.dataset.rel; renderReport(); };
+});
+$('relBusca').oninput = e => { relBuscaTxt = e.target.value; renderReport(); };
+$('relExpandAll').onclick = () => document.querySelectorAll('#relDias details').forEach(d => d.open = true);
+$('relCollapseAll').onclick = () => document.querySelectorAll('#relDias details').forEach(d => d.open = false);
 
 function closeMenu() {
   $('menuPanel').classList.add('hidden');
@@ -4244,10 +5111,13 @@ function toggleMenu() {
 }
 
 function showView(name) {
+  document.body.classList.toggle('tela-mapa', name === 'home' || name === 'config');
+  $('printFallbackArea').classList.add('hidden');
   if (name === 'config') {
     $('viewHome').classList.remove('hidden');
     $('viewPanel').classList.add('hidden');
     $('viewReport').classList.add('hidden');
+    $('viewRota').classList.add('hidden');
     closeMenu();
     showConfig(true);
     return;
@@ -4255,7 +5125,9 @@ function showView(name) {
   $('viewHome').classList.toggle('hidden', name !== 'home');
   $('viewPanel').classList.toggle('hidden', name !== 'panel');
   $('viewReport').classList.toggle('hidden', name !== 'report');
+  $('viewRota').classList.toggle('hidden', name !== 'rota');
   closeMenu();
+  if (name === 'rota') renderRotaPage();
   if (name === 'report') renderReport();
   if (name === 'home') {
     setTimeout(() => {
@@ -4268,6 +5140,7 @@ function showView(name) {
     }, 60);
   }
   window.scrollTo(0, 0);
+  try { if (name === 'home') wakeUi(); else setUiCollapsed(false); } catch (e) {}
 }
 
 $('mapMenuBtn').onclick = () => {
@@ -4439,10 +5312,41 @@ $('brandTitle').onkeydown = e => {
   }
 };
 
-$('gpsPill').onclick = () => {
-  toast('Buscando sua localização...');
-  startLiveLocationTracking();
-};
+// Card de status: 7 s após abrir o app ele encolhe para o ponto azul; toque alterna
+const gpsPillEl = $('gpsPill');
+setTimeout(() => gpsPillEl.classList.add('pill-min'), 7000);
+gpsPillEl.onclick = () => gpsPillEl.classList.toggle('pill-min');
+
+// Cabeçalho e abas: recolhem após 10 s sem interação; voltam com toque ou arrastando o mapa para baixo
+let uiIdleTimer = null;
+function setUiCollapsed(on) {
+  const naTelaDoMapa = !$('viewHome').classList.contains('hidden') && $('configCard').classList.contains('hidden');
+  const c = on && naTelaDoMapa;
+  $('appTopHeader').classList.toggle('ui-collapsed', c);
+  $('miniCardStrip').classList.toggle('ui-collapsed', c);
+  document.body.classList.toggle('cab-recolhido', c);
+}
+function wakeUi() {
+  setUiCollapsed(false);
+  clearTimeout(uiIdleTimer);
+  uiIdleTimer = setTimeout(() => setUiCollapsed(true), 10000);
+}
+function yOfEvent(oe) {
+  if (!oe) return null;
+  const t = (oe.touches && oe.touches[0]) || (oe.changedTouches && oe.changedTouches[0]) || oe;
+  return typeof t.clientY === 'number' ? t.clientY : null;
+}
+let dragStartY = null, dragLastY = null;
+map.on('dragstart', e => { dragStartY = yOfEvent(e.originalEvent); dragLastY = dragStartY; });
+map.on('drag', e => { const y = yOfEvent(e.originalEvent); if (y != null) dragLastY = y; });
+map.on('dragend', () => {
+  if (dragStartY != null && dragLastY != null && dragLastY - dragStartY > 12) wakeUi();
+  dragStartY = null;
+  dragLastY = null;
+});
+$('appTopHeader').addEventListener('pointerdown', wakeUi);
+$('miniCardStrip').addEventListener('pointerdown', wakeUi);
+wakeUi();
 $('brandLogo').onclick = () => {
   const abrir = $('configCard').classList.contains('hidden');
   showView('home');
