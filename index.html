@@ -2762,12 +2762,34 @@ function voiceRefreshBtn() {
   $('voiceOffIcon').classList.toggle('hidden', voiceEnabled);
 }
 
+// Escolhe a voz pt-BR mais natural que o aparelho tiver (Google, Microsoft Natural, etc.)
+let vozEscolhida = null;
+function escolherVozPt() {
+  if (!('speechSynthesis' in window)) return null;
+  const vozes = speechSynthesis.getVoices().filter(v => /^pt[-_]BR/i.test(v.lang) || /portugu/i.test(v.name));
+  if (!vozes.length) return null;
+  const prefs = [/natural/i, /google.*(brasil|brazil)/i, /francisca/i, /antonio/i, /microsoft/i];
+  for (const re of prefs) {
+    const v = vozes.find(x => re.test(x.name));
+    if (v) return v;
+  }
+  return vozes[0];
+}
+try {
+  if ('speechSynthesis' in window) {
+    speechSynthesis.onvoiceschanged = () => { vozEscolhida = escolherVozPt(); };
+  }
+} catch (e) {}
+
 function speakPt(text) {
   try {
     if (!('speechSynthesis' in window) || !text) return;
+    if (!vozEscolhida) vozEscolhida = escolherVozPt();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = 'pt-BR';
-    u.rate = 1;
+    if (vozEscolhida) u.voice = vozEscolhida;
+    u.rate = 0.95;
+    u.pitch = 1;
     speechSynthesis.cancel();
     speechSynthesis.speak(u);
   } catch (e) {}
